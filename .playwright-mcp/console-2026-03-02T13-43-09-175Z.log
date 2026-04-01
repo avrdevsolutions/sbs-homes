@@ -1,0 +1,10 @@
+[    2048ms] [WARNING] Statsig is not ready to log exposures, will retry in 1 seconds @ https://www.figma.com/webpack-artifacts/assets/vendor-core-02f91531200afd34.min.js.br:53
+[    5715ms] [WARNING] Canvas2D: Multiple readback operations using getImageData are faster with the willReadFrequently attribute set to true. See: https://html.spec.whatwg.org/multipage/canvas.html#concept-canvas-will-read-frequently @ https://static.figma.com/fullscreen/bf7e92fde14bce17ce7839702f7b03b902ddee1b/fullscreen-wasm-4-0-21/compiled_wasm.js.br:1
+[    6126ms] [ERROR] Failed to load resource: the server responded with a status of 401 () @ https://www.figma.com/api/folders/562693598:0
+[    6192ms] E: XHR for "/api/folders/562693598" failed with status 401
+    at C (https://www.figma.com/webpack-artifacts/assets/5814-920c1b979e3d49ac.min.js.br:1097:13967)
+    at async Object.P [as get] (https://www.figma.com/webpack-artifacts/assets/5814-920c1b979e3d49ac.min.js.br:1097:14350)
+    at async https://www.figma.com/webpack-artifacts/assets/5814-920c1b979e3d49ac.min.js.br:891:138314
+    at async _.validate (https://www.figma.com/webpack-artifacts/assets/figma_app_beta-7fa4f04ba7555ce3.min.js.br:422:1517334)
+    at async h.fetchObject (https://www.figma.com/webpack-artifacts/assets/5814-920c1b979e3d49ac.min.js.br:365:134764)
+    at async g (https://www.figma.com/webpack-artifacts/assets/5814-920c1b979e3d49ac.min.js.br:365:115055)

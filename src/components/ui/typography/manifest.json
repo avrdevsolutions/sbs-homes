@@ -1,0 +1,12 @@
+{
+  "name": "Typography",
+  "pattern": "record-map",
+  "forwardRef": false,
+  "polymorphic": true,
+  "variantAxes": {
+    "variant": ["h1", "h2", "h3", "h4", "body", "body-sm", "caption", "overline"]
+  },
+  "props": [],
+  "defaults": { "variant": "body" },
+  "exports": ["Typography"]
+}

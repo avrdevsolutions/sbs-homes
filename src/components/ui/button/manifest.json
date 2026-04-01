@@ -1,0 +1,13 @@
+{
+  "name": "Button",
+  "pattern": "cva",
+  "forwardRef": true,
+  "polymorphic": false,
+  "variantAxes": {
+    "variant": ["primary", "secondary", "outline", "ghost", "danger", "link"],
+    "size": ["sm", "md", "lg", "icon", "inline"]
+  },
+  "props": ["loading"],
+  "defaults": { "variant": "primary", "size": "md" },
+  "exports": ["Button", "buttonVariants", "ButtonProps"]
+}

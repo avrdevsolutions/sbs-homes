@@ -1,0 +1,19 @@
+{
+  "name": "Separator",
+  "pattern": "cva",
+  "forwardRef": false,
+  "polymorphic": false,
+  "variantAxes": {
+    "orientation": ["horizontal", "vertical"],
+    "thickness": ["thin", "medium", "thick"],
+    "variant": ["default", "muted", "primary", "inverse"]
+  },
+  "props": ["decorative"],
+  "defaults": {
+    "orientation": "horizontal",
+    "thickness": "thin",
+    "variant": "default",
+    "decorative": true
+  },
+  "exports": ["Separator", "separatorVariants"]
+}

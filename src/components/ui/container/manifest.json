@@ -1,0 +1,13 @@
+{
+  "name": "Container",
+  "pattern": "record-map",
+  "forwardRef": false,
+  "polymorphic": true,
+  "variantAxes": {
+    "size": ["sm", "md", "lg", "xl", "full"],
+    "padding": ["none", "tight", "default", "wide"]
+  },
+  "props": [],
+  "defaults": { "size": "xl", "padding": "default" },
+  "exports": ["Container"]
+}

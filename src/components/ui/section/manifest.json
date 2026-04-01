@@ -1,0 +1,22 @@
+{
+  "name": "Section",
+  "pattern": "record-map",
+  "forwardRef": false,
+  "polymorphic": false,
+  "variantAxes": {
+    "spacing": ["none", "compact", "standard", "hero"],
+    "background": ["default", "alt", "primary", "inverse"],
+    "containerSize": ["sm", "md", "lg", "xl", "full"],
+    "containerPadding": ["none", "tight", "default", "wide"]
+  },
+  "nativeProps": true,
+  "props": ["fullBleed"],
+  "defaults": {
+    "spacing": "standard",
+    "background": "default",
+    "containerSize": "xl",
+    "containerPadding": "default",
+    "fullBleed": false
+  },
+  "exports": ["Section"]
+}

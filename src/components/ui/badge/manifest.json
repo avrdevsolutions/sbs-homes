@@ -1,0 +1,12 @@
+{
+  "name": "Badge",
+  "pattern": "cva",
+  "forwardRef": false,
+  "polymorphic": false,
+  "variantAxes": {
+    "variant": ["default", "secondary", "success", "warning", "error", "outline"]
+  },
+  "props": [],
+  "defaults": { "variant": "default" },
+  "exports": ["Badge", "badgeVariants", "BadgeProps"]
+}

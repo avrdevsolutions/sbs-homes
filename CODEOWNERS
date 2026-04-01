@@ -1,0 +1,47 @@
+# CODEOWNERS
+# Each line is a file pattern followed by one or more owners.
+# Owners must be @username or a team like @org/team-name.
+#
+# AI agents can create PRs but they still need CODEOWNER approval to merge.
+
+# TODO: Replace with actual GitHub usernames / team names.
+
+# Default owners for everything not matched below
+* @avrdevsolutions/maintainers
+
+# ─────────────────────────────────────────────────────────────────────────────
+# High-sensitivity files — require explicit approval
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Documentation (standards, ADRs) — changes affect how everyone works
+/docs/ @avrdevsolutions/maintainers
+
+# Contracts — breaking changes need sign-off from all maintainers
+/contracts/ @avrdevsolutions/maintainers
+
+# CI / GitHub configuration — affects all workflows
+/.github/ @avrdevsolutions/maintainers
+
+# Agent system — changes affect all AI-assisted development
+/.github/agents/ @avrdevsolutions/maintainers
+/.github/skills/ @avrdevsolutions/maintainers
+/.github/prompts/ @avrdevsolutions/maintainers
+/.github/instructions/ @avrdevsolutions/maintainers
+
+# Configuration files — can break the build
+/*.config.* @avrdevsolutions/maintainers
+/tsconfig.json @avrdevsolutions/maintainers
+/next.config.js @avrdevsolutions/maintainers
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Application code
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Source code
+/src/ @avrdevsolutions/maintainers
+
+# API routes — security sensitive
+/src/app/api/ @avrdevsolutions/maintainers
+
+# Middleware — security sensitive
+/src/middleware.ts @avrdevsolutions/maintainers

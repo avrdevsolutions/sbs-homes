@@ -1,0 +1,48 @@
+{
+  "version": 1,
+  "lastUpdatedBy": "template-seed",
+  "primitives": [
+    {
+      "name": "Typography",
+      "path": "src/components/ui/typography",
+      "pattern": "record-map",
+      "axes": ["variant"]
+    },
+    {
+      "name": "Button",
+      "path": "src/components/ui/button",
+      "pattern": "cva",
+      "axes": ["variant", "size"]
+    },
+    {
+      "name": "Badge",
+      "path": "src/components/ui/badge",
+      "pattern": "cva",
+      "axes": ["variant"]
+    },
+    {
+      "name": "Container",
+      "path": "src/components/ui/container",
+      "pattern": "record-map",
+      "axes": ["size", "padding"]
+    },
+    {
+      "name": "Section",
+      "path": "src/components/ui/section",
+      "pattern": "record-map",
+      "axes": ["spacing", "background", "containerSize", "containerPadding"]
+    },
+    {
+      "name": "Stack",
+      "path": "src/components/ui/stack",
+      "pattern": "record-map",
+      "axes": ["direction", "gap", "align", "justify"]
+    },
+    {
+      "name": "Separator",
+      "path": "src/components/ui/separator",
+      "pattern": "cva",
+      "axes": ["orientation", "thickness", "variant"]
+    }
+  ]
+}
