@@ -6,7 +6,7 @@
   "variantAxes": {
     "orientation": ["horizontal", "vertical"],
     "thickness": ["thin", "medium", "thick"],
-    "variant": ["default", "muted", "primary", "inverse"]
+    "variant": ["default", "subtle", "accent", "inverse"]
   },
   "props": ["decorative"],
   "defaults": {

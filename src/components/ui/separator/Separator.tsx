@@ -14,9 +14,9 @@ const separatorVariants = cva('shrink-0 border-none', {
       thick: '',
     },
     variant: {
-      default: 'bg-secondary-200',
-      muted: 'bg-secondary-100',
-      primary: 'bg-primary-500',
+      default: 'bg-foreground/10',
+      subtle: 'bg-white/10',
+      accent: 'bg-primary-600/60',
       inverse: 'bg-white/20',
     },
   },

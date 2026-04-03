@@ -4,8 +4,8 @@
   "forwardRef": false,
   "polymorphic": false,
   "variantAxes": {
-    "spacing": ["none", "compact", "standard", "hero"],
-    "background": ["default", "alt", "primary", "inverse"],
+    "spacing": ["none", "compact", "standard", "spacious", "hero"],
+    "background": ["default", "warm", "warm-alt", "dark", "dark-deeper"],
     "containerSize": ["sm", "md", "lg", "xl", "full"],
     "containerPadding": ["none", "tight", "default", "wide"]
   },

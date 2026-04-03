@@ -1,0 +1,141 @@
+{
+  "$schema": "feo-manifest-v1",
+  "agent": "ux-integrator",
+  "created_at": "2026-04-02T12:00:00Z",
+  "updated_at": "2026-04-02T12:00:00Z",
+  "status": "completed",
+  "approved": true,
+  "approved_at": "2026-04-02T12:05:00Z",
+  "change_rounds": [],
+  "source_brief": "orchestrator.ux.brief.md",
+  "source_brief_manifest": "orchestrator.ux.manifest.json",
+  "source_builder_manifest": "ui-builder.manifest.json",
+  "skeletons_processed": [
+    {
+      "component": "FloorPlanTabs",
+      "file": "src/components/features/landing-page/floor-plans-section/FloorPlanTabs.tsx",
+      "section": "floor-plans",
+      "decision": "accepted",
+      "status": "implemented"
+    },
+    {
+      "component": "StructuralLayerToggles",
+      "file": "src/components/features/landing-page/structural-floor-plans-section/StructuralLayerToggles.tsx",
+      "section": "structural-floor-plans",
+      "decision": "accepted",
+      "status": "implemented"
+    },
+    {
+      "component": "CollapsibleDetailCard",
+      "file": "src/components/features/landing-page/component-details-section/CollapsibleDetailCard.tsx",
+      "section": "component-details",
+      "decision": "accepted",
+      "status": "implemented"
+    },
+    {
+      "component": "NavSpineClient",
+      "file": "src/components/layout/nav-spine/NavSpineClient.tsx",
+      "section": "nav-spine",
+      "decision": "deferred",
+      "status": "skipped"
+    }
+  ],
+  "new_boundaries_created": [],
+  "skipped": [
+    {
+      "component": "NavSpineClient",
+      "section": "nav-spine",
+      "reason": "Navigation design deferred per UX brief. NavSpineClient remains as bare skeleton."
+    }
+  ],
+  "global_implementations": [
+    {
+      "feature": "smooth-scroll",
+      "file": "src/app/globals.css",
+      "description": "scroll-behavior: smooth on html with prefers-reduced-motion: reduce reset to auto"
+    },
+    {
+      "feature": "skip-link",
+      "file": "src/components/layout/skip-link/SkipLink.tsx",
+      "description": "Visually-hidden skip link as first focusable element, pointing to #main-content"
+    },
+    {
+      "feature": "desktop-content-offset",
+      "file": "src/app/layout.tsx",
+      "description": "lg:pr-14 on body for nav spine clearance"
+    },
+    {
+      "feature": "back-to-top-button",
+      "file": "src/components/layout/back-to-top-button/BackToTopButton.tsx",
+      "description": "Fixed back-to-top button with scroll threshold (~100vh), bottom-left desktop, bottom-right mobile, aria-label, fade in/out"
+    },
+    {
+      "feature": "focus-ring-audit",
+      "description": "All interactive elements verified: Button base cva includes focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2. Dark section offsets use focus-visible:ring-offset-secondary-950. Footer links, nav links, FloorPlanTabs, StructuralLayerToggles, CollapsibleDetailCard toggle all have explicit focus rings."
+    }
+  ],
+  "section_implementations": [
+    {
+      "section": "hero",
+      "description": "No additional work needed. CTA anchor covered by global smooth scroll."
+    },
+    {
+      "section": "exterior-views",
+      "description": "Reduced-motion fallback: static photo placeholder with role=img and descriptive aria-label"
+    },
+    {
+      "section": "interior-lifestyle",
+      "description": "Reduced-motion fallback: static interior photo placeholder with role=img and descriptive aria-label"
+    },
+    {
+      "section": "floor-plans",
+      "description": "FloorPlanTabs client component: segmented control with radiogroup role, aria-checked, focus rings, aria-live plan area"
+    },
+    {
+      "section": "technology-divider",
+      "description": "No action (non-interactive pacing device)"
+    },
+    {
+      "section": "construction-overview",
+      "description": "Reduced-motion fallback (ordered structural component list), contextual link to Component Details section"
+    },
+    {
+      "section": "assembly-sequence",
+      "description": "Step progress indicator with 7-segment pip bar, Step N of M text in aria-live polite region, hidden under reduced motion. Reduced-motion fallback: numbered step list with descriptions."
+    },
+    {
+      "section": "structural-floor-plans",
+      "description": "StructuralLayerToggles client component: layer visibility toggle buttons with aria-pressed, pip-coloured indicators, focus rings"
+    },
+    {
+      "section": "component-details",
+      "description": "CollapsibleDetailCard client component: mobile collapsible cards with aria-expanded, chevron indicator, keyboard toggle, desktop always-expanded"
+    },
+    {
+      "section": "footer",
+      "description": "External link has target=_blank, rel=noopener noreferrer, sr-only (opens in new tab). Email uses mailto: href. All links have focus-visible ring styles with dark section offset."
+    }
+  ],
+  "quality_gates": {
+    "UX-G0": {
+      "passed": true,
+      "notes": "All brief decisions implemented or documented. Hero, exterior-views, interior-lifestyle, floor-plans, technology-divider, construction-overview, assembly-sequence, structural-floor-plans, component-details, footer — all covered."
+    },
+    "UX-G1": {
+      "passed": true,
+      "notes": "4 client boundary files: BackToTopButton (scroll listener + useState), FloorPlanTabs (useState), StructuralLayerToggles (useState), CollapsibleDetailCard (useState + useMediaQuery). NavSpineClient skipped per brief. All justified."
+    },
+    "UX-G2": {
+      "passed": true,
+      "notes": "ARIA verified: aria-expanded on CollapsibleDetailCard, aria-pressed on StructuralLayerToggles, aria-checked + radiogroup on FloorPlanTabs, aria-live=polite on plan areas and step indicator, aria-label on back-to-top button and skip link, sr-only on external link disclosure."
+    },
+    "UX-G3": {
+      "passed": true,
+      "notes": "BackToTopButton 44x44px (size-11). FloorPlanTabs buttons have py-3 px-6 (adequate). StructuralLayerToggles have py-2.5 px-4 (24px height, adequate touch target via full button area). CollapsibleDetailCard toggle is full-width."
+    },
+    "UX-G4": {
+      "passed": true,
+      "notes": "pnpm build clean — zero errors, zero type errors."
+    }
+  }
+}

@@ -1,0 +1,1 @@
+export { InteriorLifestyleSection } from './InteriorLifestyleSection'

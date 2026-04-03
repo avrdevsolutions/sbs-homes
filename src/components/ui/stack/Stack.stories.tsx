@@ -103,3 +103,20 @@ export const GapVariations: Story = {
     </div>
   ),
 }
+
+export const AllVariants: Story = {
+  render: () => (
+    <div className='flex flex-col gap-8'>
+      <Stack direction='row' gap='4' align='center' justify='between'>
+        <Box>Row</Box>
+        <Box>Between</Box>
+        <Box>Center</Box>
+      </Stack>
+      <Stack direction='col' gap='6' align='stretch'>
+        <Box>Column</Box>
+        <Box>Gap 6</Box>
+        <Box>Stretch</Box>
+      </Stack>
+    </div>
+  ),
+}

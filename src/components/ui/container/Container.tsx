@@ -10,18 +10,18 @@ type ContainerProps<T extends React.ElementType = 'div'> = {
 } & Omit<React.ComponentPropsWithoutRef<T>, 'as' | 'size' | 'padding' | 'className' | 'children'>
 
 const sizeMap = {
-  sm: 'max-w-screen-sm',
-  md: 'max-w-screen-md',
-  lg: 'max-w-screen-lg',
-  xl: 'max-w-screen-xl',
+  sm: 'max-w-narrow',
+  md: 'max-w-3xl',
+  lg: 'max-w-5xl',
+  xl: 'max-w-content',
   full: 'max-w-full',
 } as const
 
 const paddingMap = {
   none: '',
-  tight: 'px-3 sm:px-4 lg:px-6',
-  default: 'px-4 sm:px-6 lg:px-8',
-  wide: 'px-6 sm:px-10 lg:px-16',
+  tight: 'px-5 md:px-10 lg:px-14',
+  default: 'px-5 md:px-10 lg:px-14',
+  wide: 'px-6 md:px-12 lg:px-18',
 } as const
 
 export const Container = <T extends React.ElementType = 'div'>({

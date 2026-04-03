@@ -97,3 +97,17 @@ export const AllPaddings: Story = {
     </div>
   ),
 }
+
+export const AllVariants: Story = {
+  render: () => (
+    <div className='flex flex-col gap-6'>
+      {(['sm', 'md', 'lg', 'xl', 'full'] as const).map((size) => (
+        <Container key={size} size={size} padding='default'>
+          <div className='rounded border border-dashed border-primary-300 bg-white p-4 text-center text-sm'>
+            size=&quot;{size}&quot; / padding=&quot;default&quot;
+          </div>
+        </Container>
+      ))}
+    </div>
+  ),
+}

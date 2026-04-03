@@ -1,0 +1,31 @@
+{
+  "$schema": "feo-manifest-v1",
+  "agent": "orchestrator",
+  "phase": "ux-interview",
+  "created_at": "2026-04-02T11:10:00Z",
+  "updated_at": "2026-04-02T11:20:00Z",
+  "status": "completed",
+  "approved": true,
+  "approved_at": "2026-04-02T11:20:00Z",
+  "change_rounds": [],
+  "source_recommendations": "ux-analyst.recommendations.md",
+  "source_analyst_manifest": "ux-analyst.manifest.json",
+  "brief_file": "orchestrator.ux.brief.md",
+  "sections_decided": [
+    { "section": "smooth-scroll", "decision": "accepted", "notes": null },
+    { "section": "skip-link", "decision": "accepted", "notes": null },
+    { "section": "back-to-top", "decision": "accepted", "notes": null },
+    { "section": "focus-ring-audit", "decision": "accepted", "notes": null },
+    { "section": "desktop-content-offset", "decision": "accepted", "notes": null },
+    { "section": "hero-cta", "decision": "accepted", "notes": "Covered by global smooth scroll — no additional work" },
+    { "section": "exterior-views", "decision": "accepted", "notes": "Single static photo reduced-motion fallback" },
+    { "section": "interior-lifestyle", "decision": "accepted", "notes": "Single static photo reduced-motion fallback" },
+    { "section": "floor-plans", "decision": "accepted", "notes": "Segmented control + lightbox when assets arrive" },
+    { "section": "technology-divider", "decision": "accepted", "notes": "No action — intentionally non-interactive" },
+    { "section": "construction-overview", "decision": "accepted", "notes": "Static fallback + contextual link to Component Details" },
+    { "section": "assembly-sequence", "decision": "accepted", "notes": "Step progress indicator with aria-live + numbered list fallback" },
+    { "section": "structural-floor-plans", "decision": "accepted", "notes": "Layer visibility toggles when assets arrive" },
+    { "section": "component-details", "decision": "accepted", "notes": "Collapsible cards on mobile, expanded on desktop" },
+    { "section": "footer", "decision": "accepted", "notes": "New-tab attributes + sr disclosure + focus rings" }
+  ]
+}

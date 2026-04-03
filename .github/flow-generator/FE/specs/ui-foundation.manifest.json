@@ -1,0 +1,83 @@
+{
+  "$schema": "feo-manifest-v1",
+  "agent": "ui-foundation",
+  "created_at": "2026-04-02T08:15:34Z",
+  "updated_at": "2026-04-02T08:43:00Z",
+  "status": "completed",
+  "approved": true,
+  "approved_at": "2026-04-02T08:43:00Z",
+  "scenario": "A",
+  "strategy": "fresh-mockup",
+  "source_mockup": "landing-page-mockup-r3-v2.html",
+  "last_completed_step": "completed",
+  "quality_gates": {
+    "G0": "pass",
+    "G1": "pass",
+    "G2": "pass",
+    "G3": "pass",
+    "G4": "pass",
+    "G5": "pass",
+    "G6": "pass",
+    "G7": "pass",
+    "G8": "pass"
+  },
+  "mockup_mapping": {
+    "typography": {
+      ".type-display": "h1",
+      ".type-heading": "h2",
+      ".type-subheading": "h3",
+      ".type-eyebrow": "overline",
+      ".type-body": "body",
+      ".type-small": "body-sm",
+      ".type-detail": "caption",
+      ".type-section-number": "section-number"
+    },
+    "buttons": {
+      ".btn-primary": { "variant": "primary", "size": "md" },
+      ".btn-ghost": { "variant": "ghost", "size": "inline" }
+    },
+    "sections": {
+      ".section-hero": { "spacing": "hero" },
+      ".section-standard": { "spacing": "standard" },
+      ".section-spacious": { "spacing": "spacious" },
+      ".section-compact": { "spacing": "compact" }
+    },
+    "backgrounds": {
+      ".act-1": { "background": "warm", "color_context": "foreground" },
+      ".act-1--alt": { "background": "warm-alt", "color_context": "foreground" },
+      ".act-dark": { "background": "dark", "color_context": "white" },
+      ".act-dark--deeper": { "background": "dark-deeper", "color_context": "white" },
+      ".hero": { "background": "dark", "color_context": "white" }
+    },
+    "separators": {
+      ".divider": { "variant": "default" },
+      ".divider--light": { "variant": "subtle" },
+      ".divider--accent": { "variant": "accent" }
+    },
+    "containers": {
+      ".container": { "size": "xl", "padding": "default" },
+      ".container--narrow": { "size": "sm", "padding": "default" }
+    }
+  },
+  "files_modified": [
+    "tailwind.config.ts",
+    "src/app/globals.css",
+    "src/app/layout.tsx",
+    "src/components/ui/design-tokens.json",
+    "src/components/ui/catalog.json",
+    "src/components/ui/typography/Typography.tsx",
+    "src/components/ui/typography/manifest.json",
+    "src/components/ui/button/Button.tsx",
+    "src/components/ui/badge/Badge.tsx",
+    "src/components/ui/container/Container.tsx",
+    "src/components/ui/section/Section.tsx",
+    "src/components/ui/section/manifest.json",
+    "src/components/ui/separator/Separator.tsx",
+    "src/components/ui/separator/manifest.json",
+    "src/lib/utils.ts",
+    ".github/flow-generator/FE/specs/ui-foundation.brief.md",
+    ".github/flow-generator/FE/specs/ui-foundation.manifest.json"
+  ],
+  "change_rounds": [],
+  "completed_at": "2026-04-02T08:42:00Z"
+}

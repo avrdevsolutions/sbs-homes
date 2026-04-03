@@ -1,0 +1,282 @@
+{
+  "$schema": "feo-manifest-v1",
+  "agent": "ui-builder",
+  "created_at": "2026-04-02T10:15:00Z",
+  "updated_at": "2026-04-02T10:50:37Z",
+  "status": "completed",
+  "approved": true,
+  "approved_at": "2026-04-02T10:50:37Z",
+  "change_rounds": [
+    {
+      "round": 1,
+      "requested_at": "2026-04-02T10:24:10Z",
+      "feedback": "Request changes",
+      "resolved_at": "2026-04-02T10:30:27Z",
+      "changes_made": [
+        "Adjusted hero subtitle, CTA button style, and scroll indicator contrast in HeroSection.",
+        "Updated technology divider heading to include spaced section number inline and reduced heading width.",
+        "Increased section description text contrast for both light and dark contexts in SectionBlockHeader.",
+        "Re-ran type checks and production build with successful results."
+      ]
+    },
+    {
+      "round": 2,
+      "requested_at": "2026-04-02T10:31:19Z",
+      "feedback": "you changed the explore the homes button it looks totally different compared to the mockup. also the thing with the colors mismatched again is persisting. check if maybe it is an issue with the tailwind being setup and the cn stuff maybe the customTwMerge maybe tailwind doesnt know how to handle that opacity on the color of text idk seems to be a huge issue across the whole app. write this in the manifest as feedback so you dont forget and start working",
+      "resolved_at": "2026-04-02T10:35:23Z",
+      "changes_made": [
+        "Restored HeroSection CTA to ghost/inline style to match mockup intent.",
+        "Updated button ghost variant in the Button primitive to inherit text color per section context, reducing cross-section text color mismatches.",
+        "Kept improved subtitle/scroll indicator contrast and section description readability adjustments.",
+        "Re-ran type checks and production build successfully after changes."
+      ]
+    },
+    {
+      "round": 3,
+      "requested_at": "2026-04-02T10:40:58Z",
+      "feedback": "Color/opacity values across all components do not match mockup. Systematic audit and fix of every opacity value, gradient stop, and text color alpha.",
+      "resolved_at": "2026-04-02T10:44:03Z",
+      "changes_made": [
+        "Replaced hero overlay Tailwind gradient with inline linear-gradient using exact mockup alpha stops (0.88 / 0.35 at 45% / 0.12).",
+        "Updated hero subtitle and scroll indicator alpha values to match mockup (subtitle 0.65, scroll text 0.35, scroll line 0.90).",
+        "Refactored SectionBlockHeader to use explicit description opacity and corrected section rule alpha to 0.5.",
+        "Applied 0.5 description opacity overrides for dark sections 05, 06, and 07; preserved 0.6 default where mockup keeps baseline section-header description opacity.",
+        "Matched placeholder panel container and label opacity behavior to mockup for animation vs content placeholders.",
+        "Corrected component details layer row border alpha to rgba(255,255,255,0.04).",
+        "Aligned desktop nav spine glass/wordmark/divider alpha values with mockup.",
+        "Re-ran ESLint auto-fix for edited files and verified successful production build."
+      ]
+    },
+    {
+      "round": 4,
+      "requested_at": "2026-04-02T10:46:56Z",
+      "feedback": "Request changes",
+      "resolved_at": "2026-04-02T10:50:08Z",
+      "changes_made": [
+        "Investigated primitive/token mapping for the technology divider mismatch and identified structural/variant misuse in TechnologyDividerSection.",
+        "Reworked the divider typography structure to match mockup semantics and scale: separate section-number block, display title with max-width 16ch, and centered accent rule.",
+        "Removed extra vertical section spacing for the divider scene by switching to spacing none while keeping 85vh scene height.",
+        "Re-ran ESLint auto-fix and verified successful production build."
+      ]
+    }
+  ],
+  "source_mockup": "landing-page-mockup-r3-v2.html",
+  "completed_at": "2026-04-02T10:50:37Z",
+  "last_completed_step": "page-assembly",
+  "content_contracts": "src/dictionaries/landing-page.ts",
+  "layout_contracts": "src/dictionaries/layout.ts",
+  "page_entry": "src/app/page.tsx",
+  "sections": [
+    {
+      "name": "hero",
+      "path": "src/components/features/landing-page/hero-section",
+      "component": "HeroSection",
+      "primitives_used": ["Section", "Container", "Typography", "Button", "Stack"],
+      "props_interface": "HeroSectionContent",
+      "images": [
+        {
+          "src": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1920&h=1080&fit=crop",
+          "alt": "Modern contemporary timber-clad home with clean architectural lines and landscaped approach",
+          "aspect": "16:9"
+        }
+      ],
+      "responsive_notes": "Full viewport hero with responsive heading and section number scale.",
+      "interactivity_hints": [
+        "CTA button should scroll to Exterior Views section",
+        "Navigation active section should reflect hero visibility"
+      ],
+      "client_skeletons": []
+    },
+    {
+      "name": "exterior-views",
+      "path": "src/components/features/landing-page/exterior-views-section",
+      "component": "ExteriorViewsSection",
+      "primitives_used": ["Section", "Typography", "Stack", "Separator"],
+      "props_interface": "PlaceholderSectionContent",
+      "images": [],
+      "responsive_notes": "Single-column header with large animation placeholder area.",
+      "interactivity_hints": ["Scroll-driven image narrative scene"],
+      "client_skeletons": []
+    },
+    {
+      "name": "interior-lifestyle",
+      "path": "src/components/features/landing-page/interior-lifestyle-section",
+      "component": "InteriorLifestyleSection",
+      "primitives_used": ["Section", "Typography", "Stack", "Separator"],
+      "props_interface": "PlaceholderSectionContent",
+      "images": [],
+      "responsive_notes": "Single-column section in alternate warm background.",
+      "interactivity_hints": ["Scroll-driven interior scene composition"],
+      "client_skeletons": []
+    },
+    {
+      "name": "floor-plans",
+      "path": "src/components/features/landing-page/floor-plans-section",
+      "component": "FloorPlansSection",
+      "primitives_used": ["Section", "Typography", "Stack", "Separator"],
+      "props_interface": "PlaceholderSectionContent",
+      "images": [],
+      "responsive_notes": "Standard vertical rhythm with static placeholder block.",
+      "interactivity_hints": ["Future download or expand interactions for provided plan assets"],
+      "client_skeletons": [
+        {
+          "component": "FloorPlanTabs",
+          "file": "src/components/features/landing-page/floor-plans-section/FloorPlanTabs.tsx",
+          "purpose": "Segmented control for Ground Floor / First Floor plan switching with placeholder plan area",
+          "status": "implemented"
+        }
+      ]
+    },
+    {
+      "name": "technology-divider",
+      "path": "src/components/features/landing-page/technology-divider-section",
+      "component": "TechnologyDividerSection",
+      "primitives_used": ["Section", "Typography", "Separator"],
+      "props_interface": "DividerSectionContent",
+      "images": [],
+      "responsive_notes": "Centered content with oversized background word at 16vw.",
+      "interactivity_hints": ["Transition marker for act change"],
+      "client_skeletons": []
+    },
+    {
+      "name": "construction-overview",
+      "path": "src/components/features/landing-page/construction-overview-section",
+      "component": "ConstructionOverviewSection",
+      "primitives_used": ["Section", "Typography", "Stack", "Separator"],
+      "props_interface": "PlaceholderSectionContent",
+      "images": [],
+      "responsive_notes": "Dark section with placeholder container and muted body text.",
+      "interactivity_hints": ["Exploded cutaway animation"],
+      "client_skeletons": []
+    },
+    {
+      "name": "assembly-sequence",
+      "path": "src/components/features/landing-page/assembly-sequence-section",
+      "component": "AssemblySequenceSection",
+      "primitives_used": ["Section", "Typography", "Stack", "Separator"],
+      "props_interface": "PlaceholderSectionContent",
+      "images": [],
+      "responsive_notes": "Dark-deeper section with placeholder block.",
+      "interactivity_hints": ["Seven-step assembly animation"],
+      "client_skeletons": []
+    },
+    {
+      "name": "structural-floor-plans",
+      "path": "src/components/features/landing-page/structural-floor-plans-section",
+      "component": "StructuralFloorPlansSection",
+      "primitives_used": ["Section", "Typography", "Stack", "Separator"],
+      "props_interface": "PlaceholderSectionContent",
+      "images": [],
+      "responsive_notes": "Dark section with static placeholder for structural drawings.",
+      "interactivity_hints": ["Future structural layer overlays"],
+      "client_skeletons": [
+        {
+          "component": "StructuralLayerToggles",
+          "file": "src/components/features/landing-page/structural-floor-plans-section/StructuralLayerToggles.tsx",
+          "purpose": "Layer visibility toggle buttons per structural system with pip-coloured indicators",
+          "status": "implemented"
+        }
+      ]
+    },
+    {
+      "name": "component-details",
+      "path": "src/components/features/landing-page/component-details-section",
+      "component": "ComponentDetailsSection",
+      "primitives_used": ["Section", "Typography", "Stack", "Separator"],
+      "props_interface": "ComponentDetailsSectionContent",
+      "images": [],
+      "responsive_notes": "Card grid: 1 column mobile, 2 columns at desktop.",
+      "interactivity_hints": ["Possible progressive reveals per component card"],
+      "client_skeletons": [
+        {
+          "component": "CollapsibleDetailCard",
+          "file": "src/components/features/landing-page/component-details-section/CollapsibleDetailCard.tsx",
+          "purpose": "Collapsible card on mobile with aria-expanded toggle; always expanded on desktop",
+          "status": "implemented"
+        }
+      ]
+    }
+  ],
+  "layout_components": [
+    {
+      "name": "nav-spine",
+      "path": "src/components/layout/nav-spine",
+      "component": "NavSpine",
+      "global": true,
+      "interactivity_hints": [
+        "Desktop right-side glass spine hover expansion",
+        "Active section tracking and dark/light nav context"
+      ],
+      "client_skeletons": [
+        {
+          "component": "NavSpineClient",
+          "file": "src/components/layout/nav-spine/NavSpineClient.tsx",
+          "purpose": "UX Integrator will implement active-section tracking and visual context transitions",
+          "status": "skipped"
+        }
+      ]
+    },
+    {
+      "name": "site-footer",
+      "path": "src/components/layout/site-footer",
+      "component": "SiteFooter",
+      "global": true,
+      "interactivity_hints": ["Static external links only"],
+      "client_skeletons": []
+    }
+  ],
+  "files_modified": [
+    ".github/flow-generator/FE/specs/ui-builder.brief.md",
+    ".github/flow-generator/FE/specs/ui-builder.manifest.json",
+    "src/app/page.tsx",
+    "src/components/features/landing-page/index.ts",
+    "src/components/features/landing-page/hero-section/HeroSection.tsx",
+    "src/components/features/landing-page/hero-section/index.ts",
+    "src/components/features/landing-page/exterior-views-section/ExteriorViewsSection.tsx",
+    "src/components/features/landing-page/exterior-views-section/index.ts",
+    "src/components/features/landing-page/interior-lifestyle-section/InteriorLifestyleSection.tsx",
+    "src/components/features/landing-page/interior-lifestyle-section/index.ts",
+    "src/components/features/landing-page/floor-plans-section/FloorPlansSection.tsx",
+    "src/components/features/landing-page/floor-plans-section/index.ts",
+    "src/components/features/landing-page/technology-divider-section/TechnologyDividerSection.tsx",
+    "src/components/features/landing-page/technology-divider-section/index.ts",
+    "src/components/features/landing-page/construction-overview-section/ConstructionOverviewSection.tsx",
+    "src/components/features/landing-page/construction-overview-section/index.ts",
+    "src/components/features/landing-page/assembly-sequence-section/AssemblySequenceSection.tsx",
+    "src/components/features/landing-page/assembly-sequence-section/index.ts",
+    "src/components/features/landing-page/structural-floor-plans-section/StructuralFloorPlansSection.tsx",
+    "src/components/features/landing-page/structural-floor-plans-section/index.ts",
+    "src/components/features/landing-page/component-details-section/ComponentDetailsSection.tsx",
+    "src/components/features/landing-page/component-details-section/ComponentDetailCard.tsx",
+    "src/components/features/landing-page/component-details-section/LayerRow.tsx",
+    "src/components/features/landing-page/component-details-section/index.ts",
+    "src/components/layout/index.ts",
+    "src/components/layout/nav-spine/NavSpine.tsx",
+    "src/components/layout/nav-spine/NavSpineClient.tsx",
+    "src/components/layout/nav-spine/index.ts",
+    "src/components/layout/site-footer/SiteFooter.tsx",
+    "src/components/layout/site-footer/index.ts",
+    "src/components/shared/index.ts",
+    "src/components/shared/placeholder-panel/PlaceholderPanel.tsx",
+    "src/components/shared/placeholder-panel/index.ts",
+    "src/components/shared/section-block-header/SectionBlockHeader.tsx",
+    "src/components/shared/section-block-header/index.ts",
+    "src/components/ui/button/Button.tsx",
+    "src/dictionaries/common.ts",
+    "src/dictionaries/layout.ts",
+    "src/dictionaries/landing-page.ts"
+  ],
+  "quality_gates": {
+    "G0": "pass",
+    "G1": "pass",
+    "G2": "pass",
+    "G3": "pass",
+    "G4": "pass",
+    "G5": "pass",
+    "G6": "pass",
+    "G7": "pass",
+    "G8": "pass",
+    "G9": "pass",
+    "G10": "pending-user-approval"
+  }
+}

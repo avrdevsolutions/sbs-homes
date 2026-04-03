@@ -17,7 +17,7 @@ const meta: Meta<typeof Separator> = {
     },
     variant: {
       control: 'select',
-      options: ['default', 'muted', 'primary', 'inverse'],
+      options: ['default', 'subtle', 'accent', 'inverse'],
     },
     decorative: { control: 'boolean' },
   },
@@ -69,14 +69,14 @@ export const VariantDefault: Story = {
   args: { variant: 'default' },
 }
 
-export const VariantMuted: Story = {
-  name: 'Variant: Muted',
-  args: { variant: 'muted' },
+export const VariantSubtle: Story = {
+  name: 'Variant: Subtle',
+  args: { variant: 'subtle' },
 }
 
-export const VariantPrimary: Story = {
-  name: 'Variant: Primary',
-  args: { variant: 'primary' },
+export const VariantAccent: Story = {
+  name: 'Variant: Accent',
+  args: { variant: 'accent' },
 }
 
 export const VariantInverse: Story = {
@@ -92,8 +92,8 @@ export const VariantInverse: Story = {
 }
 
 export const ThickPrimaryAccent: Story = {
-  name: 'Thick Primary Accent',
-  args: { thickness: 'thick', variant: 'primary' },
+  name: 'Thick Accent',
+  args: { thickness: 'thick', variant: 'accent' },
   decorators: [
     (Story) => (
       <div className='flex flex-col gap-4'>
@@ -146,8 +146,8 @@ export const AllVariants: Story = {
         <p className='mb-2 text-xs font-semibold uppercase tracking-wider'>Color Variants</p>
         <div className='flex flex-col gap-3'>
           <Separator variant='default' />
-          <Separator variant='muted' />
-          <Separator variant='primary' />
+          <Separator variant='subtle' />
+          <Separator variant='accent' />
           <div className='rounded bg-primary-900 p-3'>
             <Separator variant='inverse' />
           </div>
@@ -159,9 +159,9 @@ export const AllVariants: Story = {
           <span className='text-sm'>A</span>
           <Separator orientation='vertical' />
           <span className='text-sm'>B</span>
-          <Separator orientation='vertical' thickness='medium' variant='primary' />
+          <Separator orientation='vertical' thickness='medium' variant='accent' />
           <span className='text-sm'>C</span>
-          <Separator orientation='vertical' thickness='thick' variant='primary' />
+          <Separator orientation='vertical' thickness='thick' variant='accent' />
           <span className='text-sm'>D</span>
         </div>
       </div>

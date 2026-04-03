@@ -1,0 +1,1280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SBS Homes — R3-V2: Glass Spine</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=DM+Sans:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+  <style>
+    /* ===== RESET ===== */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+    img { display: block; max-width: 100%; height: auto; }
+    a { text-decoration: none; color: inherit; }
+    button { font: inherit; cursor: pointer; border: none; background: none; }
+    ul, ol { list-style: none; }
+
+    /* ===== TOKENS ===== */
+    :root {
+      /* Surfaces */
+      --color-background: #F5F3F0;
+      --color-background-alt: #EDEBE8;
+      --color-surface-dark: #1C1C1E;
+      --color-surface-darker: #141416;
+      --color-surface-warm: #F0EDE9;
+
+      /* Brand */
+      --color-primary: #D4740E;
+      --color-primary-dark: #B5620B;
+      --color-annotation: #D4453A;
+
+      /* Text */
+      --color-foreground: #1C1C1E;
+      --color-foreground-muted: #71706E;
+      --color-white: #FFFFFF;
+
+      /* Structure */
+      --color-border: rgba(28, 28, 30, 0.10);
+      --color-border-light: rgba(255, 255, 255, 0.10);
+
+      /* Glass */
+      --glass-bg-light: rgba(245, 243, 240, 0.45);
+      --glass-bg-dark: rgba(20, 20, 22, 0.50);
+      --glass-border-light: rgba(255, 255, 255, 0.30);
+      --glass-border-dark: rgba(255, 255, 255, 0.06);
+
+      /* Fonts */
+      --font-display: 'Instrument Sans', sans-serif;
+      --font-body: 'DM Sans', sans-serif;
+
+      /* Nav width */
+      --nav-collapsed: 3.5rem;
+      --nav-expanded: 14rem;
+    }
+
+    /* ===== TYPOGRAPHY ===== */
+    .type-display {
+      font-family: var(--font-display);
+      font-size: 2.25rem;
+      font-weight: 400;
+      line-height: 1.05;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+    .type-heading {
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      font-weight: 400;
+      line-height: 1.2;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+    .type-subheading {
+      font-family: var(--font-display);
+      font-size: 1rem;
+      font-weight: 500;
+      line-height: 1.3;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .type-eyebrow {
+      font-family: var(--font-display);
+      font-size: 0.5625rem;
+      font-weight: 500;
+      line-height: 1;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+    }
+    .type-body {
+      font-family: var(--font-body);
+      font-size: 1rem;
+      font-weight: 400;
+      line-height: 1.75;
+    }
+    .type-small {
+      font-family: var(--font-body);
+      font-size: 0.8125rem;
+      font-weight: 400;
+      line-height: 1.6;
+    }
+    .type-detail {
+      font-family: var(--font-display);
+      font-size: 0.625rem;
+      font-weight: 600;
+      line-height: 1.4;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .type-section-number {
+      font-family: var(--font-display);
+      font-size: 5rem;
+      font-weight: 400;
+      line-height: 0.9;
+      letter-spacing: -0.01em;
+    }
+
+    /* ===== BUTTONS ===== */
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.875rem 2rem;
+      background: var(--color-primary);
+      color: var(--color-white);
+      font-family: var(--font-display);
+      font-size: 0.625rem;
+      font-weight: 600;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      border: none;
+      transition: background 0.2s ease;
+    }
+    .btn-primary:hover { background: var(--color-primary-dark); }
+
+    .btn-ghost {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0;
+      background: transparent;
+      color: inherit;
+      font-family: var(--font-display);
+      font-size: 0.625rem;
+      font-weight: 500;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      border: none;
+      transition: opacity 0.2s ease;
+      position: relative;
+    }
+    .btn-ghost::after {
+      content: '';
+      position: absolute;
+      bottom: -3px;
+      left: 0;
+      width: 100%;
+      height: 1px;
+      background: currentColor;
+      opacity: 0.4;
+    }
+    .btn-ghost:hover { opacity: 0.7; }
+
+    /* ===== LAYOUT ===== */
+    .container {
+      max-width: 74rem;
+      margin: 0 auto;
+      padding: 0 1.25rem;
+    }
+    .container--narrow {
+      max-width: 46rem;
+    }
+
+    .section-hero { padding: 0; }
+    .section-standard { padding: 5rem 0; }
+    .section-spacious { padding: 6.5rem 0; }
+    .section-compact { padding: 3rem 0; }
+
+    /* ===== SEPARATORS ===== */
+    .divider {
+      height: 1px;
+      background: var(--color-border);
+    }
+    .divider--light {
+      background: var(--color-border-light);
+    }
+    .divider--accent {
+      background: var(--color-primary);
+      height: 1px;
+      width: 3rem;
+      opacity: 0.6;
+    }
+
+    /* ===== ANIMATION PLACEHOLDER ===== */
+    .anim-placeholder {
+      min-height: 55vh;
+      border: 1px dashed currentColor;
+      opacity: 0.1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 2.5rem;
+      position: relative;
+    }
+    .anim-placeholder__label {
+      font-family: var(--font-display);
+      font-size: 0.5625rem;
+      font-weight: 500;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+    }
+
+    /* ===== CONTENT PLACEHOLDER ===== */
+    .content-placeholder {
+      min-height: 30vh;
+      border: 1px dashed currentColor;
+      opacity: 0.08;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 2.5rem;
+    }
+    .content-placeholder__label {
+      font-family: var(--font-display);
+      font-size: 0.5625rem;
+      font-weight: 500;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      opacity: 0.8;
+    }
+
+    /* =============================================
+       NAVIGATION — Glass Spine (expand on hover)
+       ============================================= */
+
+    /* Mobile: frosted bottom sheet */
+    .nav-spine {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 200;
+      background: var(--glass-bg-light);
+      backdrop-filter: blur(28px) saturate(1.8);
+      -webkit-backdrop-filter: blur(28px) saturate(1.8);
+      border-top: 1px solid var(--glass-border-light);
+      transition: background 0.5s ease, border-color 0.5s ease;
+    }
+    .nav-spine--dark {
+      background: var(--glass-bg-dark);
+      border-top-color: var(--glass-border-dark);
+    }
+    .nav-spine__inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      padding: 0.75rem 0.5rem;
+      gap: 0;
+    }
+
+    /* Wordmark on mobile */
+    .nav-spine__wordmark {
+      position: fixed;
+      top: 1rem;
+      left: 1.25rem;
+      z-index: 201;
+      font-family: var(--font-display);
+      font-size: 0.625rem;
+      font-weight: 600;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      mix-blend-mode: difference;
+      color: var(--color-white);
+    }
+
+    /* Mobile section links — icon-first */
+    .nav-spine__link {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.25rem;
+      color: inherit;
+      opacity: 0.4;
+      transition: opacity 0.2s ease;
+      padding: 0.25rem 0.5rem;
+    }
+    .nav-spine__link:hover,
+    .nav-spine__link--active {
+      opacity: 1;
+    }
+    .nav-spine__link--active {
+      color: var(--color-primary);
+    }
+    .nav-spine__link-num {
+      font-family: var(--font-display);
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      line-height: 1;
+    }
+    .nav-spine__link-label {
+      font-family: var(--font-display);
+      font-size: 0.4375rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      line-height: 1;
+    }
+
+    /* Act label — mobile */
+    .nav-spine__act {
+      display: none;
+    }
+
+    /* ===== HERO ===== */
+    .hero {
+      position: relative;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      background: var(--color-surface-dark);
+      color: var(--color-white);
+      overflow: hidden;
+    }
+    .hero__image {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.5;
+    }
+    .hero__overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to top,
+        rgba(20, 20, 22, 0.88) 0%,
+        rgba(20, 20, 22, 0.35) 45%,
+        rgba(20, 20, 22, 0.12) 100%
+      );
+    }
+    .hero__content {
+      position: relative;
+      z-index: 2;
+      padding: 3rem 0;
+    }
+    .hero__number {
+      color: var(--color-primary);
+      margin-bottom: 1.5rem;
+    }
+    .hero__title {
+      max-width: 15ch;
+      margin-bottom: 1rem;
+    }
+    .hero__subtitle {
+      opacity: 0.65;
+      max-width: 34ch;
+      margin-bottom: 2.5rem;
+    }
+    .hero__scroll {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      opacity: 0.35;
+      margin-top: 2.5rem;
+    }
+    .hero__scroll-line {
+      width: 1px;
+      height: 3rem;
+      background: var(--color-white);
+    }
+
+    /* ===== ACT 1 — Light sections ===== */
+    .act-1 {
+      background: var(--color-background);
+      color: var(--color-foreground);
+    }
+    .act-1--alt {
+      background: var(--color-background-alt);
+      color: var(--color-foreground);
+    }
+
+    /* ===== Section Header ===== */
+    .section-header {
+      margin-bottom: 2.5rem;
+      position: relative;
+    }
+    .section-header__eyebrow {
+      color: var(--color-primary);
+      margin-bottom: 1.25rem;
+    }
+    .section-header__title {
+      max-width: 22ch;
+    }
+    .section-header__desc {
+      margin-top: 1rem;
+      max-width: 44ch;
+      opacity: 0.6;
+    }
+    .section-header__rule {
+      width: 3rem;
+      height: 1px;
+      background: var(--color-primary);
+      margin-top: 1.5rem;
+      opacity: 0.5;
+    }
+
+    /* ===== Section Divider ===== */
+    .section-divider {
+      background: var(--color-surface-dark);
+      color: var(--color-white);
+      min-height: 85vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .section-divider__content {
+      position: relative;
+      z-index: 2;
+    }
+    .section-divider__number {
+      color: var(--color-primary);
+      margin-bottom: 2rem;
+    }
+    .section-divider__title {
+      max-width: 16ch;
+      margin: 0 auto;
+    }
+    .section-divider__rule {
+      width: 3.5rem;
+      height: 1px;
+      background: var(--color-primary);
+      margin: 2rem auto 0;
+      opacity: 0.5;
+    }
+    .section-divider__bg-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: var(--font-display);
+      font-size: 16vw;
+      font-weight: 400;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--color-white);
+      opacity: 0.02;
+      white-space: nowrap;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    /* ===== ACT 2/3 — Dark sections ===== */
+    .act-dark {
+      background: var(--color-surface-dark);
+      color: var(--color-white);
+    }
+    .act-dark--deeper {
+      background: var(--color-surface-darker);
+      color: var(--color-white);
+    }
+
+    /* ===== Component Details ===== */
+    .comp-card {
+      border-top: 1px solid var(--color-border-light);
+      padding: 2.5rem 0;
+    }
+    .comp-card__top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+    .comp-card__metric {
+      display: flex;
+      align-items: baseline;
+      gap: 0.5rem;
+    }
+    .comp-card__metric-label {
+      font-family: var(--font-display);
+      font-size: 0.5625rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      opacity: 0.4;
+    }
+    .comp-card__metric-value {
+      font-family: var(--font-display);
+      font-size: 0.8125rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      color: var(--color-primary);
+    }
+
+    .layers {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+    .layer-row {
+      display: grid;
+      grid-template-columns: 6px 1fr auto;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    }
+    .layer-row:last-child { border-bottom: none; }
+    .layer-pip {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+    }
+    .layer-name {
+      font-family: var(--font-body);
+      font-size: 0.8125rem;
+      color: rgba(255, 255, 255, 0.85);
+    }
+    .layer-dim {
+      font-family: var(--font-display);
+      font-size: 0.6875rem;
+      letter-spacing: 0.04em;
+      color: rgba(255, 255, 255, 0.35);
+      text-align: right;
+    }
+
+    /* ===== Footer ===== */
+    .footer {
+      background: var(--color-surface-darker);
+      color: var(--color-white);
+    }
+    .footer__grid {
+      display: grid;
+      gap: 2.5rem;
+    }
+    .footer__contact-item {
+      margin-bottom: 0.75rem;
+    }
+    .footer__contact-label {
+      opacity: 0.4;
+      margin-bottom: 0.25rem;
+    }
+    .footer__link {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      padding-bottom: 1px;
+      transition: opacity 0.2s;
+    }
+    .footer__link:hover { opacity: 0.7; }
+    .footer__bottom {
+      margin-top: 3rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--color-border-light);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (min-width: 768px) {
+      .type-display { font-size: 3.25rem; }
+      .type-heading { font-size: 1.5rem; }
+      .type-section-number { font-size: 7rem; }
+
+      .container { padding: 0 2.5rem; }
+      .section-standard { padding: 6.5rem 0; }
+      .section-spacious { padding: 8rem 0; }
+      .section-compact { padding: 4rem 0; }
+
+      .hero__content { padding: 4.5rem 0; }
+
+      .footer__grid { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (min-width: 1024px) {
+      .type-display { font-size: 4.25rem; letter-spacing: 0.18em; }
+      .type-heading { font-size: 1.75rem; }
+      .type-section-number { font-size: 9rem; }
+
+      .container { padding: 0 3.5rem; }
+      .section-standard { padding: 7.5rem 0; }
+      .section-spacious { padding: 10rem 0; }
+      .section-compact { padding: 5rem 0; }
+
+      .hero__content { padding: 5rem 0; }
+
+      .comp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 3rem; }
+
+      .footer__grid { grid-template-columns: 2fr 1fr 1fr; }
+
+      /* ===== DESKTOP: Glass Spine — right side, expands on hover ===== */
+      body {
+        padding-right: var(--nav-collapsed);
+      }
+      .hero,
+      .section-divider {
+        margin-right: calc(var(--nav-collapsed) * -1);
+      }
+
+      .nav-spine {
+        top: 0;
+        bottom: 0;
+        left: auto;
+        right: 0;
+        width: var(--nav-collapsed);
+        border-top: none;
+        border-left: 1px solid var(--glass-border-light);
+        overflow: hidden;
+        transition: width 0.45s cubic-bezier(0.22, 1, 0.36, 1), background 0.5s ease, border-color 0.5s ease;
+      }
+      .nav-spine:hover {
+        width: var(--nav-expanded);
+      }
+      .nav-spine--dark {
+        border-left-color: var(--glass-border-dark);
+      }
+
+      .nav-spine__inner {
+        flex-direction: column;
+        align-items: stretch;
+        justify-content: center;
+        height: 100%;
+        padding: 2rem 0;
+        gap: 0;
+      }
+
+      /* Wordmark — top of spine, rotated when collapsed */
+      .nav-spine__wordmark {
+        position: relative;
+        top: auto;
+        left: auto;
+        mix-blend-mode: normal;
+        text-align: center;
+        margin-bottom: 2.5rem;
+        padding: 0 0.75rem;
+        opacity: 0.5;
+        white-space: nowrap;
+        writing-mode: vertical-rl;
+        text-orientation: mixed;
+        align-self: center;
+        transition: writing-mode 0.3s ease, opacity 0.3s ease;
+      }
+      .nav-spine:hover .nav-spine__wordmark {
+        writing-mode: horizontal-tb;
+        opacity: 0.7;
+      }
+
+      /* Section links — vertical stack */
+      .nav-spine__link {
+        flex-direction: row;
+        justify-content: flex-start;
+        gap: 0.75rem;
+        padding: 0.625rem 0.75rem;
+        border-left: 2px solid transparent;
+        opacity: 0.4;
+        white-space: nowrap;
+        transition: opacity 0.2s ease, border-color 0.2s ease, padding 0.3s ease;
+      }
+      .nav-spine__link--active {
+        opacity: 1;
+        border-left-color: var(--color-primary);
+      }
+      .nav-spine__link:hover {
+        opacity: 0.85;
+      }
+
+      .nav-spine__link-num {
+        font-size: 0.875rem;
+        font-weight: 600;
+        min-width: 1.5rem;
+        text-align: center;
+        flex-shrink: 0;
+      }
+      .nav-spine__link--active .nav-spine__link-num {
+        color: var(--color-primary);
+      }
+
+      .nav-spine__link-label {
+        font-size: 0.5625rem;
+        letter-spacing: 0.15em;
+        opacity: 0;
+        transform: translateX(-4px);
+        transition: opacity 0.3s ease 0.1s, transform 0.3s ease 0.1s;
+      }
+      .nav-spine:hover .nav-spine__link-label {
+        opacity: 1;
+        transform: translateX(0);
+      }
+
+      /* Act grouping labels — visible on hover */
+      .nav-spine__act {
+        display: block;
+        font-family: var(--font-display);
+        font-size: 0.4375rem;
+        font-weight: 600;
+        letter-spacing: 0.25em;
+        text-transform: uppercase;
+        opacity: 0;
+        padding: 0.75rem 0.75rem 0.375rem;
+        color: var(--color-primary);
+        transition: opacity 0.3s ease 0.15s;
+        white-space: nowrap;
+      }
+      .nav-spine:hover .nav-spine__act {
+        opacity: 0.6;
+      }
+
+      /* Divider between acts */
+      .nav-spine__divider {
+        height: 1px;
+        background: currentColor;
+        opacity: 0.06;
+        margin: 0.5rem 0.75rem;
+      }
+
+      /* Bottom section — contact line */
+      .nav-spine__footer {
+        margin-top: auto;
+        padding: 0.75rem;
+        border-top: 1px solid var(--glass-border-light);
+        font-family: var(--font-display);
+        font-size: 0.5rem;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        opacity: 0;
+        transition: opacity 0.3s ease 0.2s;
+        white-space: nowrap;
+      }
+      .nav-spine:hover .nav-spine__footer {
+        opacity: 0.35;
+      }
+      .nav-spine--dark .nav-spine__footer {
+        border-top-color: var(--glass-border-dark);
+      }
+    }
+
+    @media (min-width: 1280px) {
+      .type-display { font-size: 5rem; }
+      .type-section-number { font-size: 10.5rem; }
+
+      :root {
+        --nav-collapsed: 3.75rem;
+        --nav-expanded: 15rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Component: Navigation — Glass Spine (expands on hover) -->
+  <header data-layout="global" class="nav-spine" aria-label="Section navigation">
+    <div class="nav-spine__inner">
+      <a href="#" class="nav-spine__wordmark" aria-label="SBS Homes — back to top">SBS Homes</a>
+
+      <nav aria-label="Page sections">
+        <span class="nav-spine__act">Act I — The Homes</span>
+
+        <a href="#the-homes" class="nav-spine__link nav-spine__link--active" aria-label="Hero — section 01">
+          <span class="nav-spine__link-num">01</span>
+          <span class="nav-spine__link-label">The Homes</span>
+        </a>
+        <a href="#exterior-views" class="nav-spine__link" aria-label="Exterior Views — section 02">
+          <span class="nav-spine__link-num">02</span>
+          <span class="nav-spine__link-label">Exteriors</span>
+        </a>
+        <a href="#interior" class="nav-spine__link" aria-label="Interior Lifestyle — section 03">
+          <span class="nav-spine__link-num">03</span>
+          <span class="nav-spine__link-label">Interiors</span>
+        </a>
+        <a href="#floor-plans" class="nav-spine__link" aria-label="Floor Plans — section 04">
+          <span class="nav-spine__link-num">04</span>
+          <span class="nav-spine__link-label">Plans</span>
+        </a>
+
+        <div class="nav-spine__divider" aria-hidden="true"></div>
+        <span class="nav-spine__act">Act II — The Technology</span>
+
+        <a href="#the-technology" class="nav-spine__link" aria-label="The Technology — section 05">
+          <span class="nav-spine__link-num">05</span>
+          <span class="nav-spine__link-label">Technology</span>
+        </a>
+        <a href="#construction" class="nav-spine__link" aria-label="Construction — section 06">
+          <span class="nav-spine__link-num">06</span>
+          <span class="nav-spine__link-label">Construction</span>
+        </a>
+        <a href="#assembly" class="nav-spine__link" aria-label="Assembly — section 07">
+          <span class="nav-spine__link-num">07</span>
+          <span class="nav-spine__link-label">Assembly</span>
+        </a>
+
+        <div class="nav-spine__divider" aria-hidden="true"></div>
+        <span class="nav-spine__act">Act III — The Components</span>
+
+        <a href="#the-components" class="nav-spine__link" aria-label="Components — section 08">
+          <span class="nav-spine__link-num">08</span>
+          <span class="nav-spine__link-label">Components</span>
+        </a>
+      </nav>
+
+      <div class="nav-spine__footer" aria-hidden="true">
+        enquiries@sbs-homes.co.uk
+      </div>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- ============================================ -->
+    <!-- ACT 1 — THE HOMES                           -->
+    <!-- ============================================ -->
+
+    <!-- Component: HeroSection -->
+    <section id="the-homes" class="hero section-hero">
+      <img
+        class="hero__image"
+        src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1920&h=1080&fit=crop"
+        onerror="this.onerror=null; this.src='https://picsum.photos/seed/hero-modern-home/1920/1080'"
+        alt="Modern contemporary timber-clad home with clean architectural lines and landscaped approach"
+      >
+      <div class="hero__overlay"></div>
+      <div class="hero__content">
+        <div class="container">
+          <p class="type-section-number hero__number">01</p>
+          <h1 class="type-display hero__title">These Are SBS Homes</h1>
+          <p class="type-body hero__subtitle">A Showcase Project of Four Contemporary Homes. Precision-Manufactured. Timber-Engineered. Assembled On-Site.</p>
+          <a href="#exterior-views" class="btn-ghost" style="color: var(--color-white);">Explore the homes</a>
+          <div class="hero__scroll">
+            <div class="hero__scroll-line"></div>
+            <span class="type-eyebrow">Scroll</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Component: ExteriorViews -->
+    <section id="exterior-views" class="act-1 section-spacious">
+      <div class="container">
+        <div class="section-header">
+          <p class="type-eyebrow section-header__eyebrow">02 — Exterior Views</p>
+          <h2 class="type-heading section-header__title">Street Approach, Front Door, Rear Garden</h2>
+          <p class="type-body section-header__desc">Each home from three vantage points — the arrival, the threshold, and the private outdoor space.</p>
+          <div class="section-header__rule"></div>
+        </div>
+        <div class="anim-placeholder">
+          <span class="anim-placeholder__label">Scroll-driven animation content</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Component: InteriorLifestyle -->
+    <section id="interior" class="act-1--alt section-spacious">
+      <div class="container">
+        <div class="section-header">
+          <p class="type-eyebrow section-header__eyebrow">03 — Interior Lifestyle</p>
+          <h2 class="type-heading section-header__title">Living Area, Kitchen, Master Bedroom</h2>
+          <p class="type-body section-header__desc">The spaces that define daily life — open, light-filled, precisely detailed.</p>
+          <div class="section-header__rule"></div>
+        </div>
+        <div class="anim-placeholder">
+          <span class="anim-placeholder__label">Scroll-driven animation content</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Component: FloorPlans — PLACEHOLDER -->
+    <section id="floor-plans" class="act-1 section-standard">
+      <div class="container">
+        <div class="section-header">
+          <p class="type-eyebrow section-header__eyebrow">04 — Floor Plans</p>
+          <h2 class="type-heading section-header__title">General Arrangement</h2>
+          <p class="type-body section-header__desc">Ground floor and first floor plans with room schedule — real plan drawings provided later.</p>
+          <div class="section-header__rule"></div>
+        </div>
+        <div class="content-placeholder">
+          <span class="content-placeholder__label">Floor plan content — provided separately</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- ACT 2 — THE TECHNOLOGY                      -->
+    <!-- ============================================ -->
+
+    <!-- Component: SectionDivider -->
+    <section id="the-technology" class="section-divider">
+      <div class="section-divider__bg-text">Precision</div>
+      <div class="section-divider__content">
+        <div class="container">
+          <p class="type-section-number section-divider__number">02</p>
+          <h2 class="type-display section-divider__title">What Makes Them Special</h2>
+          <div class="section-divider__rule"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Component: ConstructionOverview -->
+    <section id="construction" class="act-dark section-spacious">
+      <div class="container">
+        <div class="section-header">
+          <p class="type-eyebrow section-header__eyebrow" style="color: var(--color-primary);">05 — Construction Overview</p>
+          <h2 class="type-heading section-header__title">Off-Site Timber Panel Construction</h2>
+          <p class="type-body section-header__desc" style="opacity: 0.5;">Five key components — engineered in a factory, not improvised on a building site.</p>
+          <div class="section-header__rule"></div>
+        </div>
+        <div class="anim-placeholder" style="border-color: rgba(255,255,255,0.1);">
+          <span class="anim-placeholder__label" style="color: var(--color-white);">Exploded cutaway animation content</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Component: AssemblySequence -->
+    <section id="assembly" class="act-dark--deeper section-spacious">
+      <div class="container">
+        <div class="section-header">
+          <p class="type-eyebrow section-header__eyebrow" style="color: var(--color-primary);">06 — Assembly Sequence</p>
+          <h2 class="type-heading section-header__title">From Slab to Roof in Seven Steps</h2>
+          <p class="type-body section-header__desc" style="opacity: 0.5;">A controlled, sequential assembly process. Each phase completes before the next begins.</p>
+          <div class="section-header__rule"></div>
+        </div>
+        <div class="anim-placeholder" style="border-color: rgba(255,255,255,0.1);">
+          <span class="anim-placeholder__label" style="color: var(--color-white);">Build sequence animation content</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Component: StructuralFloorPlans — PLACEHOLDER -->
+    <section class="act-dark section-standard">
+      <div class="container">
+        <div class="section-header">
+          <p class="type-eyebrow section-header__eyebrow" style="color: var(--color-primary);">07 — Structural Floor Plans</p>
+          <h2 class="type-heading section-header__title">Component Mapping</h2>
+          <p class="type-body section-header__desc" style="opacity: 0.5;">Colour-coded plans showing the structural system — every wall, floor, and panel type identified. Real structural drawings provided later.</p>
+          <div class="section-header__rule"></div>
+        </div>
+        <div class="content-placeholder" style="border-color: rgba(255,255,255,0.1);">
+          <span class="content-placeholder__label" style="color: var(--color-white);">Structural plan content — provided separately</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- ACT 3 — THE COMPONENTS                      -->
+    <!-- ============================================ -->
+
+    <!-- Component: ComponentDetails -->
+    <section id="the-components" class="act-dark--deeper section-spacious">
+      <div class="container">
+        <div class="section-header" style="text-align: center; margin-bottom: 3.5rem;">
+          <p class="type-eyebrow section-header__eyebrow" style="color: var(--color-primary);">08 — Component Details</p>
+          <h2 class="type-heading section-header__title" style="margin: 0 auto; max-width: 24ch;">Layer-by-Layer Specification</h2>
+          <p class="type-body section-header__desc" style="margin: 1rem auto 0; text-align: center; max-width: 48ch;">Every element is engineered to a specific performance target. From slab to ridge, nothing is left to chance.</p>
+        </div>
+
+        <div class="comp-grid">
+
+          <!-- Ground Floor Slab -->
+          <div class="comp-card">
+            <div class="comp-card__top">
+              <h3 class="type-subheading">Ground Floor Slab</h3>
+              <div class="comp-card__metric">
+                <span class="comp-card__metric-label">U-value</span>
+                <span class="comp-card__metric-value">0.13 W/m²K</span>
+              </div>
+            </div>
+            <div class="layers">
+              <div class="layer-row">
+                <div class="layer-pip" style="background: var(--color-primary);"></div>
+                <span class="layer-name">Finished floor covering</span>
+                <span class="layer-dim">—</span>
+              </div>
+              <div class="layer-row">
+                <div class="layer-pip" style="background: #8B7355;"></div>
+                <span class="layer-name">Screed</span>
+                <span class="layer-dim">65 mm</span>
+              </div>
+              <div class="layer-row">
+                <div class="layer-pip" style="background: var(--color-annotation);"></div>
+                <span class="layer-name">Underfloor heating</span>
+                <span class="layer-dim">Pipes</span>
+              </div>
+              <div class="layer-row">
+                <div class="layer-pip" style="background: #D4A843;"></div>
+                <span class="layer-name">PIR insulation</span>
+                <span class="layer-dim">100 mm</span>
+              </div>
+              <div class="layer-row">
+                <div class="layer-pip" style="background: #556B7A;"></div>
+                <span class="layer-name">DPM</span>
+                <span class="layer-dim">—</span>
+              </div>
+              <div class="layer-row">
+                <div class="layer-pip" style="background: #7A7A7A;"></div>
+                <span class="layer-name">Concrete slab</span>
+                <span class="layer-dim">150 mm</span>
+              </div>
+              <div class="layer-row">
+                <div class="layer-pip" style="background: #5A5A5A;"></div>
+                <span class="layer-name">Compacted hardcore</span>
+                <span class="layer-dim">150 mm</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- External Walls -->
+          <div class="comp-card">
+            <div class="comp-card__top">
+              <h3 class="type-subheading">External Walls</h3>
+              <div class="comp-card__metric">
+                <span class="comp-card__metric-label">U-value</span>
+                <span class="comp-card__metric-value">0.18 W/m²K</span>
+              </div>
+            </div>
+            <div class="layers">
+              <div class="layer-row">
+                <div class="layer-pip" style="background: var(--color-primary);"></div>
+                <span class="layer-name">Timber cladding / render</span>
+                <span class="layer-dim">18 mm</span>
+              </div>
+              <div class="layer-row">
+                <div class="layer-pip" style="background: #8BA8A0;"></div>
+                <span class="layer-name">Ventilated cavity</span>
+                <span class="layer-dim">25 mm</span>
+              </div>
+              <div class="layer-row">
+                <div class="layer-pip" style="background: #556B7A;"></div>
+                <span class="layer-name">Breather membrane</span>
+                <span class="layer-dim">—</span>
+              </div>
+              <div class="layer-row">
+                <div class="layer-pip" style="background: #B5956E;"></div>
+                <span class="layer-name">OSB sheathing</span>
+                <span class="layer-dim">9 mm</span>
+              </div>
+              <div class="layer-row">
+                <div class="layer-pip" style="background: #D4A843;"></div>
+                <span class="layer-name">Timber frame + insulation</span>
+                <span class="layer-dim">140 mm</span>
+              </div>
+              <div class="layer-row">
+                <div class="layer-pip" style="background: #6E8B9E;"></div>
+                <span class="layer-name">VCL</span>
+                <span class="layer-dim">—</span>
+              </div>
+              <div class="layer-row">
+                <div class="layer-pip" style="background: #E8E4DF;"></div>
+                <span class="layer-name">Plasterboard</span>
+                <span class="layer-dim">12.5 mm</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Internal Walls -->
+          <div class="comp-card">
+            <div class="comp-card__top">
+              <h3 class="type-subheading">Internal Walls</h3>
+              <div class="comp-card__metric">
+                <span class="comp-card__metric-label">Type</span>
+                <span class="comp-card__metric-value" style="color: rgba(255,255,255,0.6);">Non-structural</span>
+              </div>
+            </div>
+            <div class="layers">
+              <div class="layer-row">
+                <div class="layer-pip" style="background: #E8E4DF;"></div>
+                <span class="layer-name">Plasterboard</span>
+                <span class="layer-dim">12.5 mm</span>
+              </div>
+              <div class="layer-row">
+                <div class="layer-pip" style="background: #B5956E;"></div>
+                <span class="layer-name">Timber frame</span>
+                <span class="layer-dim">75 mm</span>
+              </div>
+              <div class="layer-row">
+                <div class="layer-pip" style="background: #E8E4DF;"></div>
+                <span class="layer-name">Plasterboard</span>
+                <span class="layer-dim">12.5 mm</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Party Walls -->
+          <div class="comp-card">
+            <div class="comp-card__top">
+              <h3 class="type-subheading">Party Walls</h3>
+              <div class="comp-card__metric">
+                <span class="comp-card__metric-label">Acoustic</span>
+                <span class="comp-card__metric-value">60 dB Rw</span>
+              </div>
+            </div>
+            <div class="layers">
+              <div class="layer-row">
+                <div class="layer-pip" style="background: #E8E4DF;"></div>
+                <span class="layer-name">Plasterboard</span>
+                <span class="layer-dim">12.5 mm</span>
+              </div>
+              <div class="layer-row">
+                <div class="layer-pip" style="background: #7A7A7A;"></div>
+                <span class="layer-name">Resilient bars</span>
+                <span class="layer-dim">—</span>
+              </div>
+              <div class="layer-row">
+                <div class="layer-pip" style="background: #B5956E;"></div>
+                <span class="layer-name">OSB sheathing</span>
+                <span class="layer-dim">9 mm</span>
+              </div>
+              <div class="layer-row">
+                <div class="layer-pip" style="background: #D4A843;"></div>
+                <span class="layer-name">Timber frame + acoustic insulation</span>
+                <span class="layer-dim">89 mm</span>
+              </div>
+              <div class="layer-row">
+                <div class="layer-pip" style="background: #444;"></div>
+                <span class="layer-name">Acoustic void</span>
+                <span class="layer-dim">50 mm</span>
+              </div>
+              <div class="layer-row">
+                <div class="layer-pip" style="background: #D4A843;"></div>
+                <span class="layer-name">Timber frame + acoustic insulation</span>
+                <span class="layer-dim">89 mm</span>
+              </div>
+              <div class="layer-row">
+                <div class="layer-pip" style="background: #B5956E;"></div>
+                <span class="layer-name">OSB sheathing</span>
+                <span class="layer-dim">9 mm</span>
+              </div>
+              <div class="layer-row">
+                <div class="layer-pip" style="background: #7A7A7A;"></div>
+                <span class="layer-name">Resilient bars</span>
+                <span class="layer-dim">—</span>
+              </div>
+              <div class="layer-row">
+                <div class="layer-pip" style="background: #E8E4DF;"></div>
+                <span class="layer-name">Plasterboard</span>
+                <span class="layer-dim">12.5 mm</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Intermediate Floor -->
+          <div class="comp-card">
+            <div class="comp-card__top">
+              <h3 class="type-subheading">Intermediate Floor</h3>
+              <div class="comp-card__metric">
+                <span class="comp-card__metric-label">Acoustic</span>
+                <span class="comp-card__metric-value">55 dB Rw</span>
+              </div>
+            </div>
+            <div class="layers">
+              <div class="layer-row">
+                <div class="layer-pip" style="background: var(--color-primary);"></div>
+                <span class="layer-name">Finished floor covering</span>
+                <span class="layer-dim">—</span>
+              </div>
+              <div class="layer-row">
+                <div class="layer-pip" style="background: #B5956E;"></div>
+                <span class="layer-name">OSB deck</span>
+                <span class="layer-dim">18 mm</span>
+              </div>
+              <div class="layer-row">
+                <div class="layer-pip" style="background: #D4A843;"></div>
+                <span class="layer-name">Engineered joists + insulation</span>
+                <span class="layer-dim">235 mm</span>
+              </div>
+              <div class="layer-row">
+                <div class="layer-pip" style="background: #7A7A7A;"></div>
+                <span class="layer-name">Resilient bars</span>
+                <span class="layer-dim">—</span>
+              </div>
+              <div class="layer-row">
+                <div class="layer-pip" style="background: #E8E4DF;"></div>
+                <span class="layer-name">Plasterboard</span>
+                <span class="layer-dim">12.5 mm</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Roof -->
+          <div class="comp-card">
+            <div class="comp-card__top">
+              <h3 class="type-subheading">Roof</h3>
+              <div class="comp-card__metric">
+                <span class="comp-card__metric-label">U-value</span>
+                <span class="comp-card__metric-value">0.15 W/m²K</span>
+              </div>
+            </div>
+            <div class="layers">
+              <div class="layer-row">
+                <div class="layer-pip" style="background: #5A5A5A;"></div>
+                <span class="layer-name">Concrete tiles / slates</span>
+                <span class="layer-dim">—</span>
+              </div>
+              <div class="layer-row">
+                <div class="layer-pip" style="background: #B5956E;"></div>
+                <span class="layer-name">Battens</span>
+                <span class="layer-dim">50 × 25 mm</span>
+              </div>
+              <div class="layer-row">
+                <div class="layer-pip" style="background: #B5956E;"></div>
+                <span class="layer-name">Counter-battens</span>
+                <span class="layer-dim">50 × 50 mm</span>
+              </div>
+              <div class="layer-row">
+                <div class="layer-pip" style="background: #556B7A;"></div>
+                <span class="layer-name">Breather membrane</span>
+                <span class="layer-dim">—</span>
+              </div>
+              <div class="layer-row">
+                <div class="layer-pip" style="background: #B5956E;"></div>
+                <span class="layer-name">OSB sheathing</span>
+                <span class="layer-dim">9 mm</span>
+              </div>
+              <div class="layer-row">
+                <div class="layer-pip" style="background: #D4A843;"></div>
+                <span class="layer-name">Rafters + insulation</span>
+                <span class="layer-dim">200 mm</span>
+              </div>
+              <div class="layer-row">
+                <div class="layer-pip" style="background: #6E8B9E;"></div>
+                <span class="layer-name">VCL</span>
+                <span class="layer-dim">—</span>
+              </div>
+              <div class="layer-row">
+                <div class="layer-pip" style="background: #E8E4DF;"></div>
+                <span class="layer-name">Plasterboard</span>
+                <span class="layer-dim">12.5 mm</span>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /comp-grid -->
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Component: Footer -->
+  <footer data-layout="global" class="footer section-compact">
+    <div class="container">
+      <div class="footer__grid">
+        <div>
+          <p class="type-heading" style="margin-bottom: 1.5rem;">Get in Touch</p>
+          <p class="type-body" style="opacity: 0.55; max-width: 36ch;">
+            Interested in learning more about SBS Homes? Contact Adrian Farcut directly — we're happy to discuss your project.
+          </p>
+        </div>
+        <div>
+          <div class="footer__contact-item">
+            <p class="type-eyebrow footer__contact-label">Contact</p>
+            <p class="type-body">Adrian Farcut</p>
+          </div>
+          <div class="footer__contact-item">
+            <p class="type-eyebrow footer__contact-label">Phone</p>
+            <p class="type-body">+44 (0)792 7714 786</p>
+          </div>
+          <div class="footer__contact-item">
+            <p class="type-eyebrow footer__contact-label">Email</p>
+            <p class="type-body"><a href="mailto:enquiries@sbs-homes.co.uk" class="footer__link">enquiries@sbs-homes.co.uk</a></p>
+          </div>
+          <div class="footer__contact-item">
+            <p class="type-eyebrow footer__contact-label">Web</p>
+            <p class="type-body"><a href="https://www.sbs-homes.co.uk" class="footer__link">www.sbs-homes.co.uk</a></p>
+          </div>
+        </div>
+      </div>
+      <div class="footer__bottom">
+        <span class="type-small" style="opacity: 0.35;">© 2026 SBS Homes. All rights reserved.</span>
+        <span class="type-detail" style="opacity: 0.25; font-family: var(--font-display); letter-spacing: 0.22em;">SBS Homes</span>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

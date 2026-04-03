@@ -4,9 +4,9 @@ import { Container } from '../container'
 
 type SectionProps = {
   /** Vertical spacing preset */
-  spacing?: 'none' | 'compact' | 'standard' | 'hero'
+  spacing?: 'none' | 'compact' | 'standard' | 'spacious' | 'hero'
   /** Background style — maps to project tokens */
-  background?: 'default' | 'alt' | 'primary' | 'inverse'
+  background?: 'default' | 'warm' | 'warm-alt' | 'dark' | 'dark-deeper'
   /** Container size override (defaults to 'xl') */
   containerSize?: 'sm' | 'md' | 'lg' | 'xl' | 'full'
   /** Container padding override (defaults to 'default') */
@@ -17,20 +17,20 @@ type SectionProps = {
   children: React.ReactNode
 } & Omit<React.ComponentPropsWithoutRef<'section'>, 'className' | 'children'>
 
-// ⚠️ Template defaults — replace with values from your mockup
 const spacingMap = {
   none: '',
-  compact: 'py-8 lg:py-12',
-  standard: 'py-16 lg:py-24',
-  hero: 'py-20 lg:py-32',
+  compact: 'py-12 md:py-16 lg:py-20',
+  standard: 'py-20 md:py-26 lg:py-30',
+  spacious: 'py-26 md:py-32 lg:py-40',
+  hero: 'py-24 md:py-34 lg:py-46',
 } as const
 
-// ⚠️ Template defaults — replace with values from your mockup
 const backgroundMap = {
-  default: '',
-  alt: 'bg-secondary-50',
-  primary: 'bg-primary-600 text-white',
-  inverse: 'bg-foreground text-background',
+  default: 'bg-background text-foreground',
+  warm: 'bg-secondary-100 text-foreground',
+  'warm-alt': 'bg-secondary-200 text-foreground',
+  dark: 'bg-surface-dark text-white',
+  'dark-deeper': 'bg-surface-darker text-white',
 } as const
 
 export const Section = ({

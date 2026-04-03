@@ -1,0 +1,1 @@
+export { ComponentDetailsSection } from './ComponentDetailsSection'

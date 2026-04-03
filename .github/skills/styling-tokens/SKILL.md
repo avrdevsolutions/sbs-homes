@@ -307,8 +307,10 @@ const body = Source_Sans_3({
 })
 
 // Apply to <html> or <body>
-<html className={`${display.variable} ${body.variable}`}>
+<html className={`${display.variable} ${body.variable} antialiased`}>
 ```
+
+> **CRITICAL — `antialiased` on `<html>`**: Always include `antialiased` in the `<html>` className. Tailwind's Preflight does **not** set `-webkit-font-smoothing: antialiased` — it must be applied explicitly. Without it, macOS browsers default to subpixel antialiasing, which renders text **visibly thicker and with RGB fringing**, causing fonts to appear a different weight/color than the mockup even when hex values match exactly. This is the single most common cause of "colors look different" when comparing a Next.js app to a static HTML mockup that sets `html { -webkit-font-smoothing: antialiased }` in its reset.
 
 ### 2. `tailwind.config.ts` — Reference CSS variables
 

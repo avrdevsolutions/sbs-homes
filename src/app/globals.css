@@ -4,16 +4,40 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Background/foreground as RGB channels — exact match to mockup #F5F3F0 / #1C1C1E */
+    --background: 245 243 240;
+    --foreground: 28 28 30;
+
+    /* Glass — used directly in nav-spine and other glass effects */
+    --glass-bg-light: 245 243 240;
+    --glass-bg-dark: 20 20 22;
+    --glass-border-light: 255 255 255;
+    --glass-border-dark: 255 255 255;
+
+    /* Structure */
+    --border-strong: 28 28 30;
+    --border-inverse: 255 255 255;
+
+    /* Nav dimensions */
+    --nav-collapsed: 3.5rem;
+    --nav-expanded: 14rem;
   }
 
-  .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+  html {
+    scroll-behavior: smooth;
+  }
+
+  [id] {
+    scroll-margin-top: 1rem;
   }
 
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
   }
 }

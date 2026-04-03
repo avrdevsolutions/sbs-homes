@@ -1,0 +1,25 @@
+{
+  "$schema": "feo-manifest-v1",
+  "agent": "ux-analyst",
+  "created_at": "2026-04-02T11:00:00Z",
+  "updated_at": "2026-04-02T11:06:00Z",
+  "status": "completed",
+  "approved": true,
+  "approved_at": "2026-04-02T11:06:00Z",
+  "change_rounds": [
+    {
+      "round": 1,
+      "requested_at": "2026-04-02T11:01:00Z",
+      "feedback": "Remove the navigation completely — will rethink it further, no inspiration yet and not happy with how it looks.",
+      "resolved_at": "2026-04-02T11:05:00Z",
+      "changes_made": [
+        "Removed all NavSpine UX recommendations from the active recommendations block.",
+        "Added Revision Round 1 appendix marking Navigation as deferred — no implementation required from UX Integrator."
+      ]
+    }
+  ],
+  "source_builder_manifest": "ui-builder.manifest.json",
+  "source_mockup": "landing-page-mockup-r3-v2.html",
+  "sections_analyzed": 9,
+  "recommendations_file": "ux-analyst.recommendations.md"
+}

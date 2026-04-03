@@ -9,7 +9,7 @@ const meta: Meta<typeof Typography> = {
   argTypes: {
     variant: {
       control: 'select',
-      options: ['h1', 'h2', 'h3', 'h4', 'body', 'body-sm', 'caption', 'overline'],
+      options: ['h1', 'h2', 'h3', 'h4', 'body', 'body-sm', 'caption', 'overline', 'section-number'],
     },
   },
 }
@@ -56,6 +56,10 @@ export const Overline: Story = {
   args: { variant: 'overline', children: 'Overline text' },
 }
 
+export const SectionNumber: Story = {
+  args: { variant: 'section-number', children: '02' },
+}
+
 export const SemanticOverride: Story = {
   name: 'Semantic Override (as prop)',
   args: { variant: 'h1', as: 'h2', children: 'Looks like h1, renders as h2' },
@@ -76,6 +80,7 @@ export const AllVariants: Story = {
       </Typography>
       <Typography variant='caption'>Caption — labels and metadata</Typography>
       <Typography variant='overline'>Overline — section labels</Typography>
+      <Typography variant='section-number'>03</Typography>
     </div>
   ),
 }

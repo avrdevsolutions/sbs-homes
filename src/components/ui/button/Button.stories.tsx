@@ -1,3 +1,5 @@
+import { ArrowRight } from 'lucide-react'
+
 import { Button } from './Button'
 
 import type { Meta, StoryObj } from '@storybook/react'
@@ -75,7 +77,7 @@ export const AllSizes: Story = {
       <Button size='md'>Medium</Button>
       <Button size='lg'>Large</Button>
       <Button size='icon' aria-label='Icon button'>
-        ★
+        <ArrowRight className='size-4' />
       </Button>
       <Button variant='link' size='inline'>
         Inline CTA
@@ -94,7 +96,7 @@ export const InlineCTA: Story = {
       </p>
       <div className='flex items-baseline gap-6'>
         <Button variant='link' size='inline'>
-          Explore Collection →
+          Explore Collection
         </Button>
         <Button variant='ghost' size='inline'>
           View Details

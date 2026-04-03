@@ -4,27 +4,27 @@ import { cva, type VariantProps } from 'class-variance-authority'
 
 import { cn } from '@/lib/utils'
 
-// ⚠️ Template styles — REPLACE with values from mockup CSS
 const buttonVariants = cva(
-  'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
+  'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-none font-display text-button uppercase transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
   {
     variants: {
       variant: {
         primary: 'bg-primary-600 text-white hover:bg-primary-700 active:bg-primary-800',
         secondary:
-          'bg-secondary-100 text-secondary-900 hover:bg-secondary-200 active:bg-secondary-300',
+          'bg-secondary-200 text-foreground hover:bg-secondary-300 active:bg-secondary-400',
         outline:
-          'border border-primary-300 text-primary-700 hover:bg-primary-50 active:bg-primary-100',
-        ghost: 'text-primary-700 hover:bg-primary-50 active:bg-primary-100',
+          'border border-foreground/20 text-foreground hover:border-foreground/35 hover:bg-secondary-100',
+        ghost:
+          "relative px-0 hover:opacity-70 after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-px after:bg-current after:opacity-40 after:content-['']",
         danger: 'bg-error-600 text-white hover:bg-error-700 active:bg-error-800',
-        link: 'text-primary-600 underline-offset-4 hover:underline',
+        link: 'px-0 text-primary-600 underline underline-offset-4 hover:text-primary-700',
       },
       size: {
-        sm: 'h-8 px-3 text-xs',
-        md: 'h-10 px-4 text-sm',
-        lg: 'h-12 px-6 text-base',
-        icon: 'size-10',
-        inline: 'text-sm',
+        sm: 'h-10 px-6',
+        md: 'h-12 px-8',
+        lg: 'h-14 px-10',
+        icon: 'size-10 p-0',
+        inline: 'h-auto p-0',
       },
     },
     defaultVariants: {

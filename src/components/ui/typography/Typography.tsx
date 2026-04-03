@@ -1,6 +1,15 @@
 import { cn } from '@/lib/utils'
 
-type TypographyVariant = 'h1' | 'h2' | 'h3' | 'h4' | 'body' | 'body-sm' | 'caption' | 'overline'
+type TypographyVariant =
+  | 'h1'
+  | 'h2'
+  | 'h3'
+  | 'h4'
+  | 'body'
+  | 'body-sm'
+  | 'caption'
+  | 'overline'
+  | 'section-number'
 
 type TypographyProps<C extends React.ElementType = 'p'> = {
   /** Visual style variant */
@@ -11,16 +20,17 @@ type TypographyProps<C extends React.ElementType = 'p'> = {
   className?: string
 } & Omit<React.ComponentProps<C>, 'as' | 'className' | 'children'>
 
-// ⚠️ Template defaults — REPLACE with values from the chosen mockup's CSS
 const variantStyles: Record<TypographyVariant, string> = {
-  h1: 'text-4xl font-bold tracking-tight lg:text-5xl',
-  h2: 'text-3xl font-semibold tracking-tight',
-  h3: 'text-2xl font-semibold',
-  h4: 'text-xl font-semibold',
-  body: 'text-base leading-relaxed',
-  'body-sm': 'text-sm leading-relaxed',
-  caption: 'text-xs',
-  overline: 'text-xs font-semibold uppercase tracking-wider',
+  h1: 'font-display text-display-sm uppercase md:text-display-md lg:text-display-lg xl:text-display-xl',
+  h2: 'font-display text-h1-sm uppercase md:text-h1-md lg:text-h1-lg',
+  h3: 'font-display text-h2-sm uppercase md:text-h2-md lg:text-h2-lg',
+  h4: 'font-display text-h4-sm uppercase lg:text-h4-lg',
+  body: 'font-body text-body-base',
+  'body-sm': 'font-body text-body-sm',
+  caption: 'font-display text-caption uppercase',
+  overline: 'font-display text-eyebrow uppercase',
+  'section-number':
+    'font-display text-section-number-sm md:text-section-number-md lg:text-section-number-lg xl:text-section-number-xl',
 }
 
 const defaultElementMap: Record<TypographyVariant, React.ElementType> = {
@@ -32,6 +42,7 @@ const defaultElementMap: Record<TypographyVariant, React.ElementType> = {
   'body-sm': 'p',
   caption: 'span',
   overline: 'span',
+  'section-number': 'span',
 }
 
 export const Typography = <C extends React.ElementType = 'p'>({

@@ -132,4 +132,44 @@ After all gates pass:
 5. Verify all `quality_gates` entries are `"pass"`.
 6. Verify every section has a `client_skeletons` key (empty array `[]` if none were created).
 
-Run the **Approval Gate**: present a summary to the user — **"Page build complete. [N] sections and [M] layout components built. [K] client skeleton(s) created. All [G] quality gates passed (including visual fidelity)."** — and use `askQuestions` with **Approve** / **Request changes**. On approval: set `approved: true`, `approved_at`, `status: "completed"` and yield. On changes: append to `change_rounds[]`, set `status: "revision-requested"`, address the feedback, and re-run the gate.
+Run the **Approval Gate**: present a summary to the user — **"Page build complete. [N] sections and [M] layout components built. [K] client skeleton(s) created. All [G] quality gates passed (including visual fidelity)."** — and use `askQuestions` with **Approve** / **Request changes**.
+
+**If user approves:**
+
+1. Set `approved: true`, `approved_at: <ISO 8601>`, `status: "completed"` in the manifest.
+2. Set `updated_at` to the current ISO 8601 timestamp.
+3. Write the manifest to disk. Yield to orchestrator.
+
+**If user requests changes:**
+
+Follow the **Change Rounds** protocol defined in the agent definition (`feo-ui-builder.agent.md` → `## Change Rounds`). The critical sequence is:
+
+1. **WRITE manifest FIRST** — append to `change_rounds[]`, set `status: "revision-requested"`, update `updated_at`. **Do not touch code before this write is confirmed.**
+2. Read the active feedback (latest entry where `resolved_at` is `null`).
+3. Address the feedback — modify affected components.
+4. Re-run quality gates per the scope table below.
+5. Resolve the `change_rounds[]` entry — set `resolved_at`, fill `changes_made[]`.
+6. Update `files_modified[]` if new files were touched.
+7. **WRITE manifest** — set `status: "pending-approval"`, update `updated_at`.
+8. Re-run the Approval Gate (loop).
+
+## Re-Running Gates After Revision
+
+Not every gate needs to re-run for every change. Use this scope table:
+
+| Gate      | Re-run when…                                    |
+| --------- | ----------------------------------------------- |
+| G0        | Sections were added or removed                  |
+| G-Cascade | Primitive variant usage changed                 |
+| G1        | Primitives-first compliance may have changed    |
+| G2        | Colors or tokens were changed                   |
+| G3        | Headings were added, removed, or reordered      |
+| G4        | Images were added or changed                    |
+| G5        | `'use client'` files were added or removed      |
+| G6        | Content contracts or props changed              |
+| G7        | Files were added or removed (barrel exports)    |
+| G8        | New code was written (code style check)         |
+| **G9**    | **Always** — build must pass after every change |
+| **G10**   | **Always** — visual fidelity must be confirmed  |
+
+At minimum, every revision round re-runs **G9 + G10**. Add other gates based on what was changed.

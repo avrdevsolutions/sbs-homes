@@ -22,7 +22,7 @@ On startup, check `ui-builder.manifest.json` in `.github/flow-generator/FE/specs
   - `"layout"` → resume from page assembly step
   - `"page"` → read `quality-gates.patterns.md`, run gates
 - **`status: "pending-approval"`** → work is done and awaiting user approval. Re-run the **Approval Gate** (present summary to user, ask Approve / Request changes).
-- **`status: "revision-requested"`** → read the latest entry in `change_rounds[]`. Address the feedback, then set `status: "pending-approval"` and re-run the **Approval Gate**.
+- **`status: "revision-requested"`** → read `change_rounds[]`, find the latest entry where `resolved_at` is `null` — that is the active feedback. Follow the **Change Rounds** protocol from Step 2 onward (address feedback → re-run gates → resolve entry → set `pending-approval` → re-run Approval Gate).
 - **`status: "completed"`** → report "Page build is already complete." and stop.
 
 If `ui-builder.brief.md` exists with `approved: false`, show the brief to the user and ask approve/changes before proceeding.
@@ -277,4 +277,78 @@ Update `files_modified` incrementally — append new file paths after each step.
 - You do not add interactivity, animations, or client-side behavior — that's for downstream agents.
 - You do not handle SEO metadata, error boundaries, loading states, or API routes.
 - Your output must compile (`pnpm build`) before running the approval gate.
-- You ALWAYS run the **Approval Gate** as your final action: set `ui-builder.manifest.json` `status: "pending-approval"` (CHECKPOINT), present a summary to the user (“Page build complete. [N] sections, [M] layout components built. [K] client skeletons pre-structured.”), and use `askQuestions` with **Approve** / **Request changes**. On approval: set `approved: true`, `approved_at`, `status: "completed"` and yield. On changes: append to `change_rounds[]`, set `status: "revision-requested"`, address the feedback, and re-run the gate.
+- You ALWAYS run the **Approval Gate** as your final action: set `ui-builder.manifest.json` `status: "pending-approval"` (CHECKPOINT), present a summary to the user ("Page build complete. [N] sections, [M] layout components built. [K] client skeletons pre-structured."), and use `askQuestions` with **Approve** / **Request changes**. On approval: set `approved: true`, `approved_at`, `status: "completed"` and yield. On changes: follow the **Change Rounds** protocol below.
+
+## Change Rounds
+
+When the user requests changes at the Approval Gate, follow these steps **in exact order**. Write-before-action is non-negotiable — the manifest MUST be written before any code changes begin. This is the crash-recovery guarantee.
+
+**Step 1 — WRITE manifest FIRST (CHECKPOINT)**
+
+Before touching any code, update `ui-builder.manifest.json`:
+
+1. Append a new entry to `change_rounds[]`:
+   ```json
+   {
+     "round": <next sequential number>,
+     "requested_at": "<current ISO 8601>",
+     "feedback": "<user's feedback verbatim>",
+     "resolved_at": null,
+     "changes_made": []
+   }
+   ```
+2. Set `status: "revision-requested"`.
+3. Set `updated_at` to the current ISO 8601 timestamp.
+4. Write the manifest to disk. **Do not proceed to Step 2 until the write is confirmed.**
+
+**Step 2 — Read active feedback**
+
+Read `change_rounds[]` from the manifest. Find the latest entry where `resolved_at` is `null` — that is the active feedback to address.
+
+**Step 3 — Address the feedback**
+
+Make the requested changes to the affected components. Stay within builder boundaries — no interactivity, no animation, no hooks.
+
+**Step 4 — Re-run quality gates**
+
+Re-run gates based on the scope of changes:
+
+| Always re-run             | Conditionally re-run                                   |
+| ------------------------- | ------------------------------------------------------ |
+| **G9** (build)            | **G1** (primitives-first) — if primitive usage changed |
+| **G10** (visual fidelity) | **G2** (token compliance) — if colors/tokens changed   |
+|                           | **G3** (heading hierarchy) — if headings changed       |
+|                           | **G4** (image handling) — if images changed            |
+|                           | **G5** (server-only) — if client boundaries changed    |
+|                           | **G6** (content contracts) — if content/props changed  |
+|                           | **G7** (barrel exports) — if files were added/removed  |
+|                           | **G8** (code style) — if new code was written          |
+
+Update `quality_gates` in the manifest with re-run results.
+
+**Step 5 — Resolve the change round entry**
+
+Update the active `change_rounds[]` entry (the one with `resolved_at: null`):
+
+```json
+{
+  "resolved_at": "<current ISO 8601>",
+  "changes_made": ["<summary of each change made>"]
+}
+```
+
+**Step 6 — Update files_modified**
+
+Append any new file paths to `files_modified[]` in the manifest.
+
+**Step 7 — WRITE manifest (CHECKPOINT)**
+
+1. Set `status: "pending-approval"`.
+2. Set `updated_at` to the current ISO 8601 timestamp.
+3. Write the manifest to disk.
+
+**Step 8 — Re-run the Approval Gate**
+
+Present a summary to the user — include the round number and what was changed. Use `askQuestions` with **Approve** / **Request changes**. If the user requests more changes, loop back to Step 1 with the next round number.
+
+**Never delete previous rounds** — they form the complete audit trail.

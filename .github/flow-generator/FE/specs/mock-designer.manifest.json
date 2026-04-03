@@ -1,0 +1,67 @@
+{
+  "$schema": "feo-manifest-v1",
+  "agent": "mock-designer",
+  "created_at": "2026-04-01T10:00:00Z",
+  "updated_at": "2026-04-01T12:40:00Z",
+  "status": "completed",
+  "approved": true,
+  "approved_at": "2026-04-01T12:40:00Z",
+  "chosen": { "round": 3, "variation": "v2", "file": "landing-page-mockup-r3-v2.html" },
+  "change_rounds": [],
+  "feature": "landing-page",
+  "images": {
+    "hero": {
+      "url": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1920&h=1080&fit=crop",
+      "alt": "Modern contemporary timber-clad home with clean architectural lines and landscaped approach",
+      "fallbackSeed": "hero-modern-home"
+    },
+    "timber-texture": {
+      "url": "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=1200&h=800&fit=crop",
+      "alt": "Close-up natural timber wood grain pattern showing precision milling",
+      "fallbackSeed": "timber-grain"
+    },
+    "construction": {
+      "url": "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=1200&h=800&fit=crop",
+      "alt": "Timber structural frame under construction showing engineered connections",
+      "fallbackSeed": "construction-frame"
+    }
+  },
+  "rounds": [
+    {
+      "round": 1,
+      "mode": "B",
+      "style": "Modern Architectural Editorial",
+      "seedVariation": null,
+      "feedback": "Combine best of both: V1 hero (full-bleed image bg), V2 section divider (dramatic 02 with ghost text), V2 section header arrangement, V1 footer. Floor Plans section should be a placeholder (real plans provided later — no HTML grids, no room schedule). Structural Floor Plans / Component Mapping also a placeholder (real schemas provided later — no legend, no plan grids). Keep V2 layer-by-layer specs. Seed from both variants.",
+      "expectedCount": 2,
+      "variations": [
+        { "id": "v1", "label": "Measured Grid", "description": "Systematic, structured approach — tight grid alignment, uniform section rhythm, horizontal rules, compact floor plan grids, layer-stack component diagrams. Information-architect energy: every element on a precise grid, utilitarian pacing, document-grade clarity." },
+        { "id": "v2", "label": "Open Horizon", "description": "Dramatic editorial pacing — split hero with text above and contained image below, oversized section numbers, generous vertical whitespace, sequential full-width floor plans, centered component header, 2-column card grid for specs. Magazine energy: varied rhythm, breathing room, typographic scale contrast." }
+      ]
+    },
+    {
+      "round": 2,
+      "mode": "C",
+      "style": "Modern Architectural Editorial",
+      "seedVariation": "r1-v1+r1-v2",
+      "feedback": "Combine best of both: V1 hero (full-bleed image bg), V2 section divider (dramatic 02 with ghost text), V2 section header arrangement, V1 footer. Floor Plans section should be a placeholder (real plans provided later). Structural Floor Plans / Component Mapping also a placeholder (real schemas provided later). Keep V2 layer-by-layer specs.",
+      "expectedCount": 2,
+      "variations": [
+        { "id": "v1", "label": "Editorial Precision", "description": "Tight editorial pacing with V1 full-bleed hero, V2 dramatic section divider with ghost text, V2 section headers with decorative rules, V2 pip-dot component details in 2-column grid, V1 footer structure. Floor Plans and Structural Plans as placeholders. Disciplined spacing rhythm, structured composition." },
+        { "id": "v2", "label": "Breathing Architecture", "description": "Generous whitespace and vertical storytelling with V1 full-bleed hero, V2 dramatic section divider with ghost text (92vh), V2 section headers with decorative rules, V2 pip-dot component details in single-column layout (max-width 40rem), V1 footer. Floor Plans and Structural Plans as placeholders. Larger section numbers (up to 13rem), extra breathing padding tier (section-breathe: 10-14rem), more dramatic type scale contrast." }
+      ]
+    },
+    {
+      "round": 3,
+      "mode": "C",
+      "style": "Modern Architectural Editorial",
+      "seedVariation": "r2-v1",
+      "feedback": "Replace conventional top navbar with a creative fixed right-side navbar. Use glass/frosted effects. Be creative with the navigation placement and interaction.",
+      "expectedCount": 2,
+      "variations": [
+        { "id": "v1", "label": "Vertical Meridian", "description": "Minimal glass rail fixed to the right edge — dot-based section indicators with hover-reveal labels that fly out as frosted glass tooltips. Vertical progress track connects dots. Desktop: narrow 4rem rail with body offset; mobile: bottom glass bar. Wordmark rotated vertically at rail top. Architectural elevator-column energy — the nav is a quiet measurement instrument, not a menu." },
+        { "id": "v2", "label": "Glass Spine", "description": "Expandable frosted glass panel on the right — collapsed shows only section numbers (01–08) in a vertical stack, hover expands to 15rem revealing full section names, act groupings (Act I/II/III), decorative dividers, and a contact email footer. Numbers get orange accent on active section with a left border indicator. Desktop: smooth cubic-bezier width transition; mobile: bottom bar with number+label pairs. The nav tells the story structure — it's a table of contents that breathes." }
+      ]
+    }
+  ]
+}
