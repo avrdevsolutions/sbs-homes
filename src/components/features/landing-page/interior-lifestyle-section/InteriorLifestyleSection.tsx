@@ -1,33 +1,40 @@
-import { PlaceholderPanel, SectionBlockHeader } from '@/components/shared'
-import { Section, Typography } from '@/components/ui'
-import type { PlaceholderSectionContent } from '@/dictionaries/landing-page'
+'use client'
+
+import { SectionBlockHeader } from '@/components/shared'
+import { Container, Section } from '@/components/ui'
+import type { InteriorLifestyleSectionContent } from '@/dictionaries/landing-page'
+import { useMotionEnabled } from '@/lib/motion'
+
+import { InteriorRoomPanel } from './InteriorRoomPanel'
+import { InteriorRoomStatic } from './InteriorRoomStatic'
 
 type InteriorLifestyleSectionProps = {
-  content: PlaceholderSectionContent
+  content: InteriorLifestyleSectionContent
 }
 
-export const InteriorLifestyleSection = ({ content }: InteriorLifestyleSectionProps) => (
-  <Section id={content.id} spacing='spacious' background='warm-alt'>
-    <SectionBlockHeader
-      eyebrow={content.eyebrow}
-      title={content.title}
-      description={content.description}
-      titleAs='h2'
-    />
-    {/* Animation area — hidden when reduced motion is preferred */}
-    <div className='motion-reduce:hidden'>
-      <PlaceholderPanel label={content.placeholderLabel} viewport='animation' />
-    </div>
-    {/* Reduced-motion fallback — static photo placeholder */}
-    <div
-      className='hidden aspect-video w-full items-center justify-center rounded-lg motion-reduce:flex'
-      style={{ backgroundColor: 'rgba(28, 28, 30, 0.06)' }}
-      role='img'
-      aria-label='Representative interior photograph — living area and kitchen spaces'
-    >
-      <Typography variant='body-sm' className='opacity-40'>
-        Static interior photograph placeholder
-      </Typography>
-    </div>
-  </Section>
-)
+export const InteriorLifestyleSection = ({ content }: InteriorLifestyleSectionProps) => {
+  const motionEnabled = useMotionEnabled()
+
+  return (
+    <Section id={content.id} spacing='none' background='warm-alt' fullBleed>
+      {/* Section introduction */}
+      <Container>
+        <div className='pb-10 pt-26 md:pt-32 lg:pt-40'>
+          <SectionBlockHeader
+            eyebrow={content.eyebrow}
+            title={content.title}
+            description={content.description}
+            titleAs='h2'
+          />
+        </div>
+      </Container>
+
+      {/* Room panels */}
+      {motionEnabled
+        ? content.rooms.map((room, i) => <InteriorRoomPanel key={room.id} room={room} index={i} />)
+        : content.rooms.map((room, i) => (
+            <InteriorRoomStatic key={room.id} room={room} index={i} />
+          ))}
+    </Section>
+  )
+}

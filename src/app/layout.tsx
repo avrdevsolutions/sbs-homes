@@ -1,9 +1,9 @@
 import { DM_Sans, Geist_Mono, Instrument_Sans } from 'next/font/google'
 
-import { NavSpine, SiteFooter } from '@/components/layout'
+import { SiteFooter } from '@/components/layout'
 import { BackToTopButton } from '@/components/layout/back-to-top-button'
 import { SkipLink } from '@/components/layout/skip-link'
-import { footerContent, navSpineContent } from '@/dictionaries/layout'
+import { footerContent } from '@/dictionaries/layout'
 import { MotionProvider } from '@/lib/motion'
 
 import type { Metadata } from 'next'
@@ -43,10 +43,10 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => {
       lang='en'
       className={`${displayFont.variable} ${bodyFont.variable} ${monoFont.variable} antialiased`}
     >
-      <body className='lg:pr-14'>
+      <body>
         <SkipLink />
         <MotionProvider>
-          <NavSpine content={navSpineContent} />
+          {/*<NavSpine content={navSpineContent} />*/}
           <main id='main-content'>{children}</main>
           <SiteFooter content={footerContent} />
         </MotionProvider>

@@ -21,6 +21,38 @@ export type PlaceholderSectionContent = {
   placeholderLabel: string
 }
 
+export type ExteriorVantagePoint = {
+  id: string
+  title: string
+  description: string
+  image: ImageAsset
+  sitePlan: ImageAsset
+}
+
+export type ExteriorViewsSectionContent = {
+  id: string
+  eyebrow: string
+  title: string
+  description: string
+  vantagePoints: [ExteriorVantagePoint, ExteriorVantagePoint, ExteriorVantagePoint]
+}
+
+export type InteriorRoom = {
+  id: string
+  title: string
+  subtitle: string
+  image: ImageAsset
+  overlay: ImageAsset
+}
+
+export type InteriorLifestyleSectionContent = {
+  id: string
+  eyebrow: string
+  title: string
+  description: string
+  rooms: InteriorRoom[]
+}
+
 export type FloorPlanTab = {
   label: string
   placeholderLabel: string
@@ -122,8 +154,8 @@ export type ComponentDetailsSectionContent = {
 
 export type LandingPageContent = {
   hero: HeroSectionContent
-  exteriorViews: PlaceholderSectionContent
-  interiorLifestyle: PlaceholderSectionContent
+  exteriorViews: ExteriorViewsSectionContent
+  interiorLifestyle: InteriorLifestyleSectionContent
   floorPlans: FloorPlansSectionContent
   technologyDivider: DividerSectionContent
   constructionOverview: ConstructionOverviewSectionContent
@@ -140,7 +172,7 @@ export const landingPageContent: LandingPageContent = {
     subtitle:
       'A Showcase Project of Four Contemporary Homes. Precision-Manufactured. Timber-Engineered. Assembled On-Site.',
     image: {
-      src: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1920&h=1080&fit=crop',
+      src: '/images/exteriors/terrace-front-numbered.webp',
       alt: 'Modern contemporary timber-clad home with clean architectural lines and landscaped approach',
       width: 1920,
       height: 1080,
@@ -157,14 +189,138 @@ export const landingPageContent: LandingPageContent = {
     title: 'Street Approach, Front Door, Rear Garden',
     description:
       'Each home from three vantage points - the arrival, the threshold, and the private outdoor space.',
-    placeholderLabel: 'Scroll-driven animation content',
+    vantagePoints: [
+      {
+        id: 'street-approach',
+        title: 'Street Approach',
+        description:
+          'The arrival — four homes visible from the street, clean lines and timber cladding against the landscape.',
+        image: {
+          src: '/images/exteriors/terrace-front.png',
+          alt: 'Four contemporary timber-clad homes viewed from the street approach with landscaped frontage',
+          width: 1920,
+          height: 1080,
+        },
+        sitePlan: {
+          src: '/images/exteriors/site-plan-front-street.svg',
+          alt: 'Site plan highlighting the street approach vantage point',
+          width: 400,
+          height: 400,
+        },
+      },
+      {
+        id: 'front-door',
+        title: 'Front Door',
+        description:
+          'The threshold — where the public street gives way to private space. A recessed entrance framed by timber.',
+        image: {
+          src: '/images/exteriors/terrace-front-door.png',
+          alt: 'Close-up of the recessed timber-framed front entrance to one of the homes',
+          width: 1920,
+          height: 1080,
+        },
+        sitePlan: {
+          src: '/images/exteriors/site-plan-front-door.svg',
+          alt: 'Site plan highlighting the front door vantage point',
+          width: 400,
+          height: 400,
+        },
+      },
+      {
+        id: 'rear-garden',
+        title: 'Rear Garden',
+        description:
+          'The private outdoor space — full-width glazing opens onto a sheltered garden. Indoor and outdoor merge.',
+        image: {
+          src: '/images/exteriors/private-outdoor.png',
+          alt: 'Rear view of the home showing full-width glazing opening onto a private garden space',
+          width: 1920,
+          height: 1080,
+        },
+        sitePlan: {
+          src: '/images/exteriors/site-plan-rear-garden.svg',
+          alt: 'Site plan highlighting the rear garden vantage point',
+          width: 400,
+          height: 400,
+        },
+      },
+    ],
   },
   interiorLifestyle: {
     id: 'interior',
     eyebrow: '03 - Interior Lifestyle',
     title: 'Living Area, Kitchen, Master Bedroom',
     description: 'The spaces that define daily life - open, light-filled, precisely detailed.',
-    placeholderLabel: 'Scroll-driven animation content',
+    rooms: [
+      {
+        id: 'living-area-gather',
+        title: 'Living Area',
+        subtitle: 'A Space to Gather',
+        image: {
+          src: '/images/interiors/living-area-tv-view.webp',
+          alt: 'Open-plan living area with natural light, timber flooring and modern furnishings',
+          width: 1920,
+          height: 1080,
+        },
+        overlay: {
+          src: '/images/interiors/test.png',
+          alt: 'Living area architectural overlay showing spatial layout',
+          width: 1920,
+          height: 1080,
+        },
+      },
+      {
+        id: 'living-area-garden',
+        title: 'Living Area',
+        subtitle: 'Where Home Opens to the Garden',
+        image: {
+          src: '/images/interiors/living-area-garden-view.webp',
+          alt: 'Living area with full-height glazing opening onto the garden',
+          width: 1920,
+          height: 1080,
+        },
+        overlay: {
+          src: '/images/interiors/living-area-garden-view-overlay.webp',
+          alt: 'Garden view living area architectural overlay',
+          width: 1920,
+          height: 1080,
+        },
+      },
+      {
+        id: 'kitchen',
+        title: 'Open-Plan Kitchen',
+        subtitle: 'For Everyday Living',
+        image: {
+          src: '/images/interiors/kitchen-open-plan.webp',
+          alt: 'Open-plan kitchen with pendant lighting and dining area',
+          width: 1920,
+          height: 1080,
+        },
+        overlay: {
+          src: '/images/interiors/kitchen-open-plan-overlay.webp',
+          alt: 'Kitchen architectural overlay showing spatial arrangement',
+          width: 1920,
+          height: 1080,
+        },
+      },
+      {
+        id: 'master-bedroom',
+        title: 'Master Bedroom',
+        subtitle: 'A Private Retreat',
+        image: {
+          src: '/images/interiors/master-bedroom.webp',
+          alt: 'Master bedroom with vaulted ceiling, full-height glazing and natural materials',
+          width: 1920,
+          height: 1080,
+        },
+        overlay: {
+          src: '/images/interiors/master-bedroom-overlay.webp',
+          alt: 'Master bedroom architectural overlay',
+          width: 1920,
+          height: 1080,
+        },
+      },
+    ],
   },
   floorPlans: {
     id: 'floor-plans',
