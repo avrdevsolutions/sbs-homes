@@ -22,43 +22,43 @@ For **React runtime and rendering performance** — `useMemo`, `useCallback`, `R
 
 ## Core Web Vitals Targets
 
-| Metric | Target | What It Measures | How To Fix |
-|--------|--------|-----------------|------------|
-| **LCP** (Largest Contentful Paint) | < 2.5s | Loading performance — when the biggest element renders | Optimize images, preload critical resources, cache (ADR-0017) |
+| Metric                              | Target  | What It Measures                                              | How To Fix                                                        |
+| ----------------------------------- | ------- | ------------------------------------------------------------- | ----------------------------------------------------------------- |
+| **LCP** (Largest Contentful Paint)  | < 2.5s  | Loading performance — when the biggest element renders        | Optimize images, preload critical resources, cache (ADR-0017)     |
 | **INP** (Interaction to Next Paint) | < 200ms | Responsiveness — delay between user input and visual response | Reduce JS on main thread, defer heavy work, use `startTransition` |
-| **CLS** (Cumulative Layout Shift) | < 0.1 | Visual stability — elements moving after render | Set explicit image dimensions, reserve space for dynamic content |
-| **TTFB** (Time to First Byte) | < 800ms | Server response time | Cache (ADR-0017), edge deployment, optimize DB queries |
-| **FCP** (First Contentful Paint) | < 1.8s | When any content first appears | Reduce render-blocking resources, stream HTML |
+| **CLS** (Cumulative Layout Shift)   | < 0.1   | Visual stability — elements moving after render               | Set explicit image dimensions, reserve space for dynamic content  |
+| **TTFB** (Time to First Byte)       | < 800ms | Server response time                                          | Cache (ADR-0017), edge deployment, optimize DB queries            |
+| **FCP** (First Contentful Paint)    | < 1.8s  | When any content first appears                                | Reduce render-blocking resources, stream HTML                     |
 
 ### Lighthouse Score Targets
 
-| Category | Target |
-|----------|--------|
-| Performance | ≥ 90 |
-| Accessibility | ≥ 90 |
-| Best Practices | ≥ 90 |
-| SEO | ≥ 90 |
+| Category       | Target |
+| -------------- | ------ |
+| Performance    | ≥ 90   |
+| Accessibility  | ≥ 90   |
+| Best Practices | ≥ 90   |
+| SEO            | ≥ 90   |
 
 ---
 
 ## Rules
 
-| Rule | Level |
-|------|-------|
-| Server Components by default — only add `'use client'` when needed (ADR-0004) | **MUST** |
-| All images use `next/image` (automatic WebP, resize, lazy loading) | **MUST** |
-| All fonts use `next/font` (self-hosted, zero layout shift) | **MUST** |
-| Every `<Image>` has explicit `width` and `height` (or `fill` + sized container) — prevents CLS | **MUST** |
-| LCP image must have `priority` prop — preloads it, disables lazy loading | **MUST** |
-| Don't import entire libraries — use tree-shakeable named imports | **MUST** |
-| Don't load heavy libraries (charts, maps, editors) synchronously — use `next/dynamic` | **MUST** |
-| Don't use `layout="fill"` without a sized parent container — causes CLS | **MUST NOT** |
-| Don't ship `console.log` to production — ESLint catches this (ADR-0001) | **MUST NOT** |
-| Use `<Suspense>` boundaries for independent async sections | **SHOULD** |
-| Use `loading.tsx` for route-level loading states | **SHOULD** |
-| Analyze bundle size after adding new dependencies | **SHOULD** |
-| Run Lighthouse before major releases | **SHOULD** |
-| Monitor Core Web Vitals in production (ADR-0014) | **SHOULD** |
+| Rule                                                                                           | Level        |
+| ---------------------------------------------------------------------------------------------- | ------------ |
+| Server Components by default — only add `'use client'` when needed (ADR-0004)                  | **MUST**     |
+| All images use `next/image` (automatic WebP, resize, lazy loading)                             | **MUST**     |
+| All fonts use `next/font` (self-hosted, zero layout shift)                                     | **MUST**     |
+| Every `<Image>` has explicit `width` and `height` (or `fill` + sized container) — prevents CLS | **MUST**     |
+| LCP image must have `priority` prop — preloads it, disables lazy loading                       | **MUST**     |
+| Don't import entire libraries — use tree-shakeable named imports                               | **MUST**     |
+| Don't load heavy libraries (charts, maps, editors) synchronously — use `next/dynamic`          | **MUST**     |
+| Don't use `layout="fill"` without a sized parent container — causes CLS                        | **MUST NOT** |
+| Don't ship `console.log` to production — ESLint catches this (ADR-0001)                        | **MUST NOT** |
+| Use `<Suspense>` boundaries for independent async sections                                     | **SHOULD**   |
+| Use `loading.tsx` for route-level loading states                                               | **SHOULD**   |
+| Analyze bundle size after adding new dependencies                                              | **SHOULD**   |
+| Run Lighthouse before major releases                                                           | **SHOULD**   |
+| Monitor Core Web Vitals in production (ADR-0014)                                               | **SHOULD**   |
 
 ---
 
@@ -67,6 +67,7 @@ For **React runtime and rendering performance** — `useMemo`, `useCallback`, `R
 ### The `next/image` Component
 
 `next/image` automatically:
+
 - Converts to WebP/AVIF (30-50% smaller than JPEG/PNG)
 - Resizes to the displayed size (don't load a 4000px image for a 200px avatar)
 - Lazy loads by default (images below the fold load when scrolled to)
@@ -136,12 +137,12 @@ Without `sizes`, Next.js generates images for the full viewport width — even i
 
 ### Image Format Guidelines
 
-| Format | Use Case | Notes |
-|--------|----------|-------|
-| WebP | Photos, general images | Default — `next/image` converts automatically |
-| AVIF | Photos (even smaller than WebP) | Supported by most browsers, Next.js converts automatically |
-| SVG | Icons, logos, illustrations | Don't use `next/image` for SVGs — use `<svg>` inline or `<img>` |
-| PNG | Images requiring transparency | Larger than WebP — use only when transparency is needed |
+| Format | Use Case                        | Notes                                                           |
+| ------ | ------------------------------- | --------------------------------------------------------------- |
+| WebP   | Photos, general images          | Default — `next/image` converts automatically                   |
+| AVIF   | Photos (even smaller than WebP) | Supported by most browsers, Next.js converts automatically      |
+| SVG    | Icons, logos, illustrations     | Don't use `next/image` for SVGs — use `<svg>` inline or `<img>` |
+| PNG    | Images requiring transparency   | Larger than WebP — use only when transparency is needed         |
 
 ### LCP Optimization Checklist
 
@@ -228,19 +229,18 @@ import dynamic from 'next/dynamic'
 
 // Chart library (~200kB) — loaded only when dashboard is visible
 const Chart = dynamic(() => import('@/components/features/chart/Chart'), {
-  loading: () => <div className="h-64 animate-pulse rounded-lg bg-primary-100" />,
-  ssr: false,  // Charts don't need SSR — skip server render
+  loading: () => <div className='bg-primary-100 h-64 animate-pulse rounded-lg' />,
+  ssr: false, // Charts don't need SSR — skip server render
 })
 
 // Rich text editor (~300kB) — loaded when user opens editor
-const RichTextEditor = dynamic(
-  () => import('@/components/features/editor/RichTextEditor'),
-  { loading: () => <div className="h-48 animate-pulse rounded-lg bg-primary-100" /> },
-)
+const RichTextEditor = dynamic(() => import('@/components/features/editor/RichTextEditor'), {
+  loading: () => <div className='bg-primary-100 h-48 animate-pulse rounded-lg' />,
+})
 
 // Map component (~150kB) — loaded when visible
 const Map = dynamic(() => import('@/components/features/map/Map'), {
-  loading: () => <div className="h-96 animate-pulse rounded-lg bg-primary-100" />,
+  loading: () => <div className='bg-primary-100 h-96 animate-pulse rounded-lg' />,
   ssr: false,
 })
 ```
@@ -276,11 +276,11 @@ import { Search } from 'lucide-react'
 // src/app/dashboard/loading.tsx
 export default function DashboardLoading() {
   return (
-    <div className="space-y-6 p-6">
-      <div className="h-8 w-48 animate-pulse rounded bg-primary-100" />
-      <div className="grid grid-cols-3 gap-4">
+    <div className='space-y-6 p-6'>
+      <div className='bg-primary-100 h-8 w-48 animate-pulse rounded' />
+      <div className='grid grid-cols-3 gap-4'>
         {Array.from({ length: 3 }).map((_, i) => (
-          <div key={i} className="h-32 animate-pulse rounded-lg bg-primary-100" />
+          <div key={i} className='bg-primary-100 h-32 animate-pulse rounded-lg' />
         ))}
       </div>
     </div>
@@ -296,8 +296,8 @@ import { Suspense } from 'react'
 
 export default function DashboardPage() {
   return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Dashboard</h1>
+    <div className='space-y-6'>
+      <h1 className='text-2xl font-bold'>Dashboard</h1>
 
       {/* Stats load fast — show first */}
       <Suspense fallback={<StatsSkeleton />}>
@@ -326,14 +326,14 @@ export default function DashboardPage() {
 
 ### Common CLS Causes and Fixes
 
-| Cause | Fix |
-|-------|-----|
-| Images without dimensions | Always set `width`/`height` or use `fill` with sized container |
-| Web fonts causing layout shift | Use `next/font` with `display: 'swap'` |
-| Dynamic content above the fold | Reserve space with skeleton/placeholder |
-| Ads or embeds loading late | Reserve space with fixed-height container |
-| Toasts/banners pushing content | Use fixed/absolute positioning (Sonner does this correctly) |
-| CSS animations on layout properties | Animate only `transform` and `opacity` |
+| Cause                               | Fix                                                            |
+| ----------------------------------- | -------------------------------------------------------------- |
+| Images without dimensions           | Always set `width`/`height` or use `fill` with sized container |
+| Web fonts causing layout shift      | Use `next/font` with `display: 'swap'`                         |
+| Dynamic content above the fold      | Reserve space with skeleton/placeholder                        |
+| Ads or embeds loading late          | Reserve space with fixed-height container                      |
+| Toasts/banners pushing content      | Use fixed/absolute positioning (Sonner does this correctly)    |
+| CSS animations on layout properties | Animate only `transform` and `opacity`                         |
 
 ```tsx
 // ❌ Image without dimensions — causes CLS when image loads
@@ -378,12 +378,12 @@ module.exports = withBundleAnalyzer({
 
 ### Bundle Size Budget
 
-| What | Budget | Action If Exceeded |
-|------|--------|-------------------|
-| First Load JS (shared) | < 90kB | Audit shared dependencies, check for accidental client components |
-| Per-page JS | < 50kB | Dynamic import heavy sections, review client components |
-| Total page weight (JS + CSS + images) | < 500kB | Optimize images, lazy load below-fold content |
-| Individual dependency | < 50kB | Find lighter alternative or dynamic import |
+| What                                  | Budget  | Action If Exceeded                                                |
+| ------------------------------------- | ------- | ----------------------------------------------------------------- |
+| First Load JS (shared)                | < 90kB  | Audit shared dependencies, check for accidental client components |
+| Per-page JS                           | < 50kB  | Dynamic import heavy sections, review client components           |
+| Total page weight (JS + CSS + images) | < 500kB | Optimize images, lazy load below-fold content                     |
+| Individual dependency                 | < 50kB  | Find lighter alternative or dynamic import                        |
 
 ### Checking Bundle Impact of New Dependencies
 
@@ -447,7 +447,7 @@ export default async function ProductPage({ params }: Props) {
       <h1>{product.name}</h1>
       <p>{product.description}</p>
       <Image src={product.image} alt={product.name} width={600} height={400} />
-      <AddToCart productId={id} />  {/* Only this is 'use client' */}
+      <AddToCart productId={id} /> {/* Only this is 'use client' */}
     </div>
   )
 }
@@ -465,10 +465,13 @@ export default async function ProductPage({ params }: Props) {
 - [ ] INP < 200ms (test with Chrome DevTools → Performance panel)
 
 > **Agent execution note**: Agents can run Lighthouse programmatically via `run_in_terminal`:
+>
 > ```bash
 > npx lighthouse http://localhost:3000 --output=json --output-path=./lighthouse-report.json --chrome-flags="--headless"
 > ```
+>
 > For runtime metrics (JS heap, DOM nodes, layout count) and CPU profiling, use the Playwright MCP server's `browser_devtools_execute_cdp` capability with `Performance.getMetrics()`, `Profiler.start()`/`Profiler.stop()`, or `Tracing.start()`/`Tracing.end()`. See `docs/agent-tooling.md` for full MCP tool documentation.
+
 - [ ] All images use `next/image` with explicit dimensions
 - [ ] LCP image has `priority` prop
 - [ ] Responsive images have `sizes` prop
@@ -552,6 +555,7 @@ Performance is not an afterthought — it's a direct ranking factor (Google Core
 Lighthouse provides a standardized, reproducible score. A ≥90 target is ambitious but achievable with the patterns in this ADR. Scores below 90 indicate real user-facing problems. The score is a proxy for user experience — not the goal itself.
 
 ### Key Factors
+
 1. **Server Components** — zero client JS is the biggest performance win in Next.js.
 2. **Image optimization** — `next/image` handles format, size, lazy loading, and CDN automatically.
 3. **Font optimization** — `next/font` eliminates FOUT/FOIT and external requests.
@@ -561,20 +565,21 @@ Lighthouse provides a standardized, reproducible score. A ≥90 target is ambiti
 
 ## Options Considered
 
-| Option | Description | Why Chosen / Why Not |
-|--------|------------|---------------------|
-| `next/image` | Framework image optimization | ✅ Chosen: automatic WebP, resize, CDN, lazy load |
-| `next/font` | Self-hosted fonts | ✅ Chosen: zero CLS, no external requests |
-| `next/dynamic` | Component-level code splitting | ✅ Chosen: defers heavy libraries |
-| Suspense streaming | Independent section loading | ✅ Chosen: fast content shows immediately |
-| Lighthouse CI | Automated performance testing | ✅ Chosen: reproducible, actionable scores |
-| `@next/bundle-analyzer` | Bundle visualization | ✅ Chosen: identifies bloated dependencies |
+| Option                  | Description                    | Why Chosen / Why Not                              |
+| ----------------------- | ------------------------------ | ------------------------------------------------- |
+| `next/image`            | Framework image optimization   | ✅ Chosen: automatic WebP, resize, CDN, lazy load |
+| `next/font`             | Self-hosted fonts              | ✅ Chosen: zero CLS, no external requests         |
+| `next/dynamic`          | Component-level code splitting | ✅ Chosen: defers heavy libraries                 |
+| Suspense streaming      | Independent section loading    | ✅ Chosen: fast content shows immediately         |
+| Lighthouse CI           | Automated performance testing  | ✅ Chosen: reproducible, actionable scores        |
+| `@next/bundle-analyzer` | Bundle visualization           | ✅ Chosen: identifies bloated dependencies        |
 
 ---
 
 ## Consequences
 
 **Positive:**
+
 - Server Components by default means most pages ship zero JS — fastest possible load.
 - `next/image` automatically optimizes images (WebP, resize, lazy load) — no manual effort.
 - `next/font` eliminates font-related CLS — better user experience and SEO.
@@ -583,6 +588,7 @@ Lighthouse provides a standardized, reproducible score. A ≥90 target is ambiti
 - Measurable targets (Lighthouse ≥90, LCP <2.5s) make performance auditable.
 
 **Negative:**
+
 - Performance optimization takes development time — mitigated by building it into the development process (not as an afterthought).
 - Dynamic imports add complexity (loading states, SSR considerations) — mitigated by providing clear patterns.
 - `unstable_cache` may change API — mitigated by encapsulating in query functions (ADR-0017).
@@ -597,4 +603,3 @@ Lighthouse provides a standardized, reproducible score. A ≥90 target is ambiti
 - [ADR-0014](./0014-logging-observability.md) — Logging (Vercel Analytics / Sentry for Web Vitals monitoring)
 - [ADR-0017](./0017-caching.md) — Caching (explicit cache on every fetch, ISR, revalidation)
 - [ADR-0021](./0021-performance-react.md) — React Runtime & Rendering Performance (useMemo, useCallback, useTransition, re-render prevention)
-
