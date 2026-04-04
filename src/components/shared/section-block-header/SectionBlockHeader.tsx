@@ -27,7 +27,7 @@ export const SectionBlockHeader = ({
     <Typography
       variant='h2'
       as={titleAs}
-      className={cn(centered && 'mx-auto')}
+      className={cn(centered && 'mx-auto', dark && 'text-white')}
       style={{ maxWidth: '22ch' }}
     >
       {title}

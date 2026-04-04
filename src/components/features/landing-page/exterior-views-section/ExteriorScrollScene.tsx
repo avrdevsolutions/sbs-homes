@@ -2,24 +2,28 @@
 
 import { type ReactNode, useRef } from 'react'
 
-import { type MotionValue, useScroll, useSpring } from '@/lib/motion'
+import { m, type MotionValue, useScroll, useSpring, useTransform } from '@/lib/motion'
 
 type ExteriorScrollSceneProps = {
   children: (progress: MotionValue<number>) => ReactNode
-  /** Total scroll runway. Defaults to "400vh". */
+  /** Total scroll runway. Defaults to "500vh". */
   scrollHeight?: string
 }
 
 /** Tight scroll smoothing — eliminates jitter, near-zero perceived lag. */
 const SCROLL_SMOOTH = { stiffness: 300, damping: 40, mass: 0.15 }
 
+/** warm (#f5f3f0) → warm-alt (#edebe8) background transition at the end */
+const BG_FROM = '#f5f3f0'
+const BG_TO = '#edebe8'
+
 /**
- * Scroll scene — warm bg, sticky 100vh viewport.
- * Light spring smoothing for buttery tracking without lag.
+ * Full-viewport scroll scene — sticky h-screen container.
+ * Background morphs warm→warm-alt in the last 15% of scroll.
  */
 export const ExteriorScrollScene = ({
   children,
-  scrollHeight = '400vh',
+  scrollHeight = '500vh',
 }: ExteriorScrollSceneProps) => {
   const ref = useRef<HTMLDivElement>(null)
 
@@ -29,14 +33,16 @@ export const ExteriorScrollScene = ({
   })
 
   const progress = useSpring(scrollYProgress, SCROLL_SMOOTH)
+  const bgColor = useTransform(progress, [0, 0.85, 1], [BG_FROM, BG_FROM, BG_TO])
 
   return (
     <div ref={ref} className='relative' style={{ height: scrollHeight }}>
-      <div className='sticky top-0 h-screen w-full overflow-hidden'>
-        <div className='relative flex size-full flex-col justify-around py-20'>
-          {children(progress)}
-        </div>
-      </div>
+      <m.div
+        className='sticky top-0 h-screen w-full overflow-hidden'
+        style={{ backgroundColor: bgColor }}
+      >
+        {children(progress)}
+      </m.div>
     </div>
   )
 }

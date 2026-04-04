@@ -7,8 +7,8 @@ import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { MotionInView, useMotionEnabled } from '@/lib/motion'
 
 import { ExteriorScrollScene } from './ExteriorScrollScene'
+import { ImageCrossfade } from './ImageCrossfade'
 import { InfoLegend } from './InfoLegend'
-import { PhotoStrip } from './PhotoStrip'
 import { VantagePointCard } from './VantagePointCard'
 
 type ExteriorViewsSectionProps = {
@@ -21,28 +21,32 @@ export const ExteriorViewsSection = ({ content }: ExteriorViewsSectionProps) => 
 
   return (
     <Section id={content.id} spacing='none' background='warm' fullBleed>
-      {/* Desktop: full-section scroll scene */}
+      {/* Desktop: cinematic full-viewport gallery */}
       {motionEnabled && isDesktop && (
         <ExteriorScrollScene>
           {(progress) => (
             <>
-              {/* Header row — section header left, legend right */}
-              <Container>
-                <div className='flex items-start justify-between gap-12 py-0'>
-                  <div className='shrink-0'>
-                    <SectionBlockHeader
-                      eyebrow={content.eyebrow}
-                      title={content.title}
-                      description={content.description}
-                      titleAs='h2'
-                    />
-                  </div>
+              {/* Full-bleed crossfading images */}
+              <ImageCrossfade vantagePoints={[...content.vantagePoints]} progress={progress} />
+
+              {/* Floating content layer — on top of images */}
+              <div className='relative z-10 flex size-full flex-col justify-between'>
+                {/* Top — section header, white text on dark radial */}
+                <div className='px-5 pt-12 md:px-10 md:pt-16 lg:px-14 lg:pt-20'>
+                  <SectionBlockHeader
+                    eyebrow={content.eyebrow}
+                    title={content.title}
+                    description={content.description}
+                    titleAs='h2'
+                    dark
+                  />
+                </div>
+
+                {/* Bottom-left — light frosted legend */}
+                <div className='px-5 pb-10 md:px-10 md:pb-14 lg:px-14 lg:pb-16'>
                   <InfoLegend vantagePoints={[...content.vantagePoints]} progress={progress} />
                 </div>
-              </Container>
-
-              {/* Photo cards — fills remaining viewport height */}
-              <PhotoStrip vantagePoints={[...content.vantagePoints]} progress={progress} />
+              </div>
             </>
           )}
         </ExteriorScrollScene>

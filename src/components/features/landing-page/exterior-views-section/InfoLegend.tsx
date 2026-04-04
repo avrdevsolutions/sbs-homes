@@ -15,32 +15,41 @@ type InfoLegendProps = {
   progress: MotionValue<number>
 }
 
+/**
+ * Floating legend panel — frosted glass over the image.
+ * Dark backdrop so site plan SVG lines read white-on-dark.
+ */
 export const InfoLegend = memo(({ vantagePoints, progress }: InfoLegendProps) => {
-  /**
-   * Active index 0→2, leading the card arrival.
-   * Card 0: [0, 0.15], transition [0.15, 0.22],
-   * Card 1: [0.22, 0.50], transition [0.50, 0.58],
-   * Card 2: [0.58, 1.0]
-   */
-  const activeFloat = useTransform(progress, [0, 0.15, 0.22, 0.5, 0.58, 1], [0, 0, 1, 1, 2, 2])
+  const activeFloat = useTransform(progress, [0, 0.28, 0.38, 0.62, 0.72, 1], [0, 0, 1, 1, 2, 2])
 
   const counterIndex = useTransform(activeFloat, (v) => Math.round(Math.min(v, PANEL_COUNT - 1)))
 
   return (
-    <div className='flex shrink-0 flex-col gap-5' style={{ maxWidth: '28ch' }}>
-      {/* Counter + text on top */}
-      <div className='flex min-w-0 flex-col gap-2'>
-        <CounterDisplay progress={counterIndex} total={PANEL_COUNT} />
+    <div
+      className='flex flex-col gap-5 rounded-2xl border border-black/5'
+      style={{
+        padding: '1.5rem 1.75rem',
+        background: 'rgba(255, 255, 255, 0.7)',
+        backdropFilter: 'blur(24px) saturate(1.6)',
+        WebkitBackdropFilter: 'blur(24px) saturate(1.6)',
+        maxWidth: '22rem',
+      }}
+    >
+      {/* Counter */}
+      <CounterDisplay progress={counterIndex} total={PANEL_COUNT} />
 
-        <div className='relative' style={{ minHeight: 80 }}>
-          {vantagePoints.map((vp, i) => (
-            <TextSlide key={vp.id} vantagePoint={vp} index={i} progress={activeFloat} />
-          ))}
-        </div>
+      {/* Text — crossfading */}
+      <div className='relative' style={{ minHeight: 90 }}>
+        {vantagePoints.map((vp, i) => (
+          <TextSlide key={vp.id} vantagePoint={vp} index={i} progress={activeFloat} />
+        ))}
       </div>
 
-      {/* Site plan below — crossfade */}
-      <div className='relative' style={{ width: 250 }}>
+      {/* Divider */}
+      <div className='h-px bg-black/10' />
+
+      {/* Site plan — crossfading, now white-on-dark */}
+      <div className='relative' style={{ height: 160 }}>
         {vantagePoints.map((vp, i) => (
           <SitePlanLayer key={vp.id} vantagePoint={vp} index={i} progress={activeFloat} />
         ))}
@@ -89,7 +98,7 @@ const SitePlanLayer = memo(({ vantagePoint, index, progress }: SitePlanLayerProp
 
   return (
     <m.div
-      className={index === 0 ? 'relative' : 'absolute inset-0'}
+      className={index === 0 ? 'relative size-full' : 'absolute inset-0'}
       style={{ opacity }}
       aria-hidden={index !== 0}
     >
@@ -99,7 +108,7 @@ const SitePlanLayer = memo(({ vantagePoint, index, progress }: SitePlanLayerProp
         width={vantagePoint.sitePlan.width}
         height={vantagePoint.sitePlan.height}
         loading='lazy'
-        className='w-full'
+        className='size-full object-contain'
       />
     </m.div>
   )
@@ -123,7 +132,7 @@ const TextSlide = memo(({ vantagePoint, index, progress }: TextSlideProps) => {
 
   const y = useTransform(progress, (v) => {
     const delta = v - index
-    return delta * -20
+    return delta * -12
   })
 
   return (
@@ -131,11 +140,11 @@ const TextSlide = memo(({ vantagePoint, index, progress }: TextSlideProps) => {
       className={index === 0 ? 'relative' : 'absolute inset-x-0 top-0'}
       style={{ opacity, y, willChange: 'transform, opacity' }}
     >
-      <div className='flex flex-col gap-1'>
-        <Typography variant='h4' as='h3'>
+      <div className='flex flex-col gap-1.5'>
+        <Typography variant='h4' as='h3' className='text-foreground'>
           {vantagePoint.title}
         </Typography>
-        <Typography variant='body-sm' className='text-foreground' style={{ opacity: 0.6 }}>
+        <Typography variant='body-sm' className='text-foreground/60'>
           {vantagePoint.description}
         </Typography>
       </div>
