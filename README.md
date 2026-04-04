@@ -178,7 +178,7 @@ starter-nextjs/
 | Framework | Next.js 15 (App Router) | [ADR-0001](docs/adrs/0001-architecture.md) |
 | Language | TypeScript (strict) | [ADR-0001](docs/adrs/0001-architecture.md) |
 | Styling | Tailwind CSS v3 | [ADR-0002](docs/adrs/0002-styling.md) |
-| Animation | Framer Motion (opt-in) | [ADR-0003](docs/adrs/0003-animation.md) |
+| Animation | Framer Motion (opt-in) | [ADR-0034](docs/adrs/0034-motion-framer-motion.md) |
 | Validation | Zod | [ADR-0001](docs/adrs/0001-architecture.md) |
 | Testing | Vitest + Playwright | [ADR-0009](docs/adrs/0009-testing.md) |
 | Forms | React Hook Form (when needed) | [ADR-0012](docs/adrs/0012-forms.md) |
@@ -192,7 +192,7 @@ starter-nextjs/
 |-----|-------|--------|
 | [0001](docs/adrs/0001-architecture.md) | Architecture & Framework | Accepted |
 | [0002](docs/adrs/0002-styling.md) | Styling, Component Libraries, Storybook | Accepted |
-| [0003](docs/adrs/0003-animation.md) | Animation (Framer Motion, opt-in) | Accepted |
+| [0034](docs/adrs/0034-motion-framer-motion.md) | Motion / Framer Motion (API reference) | Accepted |
 | [0004](docs/adrs/0004-components.md) | Component Structure & Tiers | Accepted |
 | [0005](docs/adrs/0005-data-fetching.md) | Data Fetching & API | Accepted |
 | [0006](docs/adrs/0006-environment.md) | Environment Configuration | Accepted |
