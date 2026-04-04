@@ -199,7 +199,7 @@ The `!important` is acceptable here — it is a motion accessibility override, n
 ### JS Approach (Required for Framer Motion and Embla Autoplay)
 
 ```tsx
-import { useMotionEnabled } from '@/lib/motion/hooks/useMotionEnabled'
+import { useMotionEnabled } from '@/hooks/useMotionEnabled'
 
 const motionEnabled = useMotionEnabled()
 

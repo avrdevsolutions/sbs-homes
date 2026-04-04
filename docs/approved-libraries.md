@@ -83,7 +83,7 @@ corepack enable && corepack prepare pnpm@latest --activate
 
 | Package         | Install                  | When                                   | ADR      |
 | --------------- | ------------------------ | -------------------------------------- | -------- |
-| `framer-motion` | `pnpm add framer-motion` | When animation is explicitly requested | ADR-0003 |
+| `framer-motion` | `pnpm add framer-motion` | When animation is explicitly requested | — |
 
 ### Storybook (Opt-In)
 

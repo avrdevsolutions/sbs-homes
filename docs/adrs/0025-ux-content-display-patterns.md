@@ -14,12 +14,12 @@ Without this, agents make ad-hoc decisions about carousel libraries, tab vs. acc
 
 This is **Part 2** of a UX knowledge series:
 
-| ADR | Scope |
-|-----|-------|
-| ADR-0024 | Core interaction patterns — navigation, CTAs, feedback, form UX, responsive, keyboard/focus |
-| **ADR-0025** (this) | Content display — carousels, tabs, accordions, galleries, data tables, timelines, trees |
-| ADR-0026 (future) | Application-specific — CRUD, dashboards, search, drag-and-drop |
-| ADR-0027 (future) | Component APIs — implementation code and component interfaces |
+| ADR                 | Scope                                                                                       |
+| ------------------- | ------------------------------------------------------------------------------------------- |
+| ADR-0024            | Core interaction patterns — navigation, CTAs, feedback, form UX, responsive, keyboard/focus |
+| **ADR-0025** (this) | Content display — carousels, tabs, accordions, galleries, data tables, timelines, trees     |
+| ADR-0026 (future)   | Application-specific — CRUD, dashboards, search, drag-and-drop                              |
+| ADR-0027 (future)   | Component APIs — implementation code and component interfaces                               |
 
 ## Decision
 
@@ -29,23 +29,23 @@ This is **Part 2** of a UX knowledge series:
 
 ## Rules
 
-| Rule | Level |
-|------|-------|
-| Use the decision trees in this ADR to select content display patterns — don't invent ad-hoc patterns | **MUST** |
-| Every content display pattern must be keyboard accessible (ADR-0019, ADR-0024 §6) | **MUST** |
-| Carousels must have visible controls — never auto-advance-only with no user control | **MUST** |
-| Auto-playing carousels must pause on hover, focus, and when `prefers-reduced-motion: reduce` is active | **MUST** |
-| Tabs use Radix Tabs (via shadcn/ui) — don't build custom tab keyboard management | **MUST** |
-| Accordions use Radix Accordion (via shadcn/ui) — don't build custom disclosure keyboard management | **MUST** |
-| Data tables with >5 columns must have a responsive strategy (horizontal scroll or card stack) | **MUST** |
-| Pagination state must be reflected in the URL (`?page=N` or cursor param) for shareability | **MUST** |
-| Every carousel, tab panel, and accordion content region must be announced to screen readers on change | **MUST** |
-| Use `prefers-reduced-motion` to disable slide/scroll animations in carousels (ADR-0003) | **MUST** |
-| Prefer tabs over separate pages when content shares context and switching is frequent | **SHOULD** |
-| Prefer accordion over tabs when content items are long and viewing multiple simultaneously is useful | **SHOULD** |
-| Use skeleton loading for async content within display patterns (ADR-0024 §3.6) | **SHOULD** |
-| Animation timing and easing follow ADR-0003 transition defaults | **MUST** |
-| UI primitives from ADR-0023 are used where they cover the use case | **MUST** |
+| Rule                                                                                                   | Level      |
+| ------------------------------------------------------------------------------------------------------ | ---------- |
+| Use the decision trees in this ADR to select content display patterns — don't invent ad-hoc patterns   | **MUST**   |
+| Every content display pattern must be keyboard accessible (ADR-0019, ADR-0024 §6)                      | **MUST**   |
+| Carousels must have visible controls — never auto-advance-only with no user control                    | **MUST**   |
+| Auto-playing carousels must pause on hover, focus, and when `prefers-reduced-motion: reduce` is active | **MUST**   |
+| Tabs use Radix Tabs (via shadcn/ui) — don't build custom tab keyboard management                       | **MUST**   |
+| Accordions use Radix Accordion (via shadcn/ui) — don't build custom disclosure keyboard management     | **MUST**   |
+| Data tables with >5 columns must have a responsive strategy (horizontal scroll or card stack)          | **MUST**   |
+| Pagination state must be reflected in the URL (`?page=N` or cursor param) for shareability             | **MUST**   |
+| Every carousel, tab panel, and accordion content region must be announced to screen readers on change  | **MUST**   |
+| Use `prefers-reduced-motion` to disable slide/scroll animations in carousels                           | **MUST**   |
+| Prefer tabs over separate pages when content shares context and switching is frequent                  | **SHOULD** |
+| Prefer accordion over tabs when content items are long and viewing multiple simultaneously is useful   | **SHOULD** |
+| Use skeleton loading for async content within display patterns (ADR-0024 §3.6)                         | **SHOULD** |
+| Animation timing and easing follow project transition defaults                                         | **MUST**   |
+| UI primitives from ADR-0023 are used where they cover the use case                                     | **MUST**   |
 
 ---
 
@@ -74,6 +74,7 @@ What content is being displayed?
 **When NOT to use:** Single hero with no alternatives — just use a static hero section. More than 6 slides — users don't engage past 3-4; use a different content strategy.
 
 **Pattern:**
+
 - One slide visible at a time, full-width
 - Transition: crossfade (preferred for images) or horizontal slide
 - Indicator dots below showing total slides and current position
@@ -82,6 +83,7 @@ What content is being displayed?
 - First slide loads eagerly; subsequent slides use lazy loading (`loading="lazy"` on images)
 
 **Accessibility:**
+
 - Carousel region: `role="region"` with `aria-roledescription="carousel"` and `aria-label="Hero banner"`
 - Each slide: `role="group"` with `aria-roledescription="slide"` and `aria-label="Slide 1 of 4"`
 - Previous/Next buttons: `aria-label="Previous slide"` / `aria-label="Next slide"`
@@ -90,12 +92,14 @@ What content is being displayed?
 - Live region: `aria-live="polite"` on the slide container — announces slide changes (set to `"off"` during auto-play to avoid spamming screen readers)
 
 **Responsive:**
+
 - Desktop: Full-width with padding, arrows visible on sides
 - Mobile: Full-width, arrows smaller or replaced by swipe gesture + dots
 - Touch: swipe left/right to navigate — threshold distance before committing (ADR-0024 §5.3)
 - Images: use `<picture>` with responsive `srcSet` or Next.js `<Image>` `sizes` prop
 
 **Anti-patterns:**
+
 - ❌ Auto-advancing with no pause control — violates WCAG 2.2.2 (Pause, Stop, Hide)
 - ❌ No visible navigation controls (swipe-only) — keyboard users and desktop users can't navigate
 - ❌ More than 6 slides — engagement drops sharply after 3-4; rethink content strategy
@@ -108,18 +112,21 @@ What content is being displayed?
 **When NOT to use:** Fewer than 5 items — just show them all in a grid. Content where comparing items side-by-side matters — use a grid or table instead.
 
 **Pattern:**
+
 - Multiple slides visible (2-4 depending on breakpoint)
 - Partial peek of next slide to signal scrollability
 - Scroll snap to align slides on navigation
 - Previous/Next buttons (optional: disable at boundaries for non-looping, or use `loop: true`)
 
 **Accessibility:**
+
 - Same ARIA pattern as hero slider — `role="region"`, `aria-roledescription="carousel"`
 - Each card is a slide group with `role="group"`
 - Arrow buttons visible and labeled
 - Cards within slides must be individually focusable (links, buttons within cards)
 
 **Responsive:**
+
 - Desktop (≥1024px): 3-4 visible slides
 - Tablet (768-1023px): 2-3 visible slides
 - Mobile (<768px): 1-2 visible slides with peek of next
@@ -131,6 +138,7 @@ What content is being displayed?
 **When NOT to use:** Single-image content. Image collections where all images are equally important (use masonry grid, §9).
 
 **Pattern:**
+
 - Main image area (large, dominant)
 - Thumbnail strip below or beside the main image
 - Click/tap thumbnail to switch main image
@@ -147,6 +155,7 @@ How many product images?
 ```
 
 **Accessibility:**
+
 - Thumbnail strip: `role="tablist"`, each thumbnail `role="tab"` with `aria-selected`
 - Main image: `role="tabpanel"` linked via `aria-labelledby` to active thumbnail
 - Thumbnails show visible selection state (border, ring)
@@ -154,6 +163,7 @@ How many product images?
 - Zoom: accessible via keyboard — Enter opens lightbox from main image
 
 **Responsive:**
+
 - Desktop: Main image left/top, thumbnails right/below, hover-to-zoom
 - Mobile: Main image top, swipeable (carousel behavior), thumbnail strip below with horizontal scroll
 - Touch: tap main image for lightbox zoom instead of hover lens
@@ -164,16 +174,16 @@ How many product images?
 
 Auto-play is the most abused carousel feature. These rules apply to ALL carousel variants:
 
-| Rule | Requirement |
-|------|-------------|
-| Pause on hover (desktop) | **MUST** |
-| Pause on focus (keyboard user tabs into carousel) | **MUST** |
-| Pause on touch interaction (mobile) | **MUST** |
-| Visible play/pause button | **MUST** |
-| Respect `prefers-reduced-motion: reduce` — disable auto-advance | **MUST** |
-| Interval ≥ 5 seconds | **SHOULD** — faster intervals don't let users read content |
-| Don't auto-play on mobile by default | **SHOULD** — mobile users scroll past; auto-play wastes battery |
-| `aria-live="off"` during auto-play, `"polite"` when user-controlled | **MUST** |
+| Rule                                                                | Requirement                                                     |
+| ------------------------------------------------------------------- | --------------------------------------------------------------- |
+| Pause on hover (desktop)                                            | **MUST**                                                        |
+| Pause on focus (keyboard user tabs into carousel)                   | **MUST**                                                        |
+| Pause on touch interaction (mobile)                                 | **MUST**                                                        |
+| Visible play/pause button                                           | **MUST**                                                        |
+| Respect `prefers-reduced-motion: reduce` — disable auto-advance     | **MUST**                                                        |
+| Interval ≥ 5 seconds                                                | **SHOULD** — faster intervals don't let users read content      |
+| Don't auto-play on mobile by default                                | **SHOULD** — mobile users scroll past; auto-play wastes battery |
+| `aria-live="off"` during auto-play, `"polite"` when user-controlled | **MUST**                                                        |
 
 ---
 
@@ -210,17 +220,20 @@ Is the scroll container obviously scrollable (e.g., partial item peek)?
 **Scroll shadows:** CSS gradient masks on left/right edges that appear/disappear based on scroll position. Use `scroll` event listener (throttled) or `IntersectionObserver` on sentinel elements at each end.
 
 **Accessibility:**
+
 - Container: `role="region"` with `aria-label="Partner logos"` (or similar descriptive label)
 - If using arrow buttons: `aria-label="Scroll left"` / `aria-label="Scroll right"`, disabled when at boundary
 - `tabindex="0"` on the scroll container so keyboard users can scroll with arrow keys
 - Items within the scroll container follow normal tab order
 
 **Responsive:**
+
 - Desktop: Arrow buttons visible on hover + scroll with trackpad/mousewheel
 - Mobile: Swipe naturally — hide arrow buttons, rely on partial peek + momentum scroll
 - Ensure `scroll-padding` accounts for any sticky headers or side navigation
 
 **Anti-patterns:**
+
 - ❌ Hiding scrollbar on a container with no other scroll affordance — users don't know they can scroll
 - ❌ Custom scrollbar styling that removes native scroll behavior
 - ❌ Logo strip in a full carousel with arrows for 8 logos — just use a scrollable row
@@ -259,6 +272,7 @@ Are there more than 6 tabs?
 ### 3.2 Horizontal Tabs (Default)
 
 **Pattern:**
+
 - Tab list: horizontal row of tab triggers
 - Content panel: single panel visible below tab list, switches on tab selection
 - Active tab: visually distinct (underline, background color, bold text)
@@ -267,6 +281,7 @@ Are there more than 6 tabs?
 **Implementation:** Radix Tabs via shadcn/ui — handles keyboard navigation (`role="tablist"`, roving tabindex, Arrow keys) automatically.
 
 **Accessibility:**
+
 - Tab list: `role="tablist"` (automatic via Radix)
 - Each tab: `role="tab"` with `aria-selected`, `aria-controls` pointing to panel
 - Panel: `role="tabpanel"` with `aria-labelledby` pointing to its tab
@@ -274,6 +289,7 @@ Are there more than 6 tabs?
 - Focus: tab selection can be automatic (focus = select) or manual (focus then Enter to select) — prefer automatic for ≤5 tabs, manual for more
 
 **Responsive:**
+
 - Desktop: All tabs visible in a single row
 - Mobile (≤5 tabs): All tabs visible, smaller text, horizontally centered
 - Mobile (>5 tabs): Horizontally scrollable tab bar with overflow indicator
@@ -285,11 +301,13 @@ Are there more than 6 tabs?
 **When NOT to use:** Mobile-first designs (vertical tabs consume too much horizontal space on small screens).
 
 **Pattern:**
+
 - Tab list on the left (200-280px wide), content panel on the right
 - Same ARIA structure as horizontal tabs — only the visual layout changes
 - Active tab: background highlight or left border accent
 
 **Responsive:**
+
 - Desktop (≥1024px): Side-by-side layout (tabs left, panel right)
 - Mobile (<1024px): Switch to horizontal tabs or accordion — vertical tabs don't work on narrow screens
 
@@ -308,12 +326,14 @@ Is the screen width <768px?
 ```
 
 **Pattern:**
+
 - Render Tabs component on desktop, Accordion component on mobile
 - Use `useMediaQuery` or CSS container queries to switch
 - Both share the same content — only the wrapper component changes
 - State sync: active tab index maps to open accordion item index
 
 **Anti-patterns:**
+
 - ❌ Showing tabs so small they're unreadable on mobile — switch to accordion
 - ❌ Building a custom responsive tab system instead of using two Radix components with a media query switch
 - ❌ Losing URL sync during the switch — both Tabs and Accordion should reflect the same `?tab=` parameter
@@ -341,19 +361,22 @@ Can the user benefit from seeing multiple sections simultaneously?
 **When to use:** Help pages, product pages, and landing pages with frequently asked questions.
 
 **Pattern:**
+
 - Single-open accordion (1 item expanded at a time) — users typically scan questions sequentially
 - Question as the trigger, answer as the collapsible content
-- Chevron icon rotates on open/close (animated per ADR-0003)
+- Chevron icon rotates on open/close
 - Consider grouping questions by category with headings above each group
 
 **Implementation:** Radix Accordion via shadcn/ui with `type="single"` and `collapsible={true}`.
 
 **Accessibility:**
+
 - Trigger: `<button>` with `aria-expanded` (automatic via Radix)
 - Content: `role="region"` with `aria-labelledby` pointing to trigger (automatic via Radix)
 - Keyboard: Enter/Space toggles, no arrow key navigation between items (each trigger is a separate Tab stop per Disclosure pattern — different from Tabs)
 
 **Responsive:**
+
 - Same layout on all breakpoints — accordion is inherently responsive
 - Ensure trigger text doesn't truncate on mobile — wrap to multiple lines if needed
 
@@ -362,6 +385,7 @@ Can the user benefit from seeing multiple sections simultaneously?
 **When to use:** Settings pages or complex forms where sections group related fields (Account, Notifications, Privacy) and users edit one section at a time.
 
 **Pattern:**
+
 - Multi-open accordion (`type="multiple"`) — users may need to reference one section while editing another
 - Section header shows a summary of current settings (e.g., "Notifications: Email, Push")
 - Open state persisted in `localStorage` or URL — user returns to the same expanded state
@@ -373,6 +397,7 @@ Can the user benefit from seeing multiple sections simultaneously?
 **Exception:** Documentation or deeply hierarchical FAQ where a category contains sub-categories. Limit to 2 levels maximum. Prefer tree view (§12) for 3+ levels.
 
 **Anti-patterns:**
+
 - ❌ 3+ levels of nested accordions — use tree view (§12) or separate pages
 - ❌ Single-item accordion (one collapsible section on its own) — use a simple `<details>/<summary>` or a Collapsible component instead
 - ❌ Accordion where all items should be visible (no progressive disclosure benefit) — use headed sections with scroll-to-section nav
@@ -401,6 +426,7 @@ Does the user need to see the image at full resolution or detail?
 **When to use:** Galleries, portfolios, product images — anywhere users need to inspect images at full resolution.
 
 **Pattern:**
+
 - Click/tap image to open full-screen overlay (dark background, 90-95% opacity)
 - Image scales to fit viewport with padding (not cropped)
 - Close: X button (top-right), Escape key, click outside image, swipe down (mobile)
@@ -409,6 +435,7 @@ Does the user need to see the image at full resolution or detail?
 - Optional: zoom on double-tap/scroll, pinch-to-zoom on mobile
 
 **Accessibility:**
+
 - Lightbox container: `role="dialog"` with `aria-label="Image gallery"` and `aria-modal="true"`
 - Focus trap: Tab cycles through Close, Previous, Next buttons (and image if zoomable)
 - Image: `alt` text describing the image — same alt as the thumbnail
@@ -417,11 +444,13 @@ Does the user need to see the image at full resolution or detail?
 - Escape closes lightbox, focus returns to the thumbnail that opened it (ADR-0024 §6.6)
 
 **Responsive:**
+
 - Desktop: Centered image with visible arrows on sides, X button top-right
 - Mobile: Full-screen image, swipe navigation, X button or swipe-down to close
 - Touch: pinch-to-zoom if zoom is supported
 
 **Anti-patterns:**
+
 - ❌ Lightbox that takes >300ms to open (feels broken) — preload adjacent images
 - ❌ No close button (only Escape or click-outside) — mobile users have no Escape key
 - ❌ Lightbox for non-image content that should be a page (long text, forms)
@@ -432,6 +461,7 @@ Does the user need to see the image at full resolution or detail?
 **When to use:** Video thumbnails that play full-screen when clicked — promotional videos, product demos, tutorials.
 
 **Pattern:**
+
 - Thumbnail with play button overlay (centered, semi-transparent)
 - Click opens lightbox with video player filling the overlay
 - Video auto-plays on open (muted if autoplay policies require it)
@@ -439,6 +469,7 @@ Does the user need to see the image at full resolution or detail?
 - Don't load the video player until lightbox opens — use a static thumbnail + play button as the trigger
 
 **Accessibility:**
+
 - Play button on thumbnail: `aria-label="Play video: [video title]"`
 - Lightbox: same dialog pattern as image lightbox
 - Video player: native controls visible, keyboard accessible (Space to play/pause, arrow keys for seek)
@@ -453,6 +484,7 @@ Does the user need to see the image at full resolution or detail?
 **When to use:** Pricing pages with two billing intervals where showing both simultaneously clutters the layout.
 
 **Pattern:**
+
 - Segmented control or toggle switch with two options: "Monthly" / "Annual"
 - Switching updates all visible prices instantly (no page reload)
 - Highlight the savings: "Save 20%" badge near the Annual option
@@ -461,12 +493,14 @@ Does the user need to see the image at full resolution or detail?
 **Implementation:** Use a segmented control (`role="radiogroup"` with `role="radio"` items) — not a checkbox toggle, because it's choosing between two values, not on/off.
 
 **Accessibility:**
+
 - Segmented control: `role="radiogroup"` with `aria-label="Billing period"`
 - Each option: `role="radio"` with `aria-checked`
 - Price change: `aria-live="polite"` on the pricing container — announces new prices
 - Keyboard: Arrow keys switch between options (roving tabindex)
 
 **Responsive:**
+
 - Toggle stays centered above pricing cards on all breakpoints
 - Pricing cards stack vertically on mobile
 
@@ -475,18 +509,21 @@ Does the user need to see the image at full resolution or detail?
 **When to use:** Content collections (products, files, projects) where users benefit from choosing information density.
 
 **Pattern:**
+
 - Two icon buttons: grid icon and list icon
 - Persist preference in `localStorage` (per ADR-0020 escalation)
 - Grid: card layout, emphasis on images/thumbnails
 - List: row layout, emphasis on text details/metadata
-- Transition: use `AnimatePresence` layout animation (ADR-0003) for smooth switch, or instant swap
+- Transition: use `AnimatePresence` layout animation for smooth switch, or instant swap
 
 **Accessibility:**
+
 - Switcher: `role="radiogroup"` with `aria-label="View mode"`
 - Each button: `role="radio"` with `aria-checked` and `aria-label="Grid view"` / `aria-label="List view"`
 - Content region: `aria-live="polite"` — announces "Showing grid view" / "Showing list view" on switch
 
 **Responsive:**
+
 - Default to grid on mobile (space-efficient), list on desktop (detail-rich) — but allow override
 - Persist user preference across sessions
 
@@ -497,18 +534,21 @@ Does the user need to see the image at full resolution or detail?
 **When NOT to use:** Comparing unrelated images. Content where side-by-side is better (different aspect ratios, different subjects).
 
 **Pattern:**
+
 - Two overlapping images at the same dimensions
 - Draggable divider line (vertical or horizontal) controlled by mouse/touch
 - Divider position reveals more of one image or the other
 - Labels on each side: "Before" / "After"
 
 **Accessibility:**
+
 - Divider: `role="slider"` with `aria-label="Comparison slider"`, `aria-valuemin="0"`, `aria-valuemax="100"`, `aria-valuenow` reflecting percentage
 - Keyboard: Left/Right arrows move the divider in increments (5-10%)
 - Both images have descriptive `alt` text
 - Fallback for no-JS: show both images stacked with labels
 
 **Responsive:**
+
 - Same interaction on all breakpoints
 - Touch: drag the divider handle — ensure handle is ≥44px for tap target (ADR-0024 §5.1)
 - Vertical divider for landscape images, horizontal divider for portrait images
@@ -518,11 +558,13 @@ Does the user need to see the image at full resolution or detail?
 **When to use:** Showing the same content in different variants — code in multiple languages, a component in different themes, a recipe in metric/imperial.
 
 **Pattern:**
+
 - Tab-like selector above the content area (but content is the SAME structure with different values, not different content)
 - Selection persisted across page — if user selects "TypeScript" once, all code blocks show TypeScript
 - Use a global preference store (Zustand per ADR-0020) if preference is site-wide
 
 **Accessibility:**
+
 - Selector: `role="radiogroup"` or Tabs (`role="tablist"`) — tabs if the selector looks like tabs
 - Content region updates: `aria-live="polite"`
 
@@ -551,6 +593,7 @@ What is the user's primary task?
 **When to use:** Search results, data tables, admin panels, any content where position in the dataset matters and direct page access is useful.
 
 **Pattern:**
+
 - Show: First, Previous, current-range (e.g., 3 4 **5** 6 7), Next, Last
 - Ellipsis for gaps: 1 … 4 5 **6** 7 8 … 42
 - Current page visually distinct (filled background, bold)
@@ -567,6 +610,7 @@ How many total pages?
 ```
 
 **Accessibility:**
+
 - Pagination wrapper: `<nav aria-label="Pagination">`
 - Current page: `aria-current="page"` on the active link/button
 - Previous/Next: `aria-label="Go to previous page"` / `aria-label="Go to next page"`
@@ -574,6 +618,7 @@ How many total pages?
 - Disabled buttons: `aria-disabled="true"` (not removed from DOM)
 
 **Responsive:**
+
 - Desktop: Full page range with ellipsis
 - Mobile: Compact — Previous/Next buttons + current page indicator ("Page 6 of 42") + optional page jump
 
@@ -584,6 +629,7 @@ How many total pages?
 **When NOT to use:** When users need random access to any page. When total count is needed for UI display.
 
 **Pattern:**
+
 - API returns `nextCursor` (opaque string) instead of page numbers
 - "Load more" or infinite scroll uses the cursor to fetch the next batch
 - No total page count displayed (total is unknown or expensive to compute)
@@ -596,13 +642,13 @@ How many total pages?
 
 Always show a results summary above paginated content:
 
-| Context | Summary Format |
-|---------|---------------|
-| Known total | "Showing 41-60 of 156 results" |
-| Filtered | "12 results for 'design'" |
-| Load-more | "Showing 60 of 156 results — Load more" |
-| Cursor-based | "Showing 60 results" (no total) |
-| Empty | Empty state (ADR-0024 §3.5 search variant) |
+| Context      | Summary Format                             |
+| ------------ | ------------------------------------------ |
+| Known total  | "Showing 41-60 of 156 results"             |
+| Filtered     | "12 results for 'design'"                  |
+| Load-more    | "Showing 60 of 156 results — Load more"    |
+| Cursor-based | "Showing 60 results" (no total)            |
+| Empty        | Empty state (ADR-0024 §3.5 search variant) |
 
 ---
 
@@ -634,12 +680,14 @@ Does the user need to act on rows?
 ### 8.2 Sortable Columns
 
 **Pattern:**
+
 - Click column header to sort ascending → click again for descending → click again for unsorted (three-state cycle)
 - Sort icon: ▲ ascending, ▼ descending, ⇅ unsortable (neutral)
 - Only one column sorted at a time (unless advanced multi-sort is needed)
 - Sort state in URL: `?sort=name&order=asc` for shareability
 
 **Accessibility:**
+
 - Column header: `<th>` with `<button>` inside (the sort trigger)
 - `aria-sort="ascending"` / `aria-sort="descending"` / `aria-sort="none"` on the `<th>`
 - Sort button: `aria-label="Sort by Name, currently ascending"`
@@ -648,6 +696,7 @@ Does the user need to act on rows?
 ### 8.3 Filterable Rows
 
 **Pattern:**
+
 - Filter bar above the table: dropdown selects, search input, or filter chips
 - Active filters shown as removable chips: "Status: Active ✕"
 - "Clear all filters" button when any filter is active
@@ -655,6 +704,7 @@ Does the user need to act on rows?
 - Results count updates live: "Showing 12 of 156 results"
 
 **Accessibility:**
+
 - Filter inputs: standard form controls with labels (ADR-0012)
 - Filter chips: `<button>` with `aria-label="Remove filter: Status Active"`
 - Table region: `aria-live="polite"` — announces filtered count change
@@ -663,12 +713,14 @@ Does the user need to act on rows?
 ### 8.4 Row Selection & Bulk Actions
 
 **Pattern:**
+
 - Checkbox in first column of each row
 - Header checkbox: select all / deselect all (with indeterminate state when some are selected)
 - Bulk action bar: appears above the table when ≥1 row is selected — "3 selected: Delete | Export | Assign"
 - Selection count: "3 of 156 selected" — or "All 156 selected" with "Select all results" link when full page is checked
 
 **Accessibility:**
+
 - Row checkbox: `aria-label="Select row: [primary identifier]"` (e.g., "Select row: John Doe")
 - Header checkbox: `aria-label="Select all rows"` with `aria-checked="mixed"` for indeterminate
 - Bulk action bar: `role="toolbar"` with `aria-label="Bulk actions"` — focus moves to toolbar when selection starts
@@ -689,17 +741,20 @@ Is the table narrow enough for mobile (≤5 short columns)?
 ```
 
 **Horizontal scroll with sticky column:**
+
 - Wrap `<table>` in `overflow-x: auto` container
 - First column (identifier): `position: sticky; left: 0` with background color and shadow on scroll
 - Scroll indicator: subtle shadow/fade on right edge when content overflows
 
 **Card stack:**
+
 - Each row becomes a card
 - Column headers become labels in label-value pairs within the card
 - Primary data (name, title) is prominent; secondary data is smaller
 - Actions (edit, delete) become card footer actions or kebab menu (⋮)
 
 **Accessibility (horizontal scroll):**
+
 - Scroll container: `tabindex="0"` with `role="region"` and `aria-label="Scrollable table: [table title]"`
 - Ensure keyboard users can scroll (arrow keys within the focused region)
 - `<caption>` on the `<table>` element describing its purpose
@@ -713,11 +768,13 @@ Is the table narrow enough for mobile (≤5 short columns)?
 **When NOT to use:** Complex edits requiring validation (use a modal or detail page). Edits that need confirmation (use confirmation dialog per ADR-0024 §3.4).
 
 **Pattern:**
+
 - Cell displays value; click/Enter activates edit mode (input replaces display text)
 - Escape cancels edit, Enter/blur saves
 - Optimistic update (ADR-0024 §3.7) — show new value immediately, revert on error
 
 **Accessibility:**
+
 - Edit trigger: `aria-label="Edit [column]: [current value]"` on the cell or edit button
 - Edit mode: input auto-focused with current value selected
 - Save/cancel: Enter saves, Escape cancels — announce result via toast (ADR-0024 §3.2) or inline status
@@ -755,6 +812,7 @@ Are all items the same height?
 CSS `masonry` value for `grid-template-rows` is the native solution. As of 2026, browser support is growing but not universal.
 
 **Progressive enhancement strategy:**
+
 1. Default: CSS Grid with `auto-fill` and fixed rows (works everywhere)
 2. Enhancement: `@supports (grid-template-rows: masonry)` — use native masonry
 3. Fallback JS: If native masonry is unsupported and the layout impact is significant, use CSS multi-column or a lightweight JS solution
@@ -766,19 +824,22 @@ CSS `masonry` value for `grid-template-rows` is the native solution. As of 2026,
 **When to use:** Content collections with taxonomy (categories, tags, types) where the user benefits from narrowing the visible set.
 
 **Pattern:**
+
 - Horizontal row of filter buttons/pills above the grid
 - "All" is the default selected state
-- Click a filter: fade out non-matching items, fade in matching items (ADR-0003 AnimatePresence)
+- Click a filter: fade out non-matching items, fade in matching items (AnimatePresence)
 - Multiple selection (optional): toggle multiple categories on, show intersection or union
 - URL state: `?category=design` (per ADR-0020, URL is the source of truth for filters)
 
 **Accessibility:**
+
 - Filter bar: `role="toolbar"` with `aria-label="Filter by category"`
 - Each filter: `<button>` with `aria-pressed="true"` / `"false"` for toggle filters
 - Grid region: `aria-live="polite"` — announces "Showing 8 items" on filter change
 - If using checkboxes for multi-select: standard `<input type="checkbox">` with visible labels
 
 **Responsive:**
+
 - Desktop: Full horizontal row of filter pills
 - Mobile: Horizontally scrollable pill row (§2 horizontal scroll pattern) or dropdown select
 
@@ -792,12 +853,12 @@ ADR-0024 §4.5 covers the form UX of multi-step wizards (validation, back/next, 
 
 ### 10.1 Step Indicator Variants
 
-| Variant | Visual | When to Use |
-|---------|--------|-------------|
-| **Numbered steps** | Circles with numbers + connecting lines | ≤6 steps with clear labels |
-| **Progress bar** | Filled bar with percentage/step count | Steps where individual step identity doesn't matter |
-| **Breadcrumb steps** | Clickable step labels in a row | Non-linear flows where users can jump to any completed step |
-| **Compact dots** | Dots (like carousel indicators) | Mobile, or when step count matters but labels don't |
+| Variant              | Visual                                  | When to Use                                                 |
+| -------------------- | --------------------------------------- | ----------------------------------------------------------- |
+| **Numbered steps**   | Circles with numbers + connecting lines | ≤6 steps with clear labels                                  |
+| **Progress bar**     | Filled bar with percentage/step count   | Steps where individual step identity doesn't matter         |
+| **Breadcrumb steps** | Clickable step labels in a row          | Non-linear flows where users can jump to any completed step |
+| **Compact dots**     | Dots (like carousel indicators)         | Mobile, or when step count matters but labels don't         |
 
 #### Decision Tree — Step Indicator Type
 
@@ -813,14 +874,15 @@ Can the user jump to any completed step?
 
 ### 10.2 Step States
 
-| State | Visual | Behavior |
-|-------|--------|----------|
-| **Completed** | Checkmark icon, filled/success color | Clickable (if non-linear), or static |
-| **Current** | Highlighted ring/fill, step number or icon | Active — form fields visible |
-| **Future** | Muted/gray, number or empty circle | Not clickable (linear) or disabled (non-linear) |
-| **Error** | Error color ring, warning icon | Step has validation errors — user must return to fix |
+| State         | Visual                                     | Behavior                                             |
+| ------------- | ------------------------------------------ | ---------------------------------------------------- |
+| **Completed** | Checkmark icon, filled/success color       | Clickable (if non-linear), or static                 |
+| **Current**   | Highlighted ring/fill, step number or icon | Active — form fields visible                         |
+| **Future**    | Muted/gray, number or empty circle         | Not clickable (linear) or disabled (non-linear)      |
+| **Error**     | Error color ring, warning icon             | Step has validation errors — user must return to fix |
 
 **Accessibility:**
+
 - Step list: `role="list"` with `aria-label="Checkout progress"` (or use `<ol>`)
 - Each step: `aria-current="step"` on the current step
 - Completed steps (clickable): `<a>` or `<button>` with `aria-label="Step 1: Shipping — completed"`
@@ -828,6 +890,7 @@ Can the user jump to any completed step?
 - Error steps: `aria-label="Step 2: Payment — has errors"`
 
 **Responsive:**
+
 - Desktop: Full horizontal stepper with labels
 - Mobile: Compact — current step label + "Step 2 of 4" + progress dots/bar
 - Don't try to fit long labels on mobile — abbreviate or use numbers only
@@ -849,18 +912,21 @@ Can the user jump to any completed step?
 **When to use:** Most timelines. Works on all screen sizes. Natural reading order (top = newest or oldest).
 
 **Pattern:**
+
 - Central line (or left-aligned line) connecting timeline nodes
 - Each node: date/time label + event content (title, description, optional icon)
 - Alternating sides (desktop, optional): odd items left, even items right of the center line
 - Icons on nodes indicate event type (success, error, info, milestone)
 
 **Accessibility:**
+
 - Timeline: `<ol>` (ordered list) with `aria-label="Activity timeline"`
 - Each event: `<li>` with date as `<time datetime="2026-03-21T14:30:00Z">`
 - Visual line and icons are decorative: `aria-hidden="true"` — screen readers get the ordered list
 - Don't use `role="tree"` for a timeline — it's a flat ordered sequence
 
 **Responsive:**
+
 - Desktop: Alternating or centered layout
 - Mobile: Left-aligned single-column — all events on the right side of the line
 
@@ -871,16 +937,19 @@ Can the user jump to any completed step?
 **When NOT to use:** Many items (>8) — horizontal scroll becomes tedious. Detailed event content — horizontal constraints prevent long text.
 
 **Pattern:**
+
 - Horizontal line with evenly spaced nodes
 - Labels above or below the line
 - Active/current milestone highlighted
 - Horizontal scrollable if items overflow (§2 pattern)
 
 **Responsive:**
+
 - Desktop: Horizontal layout
 - Mobile: Switch to vertical timeline — horizontal timelines don't fit on narrow screens
 
 **Anti-patterns:**
+
 - ❌ Horizontal timeline with >8 items — too much scrolling, use vertical
 - ❌ Timeline without dates — timestamps give meaning to the sequence
 - ❌ Using timeline for navigation — use breadcrumbs or stepper
@@ -903,6 +972,7 @@ Can the user jump to any completed step?
 - Optional: multi-select with checkboxes on each node
 
 **Accessibility:**
+
 - Tree container: `role="tree"` with `aria-label="File browser"`
 - Each node: `role="treeitem"` with `aria-expanded="true"` / `"false"` (if has children)
 - Nesting: `role="group"` wrapping child items
@@ -910,11 +980,13 @@ Can the user jump to any completed step?
 - Type-ahead: typing characters jumps to the next matching item
 
 **Responsive:**
+
 - Same tree on all breakpoints — indentation may decrease slightly on mobile
 - On mobile, ensure expand/collapse triggers meet touch target size (44px)
 - Consider off-canvas tree (drawer) on mobile if the tree is wide
 
 **Anti-patterns:**
+
 - ❌ Deeply nested tree without search — users get lost after 4-5 levels; add search/filter
 - ❌ Tree with hundreds of expanded nodes — lazy-load children on expand
 - ❌ Custom tree keyboard navigation instead of following WAI-ARIA Tree pattern
@@ -930,6 +1002,7 @@ Can the user jump to any completed step?
 **When to use:** SaaS pricing pages, product comparisons — structured comparison of features across 2-4 options.
 
 **Pattern:**
+
 - Columns: one per plan/product (plus a left column for feature names)
 - Rows: grouped by feature category with section headers
 - Cell values: checkmark (included), dash (not included), or specific value ("10 GB", "Unlimited")
@@ -937,6 +1010,7 @@ Can the user jump to any completed step?
 - Highlighted column: recommended/popular plan gets a visual accent (border, background, "Most Popular" badge)
 
 **Accessibility:**
+
 - Use `<table>` with proper `<thead>`, `<tbody>`, `<th>` structure — not a grid of divs
 - `<caption>` describing the table purpose
 - Checkmarks: use visually hidden text "Included" / "Not included" alongside icons — icons alone aren't accessible
@@ -944,6 +1018,7 @@ Can the user jump to any completed step?
 - Sticky header: ensure focus order isn't disrupted
 
 **Responsive:**
+
 - Desktop: Full table with all columns visible
 - Mobile: Horizontal scroll with sticky first column (feature names) — same pattern as §8.5
 - Alternative mobile: Tab per plan — switch between plans to see feature list for each
@@ -953,12 +1028,14 @@ Can the user jump to any completed step?
 **When to use:** Pricing pages where each plan is a distinct offering with name, price, feature list, and CTA.
 
 **Pattern:**
+
 - Card per plan, side-by-side on desktop
 - Each card: plan name, price, feature bullet list, CTA button
 - Popular/recommended card: elevated (shadow, border, "Recommended" badge)
 - CTA hierarchy: primary on recommended plan, secondary on others (ADR-0024 §2.1)
 
 **Responsive:**
+
 - Desktop: 3-4 cards side-by-side
 - Tablet: 2 cards per row, third card below
 - Mobile: Stacked vertically, recommended plan first
@@ -990,6 +1067,7 @@ Is the detail content short (1-2 paragraphs, a few fields)?
 **When to use:** Card grids where clicking a card reveals additional detail inline — project cards showing description, team cards showing bio, event cards showing schedule.
 
 **Pattern:**
+
 - Card shows preview state (image, title, short description)
 - Click/Enter expands the card — additional content slides down or the card grows in place
 - Other cards reflow around the expanded card (or the expanded card overlays on mobile)
@@ -997,12 +1075,14 @@ Is the detail content short (1-2 paragraphs, a few fields)?
 - Only one card expanded at a time (accordion-like behavior in a grid)
 
 **Accessibility:**
+
 - Card trigger: `<button>` or card wrapper with `role="button"` and `aria-expanded`
 - Expanded content: `role="region"` with `aria-labelledby` pointing to card title
 - Focus: move focus to the expanded content on open, return to card on close
 - Keyboard: Enter to expand, Escape to collapse
 
 **Responsive:**
+
 - Desktop: Card expands in-place within the grid, pushing other cards down
 - Mobile: Card expands to full-width or navigates to detail (if content is substantial)
 
@@ -1013,17 +1093,20 @@ Is the detail content short (1-2 paragraphs, a few fields)?
 **When NOT to use:** Content where both sides should be simultaneously visible. Progressive disclosure where expand is more natural.
 
 **Pattern:**
+
 - Card has front and back face
-- Click/hover triggers 3D flip animation (per ADR-0003 — use `rotateY` on GPU-composited layer)
+- Click/hover triggers 3D flip animation (use `rotateY` on GPU-composited layer)
 - Back face content is different from front (not just "more of the same")
 
 **Accessibility:**
+
 - Both faces must be accessible to screen readers — don't use `backface-visibility: hidden` on the content container (only on the visual flip wrapper)
 - Alternative: `aria-describedby` on the front face linking to the back face content
 - Or: present both faces as visible sections to screen readers, only using the flip for visual effect
 - Ensure keyboard focus works: Enter/Space to flip, content on both sides is tab-accessible
 
 **Anti-patterns:**
+
 - ❌ Card flip that hides critical information on the back — users might not discover the flip interaction
 - ❌ Auto-flipping cards — annoying and breaks screen reader focus
 - ❌ Flip triggered only by hover — not available on touch devices (same issue as ADR-0024 §5.2)
@@ -1035,71 +1118,71 @@ Is the detail content short (1-2 paragraphs, a few fields)?
 
 ### Carousel / Slider
 
-| ❌ Don't | ✅ Do | Why |
-|----------|-------|-----|
-| Auto-advance without pause button | Provide visible play/pause + pause on hover/focus | WCAG 2.2.2 violation — users must control time-based content |
-| Carousel for ≤3 items | Show all items in a grid — no need to hide content | Carousel adds interaction cost for no benefit |
-| Swipe-only navigation (no buttons) | Provide Previous/Next buttons alongside swipe | Keyboard and desktop users can't swipe |
+| ❌ Don't                                      | ✅ Do                                              | Why                                                                |
+| --------------------------------------------- | -------------------------------------------------- | ------------------------------------------------------------------ |
+| Auto-advance without pause button             | Provide visible play/pause + pause on hover/focus  | WCAG 2.2.2 violation — users must control time-based content       |
+| Carousel for ≤3 items                         | Show all items in a grid — no need to hide content | Carousel adds interaction cost for no benefit                      |
+| Swipe-only navigation (no buttons)            | Provide Previous/Next buttons alongside swipe      | Keyboard and desktop users can't swipe                             |
 | Ten-slide carousel no one clicks past slide 3 | Show top 3-4 in a visible grid, link to "View all" | Data consistently shows carousel engagement drops after 3-4 slides |
 
 ### Tabs & Accordions
 
-| ❌ Don't | ✅ Do | Why |
-|----------|-------|-----|
-| More than 7 tabs crammed in a row | Scrollable tab bar, or switch to separate pages | Tabs become unreadable and untappable |
-| Accordion for primary navigation | Use sidebar nav (ADR-0024 §1.5) | Accordion hides nav — users must open each to discover destinations |
-| Nested accordion 3+ levels deep | Use tree view (§12) for deep hierarchy | Deep nesting creates confusing keyboard navigation |
-| Tabs that look like buttons | Use standard tab styling (underline active tab) | Users don't realize they're tabs and expect button behavior |
+| ❌ Don't                          | ✅ Do                                           | Why                                                                 |
+| --------------------------------- | ----------------------------------------------- | ------------------------------------------------------------------- |
+| More than 7 tabs crammed in a row | Scrollable tab bar, or switch to separate pages | Tabs become unreadable and untappable                               |
+| Accordion for primary navigation  | Use sidebar nav (ADR-0024 §1.5)                 | Accordion hides nav — users must open each to discover destinations |
+| Nested accordion 3+ levels deep   | Use tree view (§12) for deep hierarchy          | Deep nesting creates confusing keyboard navigation                  |
+| Tabs that look like buttons       | Use standard tab styling (underline active tab) | Users don't realize they're tabs and expect button behavior         |
 
 ### Data Tables
 
-| ❌ Don't | ✅ Do | Why |
-|----------|-------|-----|
-| Grid of `<div>` elements pretending to be a table | Use semantic `<table>` with `<th>`, `<tr>`, `<td>` | Screen readers can't navigate div-tables; semantic HTML is required (ADR-0019) |
-| Hide table on mobile with no alternative | Horizontal scroll with sticky column, or card stack | Mobile users can't access the data |
-| Sort icon that's just decorative | Make sort trigger a `<button>` inside `<th>` with `aria-sort` | Decorative sort icons suggest functionality that doesn't exist or isn't accessible |
-| Load entire 10,000-row dataset client-side | Use server-side pagination or virtual scrolling | Browser freezes, memory exhaustion, long initial load |
+| ❌ Don't                                          | ✅ Do                                                         | Why                                                                                |
+| ------------------------------------------------- | ------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| Grid of `<div>` elements pretending to be a table | Use semantic `<table>` with `<th>`, `<tr>`, `<td>`            | Screen readers can't navigate div-tables; semantic HTML is required (ADR-0019)     |
+| Hide table on mobile with no alternative          | Horizontal scroll with sticky column, or card stack           | Mobile users can't access the data                                                 |
+| Sort icon that's just decorative                  | Make sort trigger a `<button>` inside `<th>` with `aria-sort` | Decorative sort icons suggest functionality that doesn't exist or isn't accessible |
+| Load entire 10,000-row dataset client-side        | Use server-side pagination or virtual scrolling               | Browser freezes, memory exhaustion, long initial load                              |
 
 ### Gallery & Lightbox
 
-| ❌ Don't | ✅ Do | Why |
-|----------|-------|-----|
-| Lightbox with no close button | X button + Escape key + click outside | Mobile users have no Escape key; click-outside is undiscoverable |
+| ❌ Don't                             | ✅ Do                                      | Why                                                                |
+| ------------------------------------ | ------------------------------------------ | ------------------------------------------------------------------ |
+| Lightbox with no close button        | X button + Escape key + click outside      | Mobile users have no Escape key; click-outside is undiscoverable   |
 | Auto-advancing slideshow in lightbox | User controls navigation speed in lightbox | User opened lightbox to inspect — auto-advance fights their intent |
-| Thumbnail grid with no alt text | Descriptive alt text on all images | Screen readers see nothing without alt text (WCAG 1.1.1) |
+| Thumbnail grid with no alt text      | Descriptive alt text on all images         | Screen readers see nothing without alt text (WCAG 1.1.1)           |
 
 ### Pagination
 
-| ❌ Don't | ✅ Do | Why |
-|----------|-------|-----|
-| Page numbers as plain text instead of links/buttons | Each page number is a link or button | Keyboard users can't navigate to other pages |
-| Infinite scroll on pages with footer content | Use load-more button, or place footer in the sidebar | Footer becomes unreachable (ADR-0024 §3.10) |
-| Pagination with no URL state | Reflect `?page=N` in URL | Users can't share, bookmark, or use back/forward |
+| ❌ Don't                                            | ✅ Do                                                | Why                                              |
+| --------------------------------------------------- | ---------------------------------------------------- | ------------------------------------------------ |
+| Page numbers as plain text instead of links/buttons | Each page number is a link or button                 | Keyboard users can't navigate to other pages     |
+| Infinite scroll on pages with footer content        | Use load-more button, or place footer in the sidebar | Footer becomes unreachable (ADR-0024 §3.10)      |
+| Pagination with no URL state                        | Reflect `?page=N` in URL                             | Users can't share, bookmark, or use back/forward |
 
 ### General
 
-| ❌ Don't | ✅ Do | Why |
-|----------|-------|-----|
-| JS masonry library for minor height variance | CSS Grid with `auto-fill` and `minmax` | JS masonry recalculates layout on resize; CSS Grid is faster and simpler |
-| Deep nesting of interactive patterns (carousel inside accordion inside tabs) | Max 1 level of nesting for interactive containers | Keyboard navigation becomes impossible to predict |
-| Content display patterns without `prefers-reduced-motion` support | All animated transitions respect reduced motion (ADR-0003) | Motion-sensitive users experience nausea from slide/scroll animations |
+| ❌ Don't                                                                     | ✅ Do                                             | Why                                                                      |
+| ---------------------------------------------------------------------------- | ------------------------------------------------- | ------------------------------------------------------------------------ |
+| JS masonry library for minor height variance                                 | CSS Grid with `auto-fill` and `minmax`            | JS masonry recalculates layout on resize; CSS Grid is faster and simpler |
+| Deep nesting of interactive patterns (carousel inside accordion inside tabs) | Max 1 level of nesting for interactive containers | Keyboard navigation becomes impossible to predict                        |
+| Content display patterns without `prefers-reduced-motion` support            | All animated transitions respect reduced motion   | Motion-sensitive users experience nausea from slide/scroll animations    |
 
 ---
 
 ## Library Compatibility
 
-| Library | Status | Purpose | Notes |
-|---------|--------|---------|-------|
-| Radix Tabs (via shadcn/ui) | `recommended` | Tab list, tab panels, keyboard navigation (roving tabindex) | Pre-approved in ADR-0002/ADR-0023. Handles all WAI-ARIA Tabs pattern requirements automatically |
-| Radix Accordion (via shadcn/ui) | `recommended` | Single-open / multi-open accordion, disclosure pattern | Pre-approved in ADR-0002/ADR-0023. Handles Disclosure WAI-ARIA pattern automatically |
-| Radix Collapsible (via shadcn/ui) | `recommended` | Single collapsible section (non-accordion) | Simpler than Accordion when you just need one collapse |
-| Radix Dialog (via shadcn/ui) | `recommended` | Lightbox overlay and focus trap | Pre-approved. Lightbox is a Dialog with image content |
-| Embla Carousel (via shadcn/ui) | `recommended` | Headless carousel engine — all carousel variants | ~6kB, headless, Tailwind-native. shadcn/ui Carousel wraps Embla. Best when full design control is needed |
-| Swiper | `compatible` | Feature-rich slider with pre-built UI (navigation, pagination, thumbs, parallax, 3D effects) | ~40-50kB, ships own CSS (static files, not runtime). Use when built-in UI saves dev time and overrides stay shallow. A11y module included |
-| TanStack Table | `compatible` | Headless data table with sorting, filtering, pagination, selection | ~15kB, headless, no CSS. Install when tables need sorting/filtering — not for static tables |
-| Framer Motion (via `@/lib/motion`) | `recommended` | Filter transitions, expand animations, carousel enter/exit, card flip | Default dependency per ADR-0003. Use AnimatePresence for filter transitions and layout animations |
-| Masonry.js / Isotope | `forbidden` | JS masonry layout | CSS Grid with `@supports (grid-template-rows: masonry)` preferred. JS masonry causes layout recalc and adds unnecessary bundle weight |
-| Any CSS-in-JS table library (MUI DataGrid, Mantine Table, AG Grid with MUI) | `forbidden` | — | Violates ADR-0002 (no CSS-in-JS runtime). Use TanStack Table + own markup |
+| Library                                                                     | Status        | Purpose                                                                                      | Notes                                                                                                                                     |
+| --------------------------------------------------------------------------- | ------------- | -------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| Radix Tabs (via shadcn/ui)                                                  | `recommended` | Tab list, tab panels, keyboard navigation (roving tabindex)                                  | Pre-approved in ADR-0002/ADR-0023. Handles all WAI-ARIA Tabs pattern requirements automatically                                           |
+| Radix Accordion (via shadcn/ui)                                             | `recommended` | Single-open / multi-open accordion, disclosure pattern                                       | Pre-approved in ADR-0002/ADR-0023. Handles Disclosure WAI-ARIA pattern automatically                                                      |
+| Radix Collapsible (via shadcn/ui)                                           | `recommended` | Single collapsible section (non-accordion)                                                   | Simpler than Accordion when you just need one collapse                                                                                    |
+| Radix Dialog (via shadcn/ui)                                                | `recommended` | Lightbox overlay and focus trap                                                              | Pre-approved. Lightbox is a Dialog with image content                                                                                     |
+| Embla Carousel (via shadcn/ui)                                              | `recommended` | Headless carousel engine — all carousel variants                                             | ~6kB, headless, Tailwind-native. shadcn/ui Carousel wraps Embla. Best when full design control is needed                                  |
+| Swiper                                                                      | `compatible`  | Feature-rich slider with pre-built UI (navigation, pagination, thumbs, parallax, 3D effects) | ~40-50kB, ships own CSS (static files, not runtime). Use when built-in UI saves dev time and overrides stay shallow. A11y module included |
+| TanStack Table                                                              | `compatible`  | Headless data table with sorting, filtering, pagination, selection                           | ~15kB, headless, no CSS. Install when tables need sorting/filtering — not for static tables                                               |
+| Framer Motion (via `motion/react`)                                          | `recommended` | Filter transitions, expand animations, carousel enter/exit, card flip                        | Use AnimatePresence for filter transitions and layout animations                                                                          |
+| Masonry.js / Isotope                                                        | `forbidden`   | JS masonry layout                                                                            | CSS Grid with `@supports (grid-template-rows: masonry)` preferred. JS masonry causes layout recalc and adds unnecessary bundle weight     |
+| Any CSS-in-JS table library (MUI DataGrid, Mantine Table, AG Grid with MUI) | `forbidden`   | —                                                                                            | Violates ADR-0002 (no CSS-in-JS runtime). Use TanStack Table + own markup                                                                 |
 
 ### Carousel Library Decision Tree
 
@@ -1118,6 +1201,7 @@ Do you need full design control with project tokens driving every visual aspect?
 ## Consequences
 
 **Positive:**
+
 - Agents and developers have decision trees for every content display pattern — no ad-hoc guessing about carousel type, tab vs accordion, or table responsiveness
 - Two-tier carousel recommendation (Embla default, Swiper for advanced use) gives flexibility without violating styling constraints
 - Every pattern includes accessibility requirements specific to the component (carousel ARIA, tree keyboard nav, table semantics)
@@ -1126,6 +1210,7 @@ Do you need full design control with project tokens driving every visual aspect?
 - Cross-references to ADR-0024 prevent duplication (form wizard UX, infinite scroll behavior, focus management)
 
 **Negative:**
+
 - Swiper's CSS imports create a styling override tax — shallow overrides are fine, deep customization may fight the library
 - CSS masonry (`grid-template-rows: masonry`) has inconsistent browser support as of 2026 — progressive enhancement is required
 - TanStack Table and Swiper are new library recommendations — require addition to `docs/approved-libraries.md` when installed
@@ -1134,7 +1219,6 @@ Do you need full design control with project tokens driving every visual aspect?
 
 ## Related ADRs
 
-- [ADR-0003](./0003-animation.md) — Animation (transition timing for carousel slides, filter transitions, expand animations, reduced motion)
 - [ADR-0004](./0004-components.md) — Component Structure (where display components live in the tier system)
 - [ADR-0019](./0019-accessibility.md) — Accessibility (WCAG rules, ARIA patterns for tabs, carousels, trees)
 - [ADR-0020](./0020-state-management.md) — State Management (URL state for pagination/filters/tabs, localStorage for view preferences)

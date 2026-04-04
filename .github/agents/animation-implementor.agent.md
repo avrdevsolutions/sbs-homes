@@ -175,7 +175,7 @@ These rules apply to ALL code you write. Violations are caught by quality gates.
 ### Motion System Rules
 
 - **`m.*` namespace only** — never use `motion.*` from Framer Motion directly. The project uses LazyMotion with the `m` namespace.
-- **Import from `@/lib/motion` only** — never import directly from `framer-motion`. The motion system re-exports everything through its barrel.
+- **Import from `motion/react` directly** — never import from the legacy `framer-motion` package. Import `useMotionEnabled` from `@/hooks/useMotionEnabled`.
 - **Module-scope variants** — define animation variant objects outside the component body, never inside. This prevents re-creation on every render.
 - **`buildWillChange()`** — use the project helper for `will-change` on composited properties (e.g., transform, opacity). Never write raw `willChange` strings.
 - **`SPRING_PRESETS`** — use the project's named spring presets (e.g., `SPRING_PRESETS.smooth`, `SPRING_PRESETS.snappy`). Never use magic numbers for spring configs.
@@ -210,7 +210,7 @@ These rules apply to ALL code you write. Violations are caught by quality gates.
 
 ### Autonomy Grants — What You CAN Do
 
-- **MAY create custom hooks** in the component folder for scene-specific animation logic, or extend `src/lib/motion/` with new hooks/helpers when existing ones don't fit the scene
+- **MAY create custom hooks** in the component folder for scene-specific animation logic, or in `src/hooks/` when the hook is reusable across features
 - **MAY use `useState` for one-time layout measurement** (viewport dimensions, card sizes on mount/resize). The "no useState" rule applies to scroll-position-derived state only — not to dimension measurement
 - **MAY use inline `style={}`** for viewport-dependent dimensions (card widths in vw, scroll heights in vh, computed transforms). This is the correct pattern for scroll-driven animations, not a violation of the "no arbitrary Tailwind" rule (that rule applies to className bracket syntax only)
 - **MAY create new component files** — extracted per-item components, mobile fallback components, scroll scene wrappers
@@ -222,11 +222,11 @@ After every section has been implemented or skipped, run these gates in order. I
 
 ### A-G0 — Motion Import Audit
 
-All animation imports use the project's motion system. Check:
+All animation imports use the correct packages. Check:
 
-1. Search all modified files for `from 'framer-motion'` or `from "framer-motion"` — there should be NONE. All imports come from `@/lib/motion`.
+1. Search all modified files for `from 'framer-motion'` or `from "framer-motion"` — there should be NONE. All motion imports come from `motion/react`.
 2. Search all modified files for `motion.` — there should be NONE. Only `m.` namespace is used.
-3. Verify all motion component imports resolve (e.g., `MotionInView`, `MotionBox`, `useParallax` are exported from `@/lib/motion`).
+3. Verify `useMotionEnabled` is imported from `@/hooks/useMotionEnabled`, not from `motion/react`.
 
 ### A-G1 — Reduced Motion Audit
 
@@ -283,7 +283,7 @@ When re-invoked after a revision request (`status: "revision-requested"`):
 
 - NO changes to interactive behavior (accordion, carousel, drawer, form logic)
 - NO content modifications (text, images, data)
-- NO direct imports from `framer-motion` — everything through `@/lib/motion`
+- NO direct imports from `framer-motion` — use `motion/react`
 - NO `motion.*` namespace — only `m.*`
 - NO magic spring numbers — `SPRING_PRESETS` only
 - NO arbitrary Tailwind bracket values in className (e.g., `w-[28vw]`, `text-[2.75rem]`) — use project tokens. Inline `style={}` for MotionValues and viewport-dependent dimensions is the correct pattern, not a violation

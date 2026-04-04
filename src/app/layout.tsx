@@ -4,7 +4,6 @@ import { SiteFooter } from '@/components/layout'
 import { BackToTopButton } from '@/components/layout/back-to-top-button'
 import { SkipLink } from '@/components/layout/skip-link'
 import { footerContent } from '@/dictionaries/layout'
-import { MotionProvider } from '@/lib/motion'
 
 import type { Metadata } from 'next'
 
@@ -45,11 +44,9 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => {
     >
       <body>
         <SkipLink />
-        <MotionProvider>
-          {/*<NavSpine content={navSpineContent} />*/}
-          <main id='main-content'>{children}</main>
-          <SiteFooter content={footerContent} />
-        </MotionProvider>
+        {/*<NavSpine content={navSpineContent} />*/}
+        <main id='main-content'>{children}</main>
+        <SiteFooter content={footerContent} />
         <BackToTopButton />
       </body>
     </html>

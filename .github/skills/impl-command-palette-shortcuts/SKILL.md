@@ -54,18 +54,18 @@ export const CommandPalette = () => {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="overflow-hidden p-0 shadow-lg">
-        <Command className="[&_[cmdk-group-heading]]:text-muted-foreground [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-xs">
+      <DialogContent className='overflow-hidden p-0 shadow-lg'>
+        <Command className='[&_[cmdk-group-heading]]:text-muted-foreground [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:text-xs [&_[cmdk-group-heading]]:font-medium'>
           <Command.Input
-            placeholder="Type a command or search..."
-            className="h-12 w-full border-b border-border bg-transparent px-4 outline-none placeholder:text-muted-foreground"
+            placeholder='Type a command or search...'
+            className='border-border placeholder:text-muted-foreground h-12 w-full border-b bg-transparent px-4 outline-none'
           />
-          <Command.List className="max-h-[300px] overflow-y-auto p-2">
-            <Command.Empty className="py-6 text-center text-sm text-muted-foreground">
+          <Command.List className='max-h-[300px] overflow-y-auto p-2'>
+            <Command.Empty className='text-muted-foreground py-6 text-center text-sm'>
               No results found.
             </Command.Empty>
 
-            <Command.Group heading="Navigation">
+            <Command.Group heading='Navigation'>
               <CommandItem onSelect={() => runCommand(() => router.push('/dashboard'))}>
                 Dashboard
               </CommandItem>
@@ -74,11 +74,14 @@ export const CommandPalette = () => {
               </CommandItem>
             </Command.Group>
 
-            <Command.Separator className="my-1 h-px bg-border" />
+            <Command.Separator className='bg-border my-1 h-px' />
 
-            <Command.Group heading="Recent">
+            <Command.Group heading='Recent'>
               {recentItems.map((item) => (
-                <CommandItem key={item.id} onSelect={() => runCommand(() => router.push(item.href))}>
+                <CommandItem
+                  key={item.id}
+                  onSelect={() => runCommand(() => router.push(item.href))}
+                >
                   {item.title}
                 </CommandItem>
               ))}
@@ -90,10 +93,16 @@ export const CommandPalette = () => {
   )
 }
 
-const CommandItem = ({ children, onSelect }: { children: React.ReactNode; onSelect: () => void }) => (
+const CommandItem = ({
+  children,
+  onSelect,
+}: {
+  children: React.ReactNode
+  onSelect: () => void
+}) => (
   <Command.Item
     onSelect={onSelect}
-    className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-2 text-sm text-foreground aria-selected:bg-muted"
+    className='text-foreground aria-selected:bg-muted flex cursor-pointer items-center gap-2 rounded-md px-2 py-2 text-sm'
   >
     {children}
   </Command.Item>
@@ -138,7 +147,7 @@ import { useEffect } from 'react'
 
 type KeyCombo = {
   key: string
-  meta?: boolean   // ⌘ on Mac, Ctrl on Windows/Linux
+  meta?: boolean // ⌘ on Mac, Ctrl on Windows/Linux
   shift?: boolean
   alt?: boolean
 }
@@ -152,7 +161,7 @@ type ShortcutOptions = {
 export const useKeyboardShortcut = (
   combo: KeyCombo,
   callback: () => void,
-  options: ShortcutOptions = {}
+  options: ShortcutOptions = {},
 ) => {
   const { preventDefault = true, ignoreInputs = true } = options
 
@@ -168,12 +177,7 @@ export const useKeyboardShortcut = (
       const shiftMatch = combo.shift ? e.shiftKey : !e.shiftKey
       const altMatch = combo.alt ? e.altKey : !e.altKey
 
-      if (
-        e.key.toLowerCase() === combo.key.toLowerCase() &&
-        metaMatch &&
-        shiftMatch &&
-        altMatch
-      ) {
+      if (e.key.toLowerCase() === combo.key.toLowerCase() && metaMatch && shiftMatch && altMatch) {
         if (preventDefault) e.preventDefault()
         callback()
       }
@@ -189,26 +193,26 @@ export const useKeyboardShortcut = (
 
 ## 4. Shortcut Scoping
 
-| Scope | Where to Register | Example |
-|-------|------------------|---------|
-| Global | Layout-level client component, mounted once | ⌘K (command palette), ? (shortcut help) |
-| Component | Inside the component that owns the action | Escape (close modal), Enter (confirm) |
+| Scope       | Where to Register                             | Example                                    |
+| ----------- | --------------------------------------------- | ------------------------------------------ |
+| Global      | Layout-level client component, mounted once   | ⌘K (command palette), ? (shortcut help)    |
+| Component   | Inside the component that owns the action     | Escape (close modal), Enter (confirm)      |
 | Conditional | Pass `enabled` or use a guard inside the hook | Shortcuts active only when a panel is open |
 
 ---
 
 ## 5. Reserved Shortcuts — Never Override
 
-| Shortcut | Browser Function |
-|----------|-----------------|
-| ⌘C / Ctrl+C | Copy |
-| ⌘V / Ctrl+V | Paste |
-| ⌘Z / Ctrl+Z | Undo |
-| ⌘T / Ctrl+T | New tab |
-| ⌘W / Ctrl+W | Close tab |
-| ⌘L / Ctrl+L | Address bar |
-| F5 / ⌘R | Refresh |
-| Tab | Tab navigation (never capture globally) |
+| Shortcut    | Browser Function                        |
+| ----------- | --------------------------------------- |
+| ⌘C / Ctrl+C | Copy                                    |
+| ⌘V / Ctrl+V | Paste                                   |
+| ⌘Z / Ctrl+Z | Undo                                    |
+| ⌘T / Ctrl+T | New tab                                 |
+| ⌘W / Ctrl+W | Close tab                               |
+| ⌘L / Ctrl+L | Address bar                             |
+| F5 / ⌘R     | Refresh                                 |
+| Tab         | Tab navigation (never capture globally) |
 
 ---
 
@@ -241,7 +245,7 @@ useKeyboardShortcut({ key: '?' }, () => setShortcutHelpOpen(true))
 Under `prefers-reduced-motion: reduce`, overlay animations for the command palette must be **fade-only** (no scale or slide):
 
 ```tsx
-import { useMotionEnabled } from '@/lib/motion/hooks/useMotionEnabled'
+import { useMotionEnabled } from '@/hooks/useMotionEnabled'
 
 const motionEnabled = useMotionEnabled()
 

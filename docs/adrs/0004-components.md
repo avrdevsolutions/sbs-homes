@@ -944,7 +944,6 @@ A tiered system was chosen over flat, feature-based, or atomic design because:
 
 - [ADR-0001](./0001-architecture.md) — Architecture (project structure, function style, Next.js special files)
 - [ADR-0002](./0002-styling.md) — Styling (Tailwind tokens, component library restyling, Storybook)
-- [ADR-0003](./0003-animation.md) — Animation (animated components need `'use client'`)
 - [ADR-0005](./0005-data-fetching.md) — Data fetching (Server Components fetch data, Server Actions for mutations)
 - [ADR-0009](./0009-testing.md) — Testing (co-located tests, component testing patterns)
 - [ADR-0020](./0020-state-management.md) — State Management (where state hooks live within tiers, escalation path)

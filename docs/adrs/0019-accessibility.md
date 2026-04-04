@@ -237,7 +237,7 @@ Authentication steps **MUST NOT** rely on cognitive function tests (e.g., rememb
 
 | Rule                                                                                                                                                      | Level    |
 | --------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
-| Respect `prefers-reduced-motion` — use `useMotionEnabled()` from `@/lib/motion` in every animated component                                               | **MUST** |
+| Respect `prefers-reduced-motion` — use `useMotionEnabled()` from `@/hooks/useMotionEnabled` in every animated component                                   | **MUST** |
 | Provide static or simplified alternative when motion is disabled (per-component decision table in ADR-0027 §14)                                           | **MUST** |
 | No flashing content (more than 3 flashes per second)                                                                                                      | **MUST** |
 | Animations must not be the only way to convey information                                                                                                 | **MUST** |

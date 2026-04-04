@@ -49,7 +49,7 @@ This is **Part 3** of a UX knowledge series:
 | Offline-capable actions should queue and sync — never silently discard user work | **SHOULD** |
 | Prefer undo over confirmation for routine, non-destructive actions | **SHOULD** |
 | Use URL state for search, filters, and pagination (ADR-0020, ADR-0025 §7) | **SHOULD** |
-| Animation timing and easing follow ADR-0003 transition defaults | **MUST** |
+| Animation timing and easing follow project transition defaults | **MUST** |
 | UI primitives from ADR-0023 are used where they cover the use case | **MUST** |
 
 ---
@@ -409,7 +409,7 @@ What is being dragged?
 
 **Pattern:**
 - Drag handle on the left side of each item (⠿ grip icon) — not the entire row, to avoid conflicting with click/tap on the item content
-- On drag start: item lifts with subtle shadow/scale (ADR-0003 spring preset)
+- On drag start: item lifts with subtle shadow/scale
 - During drag: gap indicator shows where the item will land (empty space between items)
 - On drop: item animates into final position; list items reflow smoothly
 - Persist new order: optimistic update (ADR-0024 §3.7) + server mutation with the new order array
@@ -480,7 +480,7 @@ Will columns have many items (>10)?
 - Items on a CSS Grid layout
 - Drag an item: other items reflow to make space at the cursor position
 - Placeholder shows the landing position (outline or translucent copy)
-- On drop: items animate to final positions (layout animation per ADR-0003)
+- On drop: items animate to final positions (layout animation)
 
 **Keyboard alternative:**
 - Arrow keys in 4 directions (up/down/left/right)
@@ -510,7 +510,7 @@ Will columns have many items (>10)?
 
 | Concern | Solution |
 |---------|----------|
-| Jank during drag | Use `transform: translate()` for drag position — never `top`/`left` (GPU composited per ADR-0003) |
+| Jank during drag | Use `transform: translate()` for drag position — never `top`/`left` (GPU composited) |
 | Large lists (100+ items) | Virtualize the list (TanStack Virtual or react-window) — only render visible items |
 | Frequent re-renders during drag | Use refs for drag position, `requestAnimationFrame` for visual updates — don't set state on every pointer move |
 | Drop animation | Use Framer Motion `layoutId` or CSS transitions for the drop-settle animation — 200-300ms spring |
@@ -1216,7 +1216,7 @@ ADR-0024 §3.5 covers the empty state pattern (illustration + message + CTA). Th
 **Pattern:**
 - Empty state shows guided CTA: "Create your first project"
 - After first item is created: empty state disappears, item list appears with the new item highlighted
-- Optional: brief animation on the transition (fade out empty state, fade in list per ADR-0003)
+- Optional: brief animation on the transition (fade out empty state, fade in list)
 - If more items are expected: show a contextual tip — "Tip: Use ⌘K to quickly create new items" (§15.1)
 
 ---
@@ -1703,7 +1703,6 @@ Where does the shortcut apply?
 
 ## Related ADRs
 
-- [ADR-0003](./0003-animation.md) — Animation (drag animation springs, layout transitions, reduced motion for tours)
 - [ADR-0005](./0005-data-fetching.md) — Data Fetching (TanStack Query for polling, optimistic mutations, retry logic)
 - [ADR-0007](./0007-error-handling.md) — Error Handling (AppError, error boundaries, Result\<T\> for Server Actions)
 - [ADR-0010](./0010-authentication.md) — Authentication (RBAC, session management, permission gating)

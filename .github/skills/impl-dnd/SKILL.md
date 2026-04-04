@@ -56,10 +56,7 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import {
-  restrictToVerticalAxis,
-  restrictToParentElement,
-} from '@dnd-kit/modifiers'
+import { restrictToVerticalAxis, restrictToParentElement } from '@dnd-kit/modifiers'
 
 type SortableListProps<T extends { id: string }> = {
   items: T[]
@@ -78,7 +75,7 @@ export const SortableList = <T extends { id: string }>({
     }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
-    })
+    }),
   )
 
   const handleDragEnd = (event: DragEndEvent) => {
@@ -96,11 +93,8 @@ export const SortableList = <T extends { id: string }>({
       modifiers={[restrictToVerticalAxis, restrictToParentElement]}
       onDragEnd={handleDragEnd}
     >
-      <SortableContext
-        items={items.map((i) => i.id)}
-        strategy={verticalListSortingStrategy}
-      >
-        <ul role="listbox" aria-label="Reorderable list">
+      <SortableContext items={items.map((i) => i.id)} strategy={verticalListSortingStrategy}>
+        <ul role='listbox' aria-label='Reorderable list'>
           {items.map((item) => (
             <SortableItem key={item.id} id={item.id}>
               {renderItem(item)}
@@ -113,12 +107,13 @@ export const SortableList = <T extends { id: string }>({
 }
 
 const SortableItem = ({ id, children }: { id: string; children: React.ReactNode }) => {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
-    useSortable({ id })
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id,
+  })
 
   const style = {
     transform: CSS.Transform.toString(transform), // GPU-composited — no layout thrash
-    transition,                                    // dnd-kit manages this — null during drag
+    transition, // dnd-kit manages this — null during drag
     opacity: isDragging ? 0.5 : 1,
   }
 
@@ -126,13 +121,13 @@ const SortableItem = ({ id, children }: { id: string; children: React.ReactNode 
     <li
       ref={setNodeRef}
       style={style}
-      className="flex items-center gap-2 rounded-md border border-border bg-surface p-3"
-      role="option"
+      className='border-border bg-surface flex items-center gap-2 rounded-md border p-3'
+      role='option'
       aria-selected={isDragging}
       {...attributes}
       {...listeners}
     >
-      <GripVerticalIcon className="text-muted-foreground" aria-hidden="true" />
+      <GripVerticalIcon className='text-muted-foreground' aria-hidden='true' />
       {children}
     </li>
   )
@@ -144,6 +139,7 @@ const SortableItem = ({ id, children }: { id: string; children: React.ReactNode 
 ## 3. Kanban Board (Cross-Column Drag)
 
 Key differences from a sortable list:
+
 - Multiple `SortableContext` instances (one per column)
 - `onDragOver` updates state in real-time as the card crosses column boundaries
 - `onDragEnd` finalises the position
@@ -155,8 +151,8 @@ Key differences from a sortable list:
   sensors={sensors}
   collisionDetection={closestCorners}
   onDragStart={(event) => setActiveItem(findItem(event.active.id))}
-  onDragOver={handleDragOver}   // Update column assignment in real-time
-  onDragEnd={handleDragEnd}     // Finalise; clear activeItem
+  onDragOver={handleDragOver} // Update column assignment in real-time
+  onDragEnd={handleDragEnd} // Finalise; clear activeItem
 >
   {columns.map((column) => (
     <SortableContext
@@ -169,9 +165,7 @@ Key differences from a sortable list:
   ))}
 
   {/* Renders the dragged card above all DOM layers */}
-  <DragOverlay>
-    {activeItem ? <KanbanCard item={activeItem} /> : null}
-  </DragOverlay>
+  <DragOverlay>{activeItem ? <KanbanCard item={activeItem} /> : null}</DragOverlay>
 </DndContext>
 ```
 
@@ -207,34 +201,35 @@ export const DropZone = ({
         if (file.size > maxSizeMB * 1024 * 1024) return false
         if (accept.length === 0) return true
         return accept.some((type) =>
-          type.endsWith('/*')
-            ? file.type.startsWith(type.replace('/*', '/'))
-            : file.type === type
+          type.endsWith('/*') ? file.type.startsWith(type.replace('/*', '/')) : file.type === type,
         )
       })
 
       if (files.length > 0) onFiles(files)
     },
-    [onFiles, accept, maxSizeMB]
+    [onFiles, accept, maxSizeMB],
   )
 
   return (
     <div
-      onDragOver={(e) => { e.preventDefault(); setIsDragOver(true) }}
+      onDragOver={(e) => {
+        e.preventDefault()
+        setIsDragOver(true)
+      }}
       onDragLeave={() => setIsDragOver(false)}
       onDrop={handleDrop}
       className={cn(
-        'flex items-center justify-center rounded-lg border-2 border-dashed p-8 transition-colors cursor-pointer',
-        isDragOver ? 'border-primary bg-primary/5' : 'border-border hover:border-muted-foreground'
+        'flex cursor-pointer items-center justify-center rounded-lg border-2 border-dashed p-8 transition-colors',
+        isDragOver ? 'border-primary bg-primary/5' : 'border-border hover:border-muted-foreground',
       )}
-      role="button"
+      role='button'
       tabIndex={0}
-      aria-label="Drop files here or click to browse"
+      aria-label='Drop files here or click to browse'
     >
-      <div className="text-center">
-        <UploadIcon className="mx-auto mb-2 text-muted-foreground" />
-        <Typography variant="body">Drag and drop files here, or click to browse</Typography>
-        <Typography variant="small" className="text-muted-foreground">
+      <div className='text-center'>
+        <UploadIcon className='text-muted-foreground mx-auto mb-2' />
+        <Typography variant='body'>Drag and drop files here, or click to browse</Typography>
+        <Typography variant='small' className='text-muted-foreground'>
           Max {maxSizeMB}MB per file
         </Typography>
       </div>
@@ -274,7 +269,7 @@ const announcements = {
 Under `prefers-reduced-motion: reduce`, disable the spring/ease settle animation:
 
 ```tsx
-import { useMotionEnabled } from '@/lib/motion/hooks/useMotionEnabled'
+import { useMotionEnabled } from '@/hooks/useMotionEnabled'
 
 const motionEnabled = useMotionEnabled()
 
@@ -305,10 +300,13 @@ it('reorders items via keyboard (Space → ArrowDown → Space)', async () => {
 
   render(
     <SortableList
-      items={[{ id: '1', name: 'A' }, { id: '2', name: 'B' }]}
+      items={[
+        { id: '1', name: 'A' },
+        { id: '2', name: 'B' },
+      ]}
       onReorder={onReorder}
       renderItem={(item) => <span>{item.name}</span>}
-    />
+    />,
   )
 
   // Focus the first item's grab handle area (or the li itself)
@@ -332,10 +330,13 @@ it('cancels drag on Escape', async () => {
 
   render(
     <SortableList
-      items={[{ id: '1', name: 'A' }, { id: '2', name: 'B' }]}
+      items={[
+        { id: '1', name: 'A' },
+        { id: '2', name: 'B' },
+      ]}
       onReorder={onReorder}
       renderItem={(item) => <span>{item.name}</span>}
-    />
+    />,
   )
 
   const firstItem = screen.getByText('A').closest('[role="option"]')!
@@ -351,10 +352,10 @@ it('cancels drag on Escape', async () => {
 
 ## Anti-Patterns
 
-| Anti-Pattern | Why It's Wrong | Correct Pattern |
-|-------------|----------------|-----------------|
-| Only `PointerSensor`, no `KeyboardSensor` | Keyboard-only users cannot reorder | Always add `KeyboardSensor` with `sortableKeyboardCoordinates` |
-| Using CSS `top`/`left` for drag transform | Causes layout recalculation every frame | Use `CSS.Transform.toString(transform)` — GPU-composited |
-| Skipping `activationConstraint: { distance }` | Accidental drags on click/tap | Set `distance: 8` on PointerSensor |
-| No reduced motion gate on settle animation | WCAG 2.3.3 violation (animation) | Gate `transition` with `useMotionEnabled()` |
-| No accessibility announcements | Screen readers can't communicate drag state | Provide `announcements` to `DndContext` |
+| Anti-Pattern                                  | Why It's Wrong                              | Correct Pattern                                                |
+| --------------------------------------------- | ------------------------------------------- | -------------------------------------------------------------- |
+| Only `PointerSensor`, no `KeyboardSensor`     | Keyboard-only users cannot reorder          | Always add `KeyboardSensor` with `sortableKeyboardCoordinates` |
+| Using CSS `top`/`left` for drag transform     | Causes layout recalculation every frame     | Use `CSS.Transform.toString(transform)` — GPU-composited       |
+| Skipping `activationConstraint: { distance }` | Accidental drags on click/tap               | Set `distance: 8` on PointerSensor                             |
+| No reduced motion gate on settle animation    | WCAG 2.3.3 violation (animation)            | Gate `transition` with `useMotionEnabled()`                    |
+| No accessibility announcements                | Screen readers can't communicate drag state | Provide `announcements` to `DndContext`                        |

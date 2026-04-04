@@ -28,7 +28,7 @@ description: >-
 'use client'
 import { useCallback, useEffect, useState } from 'react'
 import useEmblaCarousel from 'embla-carousel-react'
-import { useMotionEnabled } from '@/lib/motion/hooks/useMotionEnabled'
+import { useMotionEnabled } from '@/hooks/useMotionEnabled'
 
 type CarouselProps = {
   children: React.ReactNode
@@ -62,67 +62,80 @@ export const Carousel = ({
     setSlideCount(emblaApi.scrollSnapList().length)
     onSelect()
     emblaApi.on('select', onSelect)
-    return () => { emblaApi.off('select', onSelect) }
+    return () => {
+      emblaApi.off('select', onSelect)
+    }
   }, [emblaApi, onSelect])
 
   // Autoplay — disabled entirely under reduced motion (a11y requirement)
   useEffect(() => {
     if (!autoplay || !emblaApi || !motionEnabled) return
     let timer: ReturnType<typeof setInterval>
-    const start = () => { timer = setInterval(() => emblaApi.scrollNext(), autoplayInterval) }
+    const start = () => {
+      timer = setInterval(() => emblaApi.scrollNext(), autoplayInterval)
+    }
     const stop = () => clearInterval(timer)
     start()
     emblaApi.on('pointerDown', stop)
     emblaApi.on('pointerUp', start)
-    return () => { stop(); emblaApi.off('pointerDown', stop); emblaApi.off('pointerUp', start) }
+    return () => {
+      stop()
+      emblaApi.off('pointerDown', stop)
+      emblaApi.off('pointerUp', start)
+    }
   }, [emblaApi, autoplay, autoplayInterval, motionEnabled])
 
   // Embla does not provide keyboard handling natively — add it explicitly
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'ArrowLeft') { emblaApi?.scrollPrev(); e.preventDefault() }
-    else if (e.key === 'ArrowRight') { emblaApi?.scrollNext(); e.preventDefault() }
+    if (e.key === 'ArrowLeft') {
+      emblaApi?.scrollPrev()
+      e.preventDefault()
+    } else if (e.key === 'ArrowRight') {
+      emblaApi?.scrollNext()
+      e.preventDefault()
+    }
   }
 
   return (
     <div
-      role="region"
-      aria-roledescription="carousel"
-      aria-label="Image carousel"
+      role='region'
+      aria-roledescription='carousel'
+      aria-label='Image carousel'
       tabIndex={0}
       onKeyDown={handleKeyDown}
-      className="relative"
+      className='relative'
     >
-      <div className="overflow-hidden" ref={emblaRef}>
-        <div className="flex">{children}</div>
+      <div className='overflow-hidden' ref={emblaRef}>
+        <div className='flex'>{children}</div>
       </div>
 
       <button
         onClick={() => emblaApi?.scrollPrev()}
         disabled={!canScrollPrev}
-        aria-label="Previous slide"
-        className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-surface/80 p-2 disabled:opacity-30"
+        aria-label='Previous slide'
+        className='bg-surface/80 absolute top-1/2 left-2 -translate-y-1/2 rounded-full p-2 disabled:opacity-30'
       >
         ←
       </button>
       <button
         onClick={() => emblaApi?.scrollNext()}
         disabled={!canScrollNext}
-        aria-label="Next slide"
-        className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-surface/80 p-2 disabled:opacity-30"
+        aria-label='Next slide'
+        className='bg-surface/80 absolute top-1/2 right-2 -translate-y-1/2 rounded-full p-2 disabled:opacity-30'
       >
         →
       </button>
 
-      <div role="tablist" aria-label="Slide indicators" className="mt-4 flex justify-center gap-2">
+      <div role='tablist' aria-label='Slide indicators' className='mt-4 flex justify-center gap-2'>
         {Array.from({ length: slideCount }).map((_, i) => (
           <button
             key={i}
-            role="tab"
+            role='tab'
             aria-selected={i === selectedIndex}
             aria-label={`Go to slide ${i + 1}`}
             className={cn(
               'h-2 w-2 rounded-full transition-colors',
-              i === selectedIndex ? 'bg-primary' : 'bg-muted'
+              i === selectedIndex ? 'bg-primary' : 'bg-muted',
             )}
             onClick={() => emblaApi?.scrollTo(i)}
           />
@@ -133,7 +146,7 @@ export const Carousel = ({
 }
 
 export const CarouselSlide = ({ children }: { children: React.ReactNode }) => (
-  <div className="min-w-0 flex-[0_0_100%] px-2" role="group" aria-roledescription="slide">
+  <div className='min-w-0 flex-[0_0_100%] px-2' role='group' aria-roledescription='slide'>
     {children}
   </div>
 )
@@ -141,23 +154,23 @@ export const CarouselSlide = ({ children }: { children: React.ReactNode }) => (
 
 ## 2. Carousel Variants
 
-| Variant | Embla Options | Slide Sizing |
-|---------|-------------|--------------|
-| Hero (1 slide, full-width) | `{ loop: true }` | `flex-[0_0_100%]` |
-| Card carousel (multiple visible) | `{ align: 'start' }` | `flex-[0_0_33.33%]` desktop, `flex-[0_0_80%]` mobile |
-| Product gallery + thumbnails | Two instances; sync via `emblaApi.scrollTo()` on thumb click | Main: full-width; Thumbs: small fixed |
+| Variant                          | Embla Options                                                | Slide Sizing                                         |
+| -------------------------------- | ------------------------------------------------------------ | ---------------------------------------------------- |
+| Hero (1 slide, full-width)       | `{ loop: true }`                                             | `flex-[0_0_100%]`                                    |
+| Card carousel (multiple visible) | `{ align: 'start' }`                                         | `flex-[0_0_33.33%]` desktop, `flex-[0_0_80%]` mobile |
+| Product gallery + thumbnails     | Two instances; sync via `emblaApi.scrollTo()` on thumb click | Main: full-width; Thumbs: small fixed                |
 
 ## 3. Carousel ARIA Checklist
 
-| Requirement | Implementation |
-|------------|----------------|
-| `role="region"` + `aria-roledescription="carousel"` | On container |
-| `aria-label` on container | Names the carousel for screen readers |
-| `role="group"` + `aria-roledescription="slide"` | On each slide (CarouselSlide) |
-| Prev/Next buttons with `aria-label` | Keyboard-accessible navigation |
-| Indicator dots: `role="tab"` + `aria-selected` | Screen reader knows the active slide |
-| Autoplay pauses on hover and focus | Users can read content before it advances |
-| Autoplay disabled under reduced motion | Gate with `useMotionEnabled()` |
+| Requirement                                         | Implementation                            |
+| --------------------------------------------------- | ----------------------------------------- |
+| `role="region"` + `aria-roledescription="carousel"` | On container                              |
+| `aria-label` on container                           | Names the carousel for screen readers     |
+| `role="group"` + `aria-roledescription="slide"`     | On each slide (CarouselSlide)             |
+| Prev/Next buttons with `aria-label`                 | Keyboard-accessible navigation            |
+| Indicator dots: `role="tab"` + `aria-selected`      | Screen reader knows the active slide      |
+| Autoplay pauses on hover and focus                  | Users can read content before it advances |
+| Autoplay disabled under reduced motion              | Gate with `useMotionEnabled()`            |
 
 ---
 
@@ -210,24 +223,26 @@ export const DataTable = <TData,>({ columns, data, pageSize = 10 }: DataTablePro
 
   return (
     <div>
-      <div className="rounded-md border border-border">
-        <table className="w-full text-sm">
+      <div className='border-border rounded-md border'>
+        <table className='w-full text-sm'>
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id} className="border-b border-border bg-muted/50">
+              <tr key={headerGroup.id} className='border-border bg-muted/50 border-b'>
                 {headerGroup.headers.map((header) => (
                   <th
                     key={header.id}
-                    className="px-4 py-3 text-left font-medium text-muted-foreground"
+                    className='text-muted-foreground px-4 py-3 text-left font-medium'
                     aria-sort={
-                      header.column.getIsSorted() === 'asc' ? 'ascending'
-                        : header.column.getIsSorted() === 'desc' ? 'descending'
-                        : 'none'
+                      header.column.getIsSorted() === 'asc'
+                        ? 'ascending'
+                        : header.column.getIsSorted() === 'desc'
+                          ? 'descending'
+                          : 'none'
                     }
                   >
                     {!header.isPlaceholder && header.column.getCanSort() ? (
                       <button
-                        className="flex items-center gap-1 hover:text-foreground"
+                        className='hover:text-foreground flex items-center gap-1'
                         onClick={header.column.getToggleSortingHandler()}
                       >
                         {flexRender(header.column.columnDef.header, header.getContext())}
@@ -246,11 +261,11 @@ export const DataTable = <TData,>({ columns, data, pageSize = 10 }: DataTablePro
               table.getRowModel().rows.map((row) => (
                 <tr
                   key={row.id}
-                  className="border-b border-border hover:bg-muted/30"
+                  className='border-border hover:bg-muted/30 border-b'
                   data-state={row.getIsSelected() ? 'selected' : undefined}
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <td key={cell.id} className="px-4 py-3">
+                    <td key={cell.id} className='px-4 py-3'>
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </td>
                   ))}
@@ -258,7 +273,10 @@ export const DataTable = <TData,>({ columns, data, pageSize = 10 }: DataTablePro
               ))
             ) : (
               <tr>
-                <td colSpan={columns.length} className="px-4 py-8 text-center text-muted-foreground">
+                <td
+                  colSpan={columns.length}
+                  className='text-muted-foreground px-4 py-8 text-center'
+                >
                   No results found
                 </td>
               </tr>
@@ -267,16 +285,26 @@ export const DataTable = <TData,>({ columns, data, pageSize = 10 }: DataTablePro
         </table>
       </div>
 
-      <div className="flex items-center justify-between px-2 py-4">
-        <span className="text-sm text-muted-foreground">
+      <div className='flex items-center justify-between px-2 py-4'>
+        <span className='text-muted-foreground text-sm'>
           {table.getFilteredSelectedRowModel().rows.length} of{' '}
           {table.getFilteredRowModel().rows.length} row(s) selected
         </span>
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>
+        <div className='flex gap-2'>
+          <Button
+            variant='outline'
+            size='sm'
+            onClick={() => table.previousPage()}
+            disabled={!table.getCanPreviousPage()}
+          >
             Previous
           </Button>
-          <Button variant="outline" size="sm" onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
+          <Button
+            variant='outline'
+            size='sm'
+            onClick={() => table.nextPage()}
+            disabled={!table.getCanNextPage()}
+          >
             Next
           </Button>
         </div>
@@ -314,7 +342,7 @@ export const columns: ColumnDef<User>[] = [
       <Checkbox
         checked={table.getIsAllPageRowsSelected()}
         onCheckedChange={(v) => table.toggleAllPageRowsSelected(!!v)}
-        aria-label="Select all"
+        aria-label='Select all'
       />
     ),
     cell: ({ row }) => (
@@ -329,12 +357,12 @@ export const columns: ColumnDef<User>[] = [
   {
     accessorKey: 'name',
     header: 'Name',
-    cell: ({ row }) => <span className="font-medium">{row.getValue('name')}</span>,
+    cell: ({ row }) => <span className='font-medium'>{row.getValue('name')}</span>,
   },
   {
     accessorKey: 'role',
     header: 'Role',
-    cell: ({ row }) => <Badge variant="outline">{row.getValue('role')}</Badge>,
+    cell: ({ row }) => <Badge variant='outline'>{row.getValue('role')}</Badge>,
     filterFn: 'equals',
   },
   {
@@ -363,8 +391,8 @@ Screen width?
 **Horizontal scroll with sticky column:**
 
 ```tsx
-<div className="overflow-x-auto">
-  <table className="w-full min-w-[600px]">
+<div className='overflow-x-auto'>
+  <table className='w-full min-w-[600px]'>
     {/* First column: sticky left-0 bg-surface z-10 */}
   </table>
 </div>

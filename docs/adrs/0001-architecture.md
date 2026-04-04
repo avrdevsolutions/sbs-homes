@@ -190,7 +190,7 @@ import type { ApiResponse } from '../../contracts/common'
 │   │   ├── api-utils.ts        # handleApiError, fetch helpers (ADR-0005)
 │   │   ├── auth/               # Auth.js config and helpers (ADR-0010)
 │   │   ├── db/                 # Prisma client singleton (ADR-0011)
-│   │   ├── motion/             # Framer Motion exports (ADR-0003, opt-in)
+│   │   ├── motion/             # Framer Motion exports (opt-in)
 │   │   └── query/              # TanStack Query client + config (ADR-0005, opt-in)
 │   ├── hooks/                  # Custom React hooks (useDebounce, useMediaQuery)
 │   ├── services/               # API service layer (ADR-0005, opt-in)
@@ -399,7 +399,7 @@ export const POST = async (request: Request) => { ... }
 | Styling              | Tailwind CSS                         | ✅ Pre-installed | ADR-0002 |
 | Class merging        | clsx + tailwind-merge (`cn()`)       | ✅ Pre-installed | ADR-0002 |
 | Component primitives | shadcn/ui (Radix UI)                 | When needed      | ADR-0002 |
-| Animation            | Framer Motion                        | When needed      | ADR-0003 |
+| Animation            | Framer Motion                        | When needed      | —        |
 | Client data fetching | TanStack Query v5                    | When needed      | ADR-0005 |
 | State management     | React built-ins → Zustand if complex | When needed      | This ADR |
 | Forms                | React Hook Form + Zod resolver       | When needed      | This ADR |
@@ -709,7 +709,6 @@ AI agents and human developers produce consistent code only when formatting and 
 ## Related ADRs
 
 - [ADR-0002](./0002-styling.md) — Styling (Tailwind CSS, design tokens, component libraries)
-- [ADR-0003](./0003-animation.md) — Animation (Framer Motion, opt-in)
 - [ADR-0004](./0004-components.md) — Components (tier system, Server Components default)
 - [ADR-0005](./0005-data-fetching.md) — Data fetching (server-first, TanStack Query, service layer)
 - [ADR-0006](./0006-environment.md) — Environment (Zod-validated env vars)

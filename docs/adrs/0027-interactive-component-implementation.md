@@ -10,17 +10,17 @@
 
 ADRs 0024-0026 answer **"what pattern to use when"** — decision trees for navigation, feedback, content display, CRUD, search, drag-and-drop, dashboards, and onboarding. What they don't cover is **"how to build it"** — library wiring, component architecture, server/client boundaries, state management, accessibility implementation, and reduced motion integration.
 
-Without this ADR, agents and developers know *which* pattern to apply but make ad-hoc decisions about implementation: inconsistent Radix usage, `'use client'` on entire feature trees, toast calls that don't reach server action results, carousels without keyboard navigation, data tables with client-side pagination that should be server-side.
+Without this ADR, agents and developers know _which_ pattern to apply but make ad-hoc decisions about implementation: inconsistent Radix usage, `'use client'` on entire feature trees, toast calls that don't reach server action results, carousels without keyboard navigation, data tables with client-side pagination that should be server-side.
 
 This ADR provides the **technical implementation layer** for every interactive UI pattern recommended in ADRs 0024-0026.
 
 This is **Part 4** and final of the UX knowledge series:
 
-| ADR | Scope |
-|-----|-------|
-| ADR-0024 | Core interaction patterns — navigation, CTAs, feedback, form UX, responsive, keyboard/focus |
-| ADR-0025 | Content display — carousels, tabs, accordions, galleries, data tables, timelines, trees |
-| ADR-0026 | Application-specific — CRUD, search, drag-and-drop, real-time, dashboards, onboarding |
+| ADR                 | Scope                                                                                                 |
+| ------------------- | ----------------------------------------------------------------------------------------------------- |
+| ADR-0024            | Core interaction patterns — navigation, CTAs, feedback, form UX, responsive, keyboard/focus           |
+| ADR-0025            | Content display — carousels, tabs, accordions, galleries, data tables, timelines, trees               |
+| ADR-0026            | Application-specific — CRUD, search, drag-and-drop, real-time, dashboards, onboarding                 |
 | **ADR-0027** (this) | Implementation — library wiring, component architecture, server/client boundaries, accessibility code |
 
 ## Decision
@@ -31,23 +31,23 @@ This is **Part 4** and final of the UX knowledge series:
 
 ## Rules
 
-| Rule | Level |
-|------|-------|
-| Use Radix UI (via shadcn/ui) for all overlay, menu, tooltip, tabs, accordion, and toggle components — never build custom implementations of these | **MUST** |
-| Interactive components use `'use client'` only on the smallest possible wrapper — server component keeps layout + content (ADR-0004) | **MUST** |
-| Every Radix component must be restyled with project tokens only — no default Tailwind palette (ADR-0002) | **MUST** |
-| Toast notifications use Sonner — never build a custom toast system | **MUST** |
-| Carousel/slider implementations use Embla Carousel — never build custom slide logic | **MUST** |
-| Drag-and-drop implementations use dnd-kit with keyboard sensor enabled — never DnD without keyboard fallback | **MUST** |
-| Data table implementations use TanStack Table for sorting, filtering, and pagination logic | **MUST** |
-| Command palette implementations use cmdk — never build custom fuzzy search UI | **MUST** |
-| Focus traps use Radix's built-in focus trap (Dialog, AlertDialog, Sheet) — never implement manual focus traps for overlay components | **MUST** |
-| All interactive component transitions respect `useMotionEnabled()` — gate decorative animations, keep functional transitions (ADR-0003) | **MUST** |
-| URL state (`nuqs` or `useSearchParams`) for shareable UI state (active tab, filter, sort, search query) — per ADR-0020 | **SHOULD** |
-| Props crossing the server/client boundary must be serializable (no functions, no class instances, no Dates — use ISO strings) | **MUST** |
-| Always import Radix components from `@/components/ui/*` barrels, never from `@radix-ui/*` directly in feature code | **MUST** |
-| Test interactive components with RTL + `@testing-library/user-event` for keyboard/focus testing (ADR-0009) | **MUST** |
-| Library recommendations in this ADR are classified as `recommended`, `compatible`, or `forbidden` per ADR-0002 conventions | **MUST** |
+| Rule                                                                                                                                              | Level      |
+| ------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
+| Use Radix UI (via shadcn/ui) for all overlay, menu, tooltip, tabs, accordion, and toggle components — never build custom implementations of these | **MUST**   |
+| Interactive components use `'use client'` only on the smallest possible wrapper — server component keeps layout + content (ADR-0004)              | **MUST**   |
+| Every Radix component must be restyled with project tokens only — no default Tailwind palette (ADR-0002)                                          | **MUST**   |
+| Toast notifications use Sonner — never build a custom toast system                                                                                | **MUST**   |
+| Carousel/slider implementations use Embla Carousel — never build custom slide logic                                                               | **MUST**   |
+| Drag-and-drop implementations use dnd-kit with keyboard sensor enabled — never DnD without keyboard fallback                                      | **MUST**   |
+| Data table implementations use TanStack Table for sorting, filtering, and pagination logic                                                        | **MUST**   |
+| Command palette implementations use cmdk — never build custom fuzzy search UI                                                                     | **MUST**   |
+| Focus traps use Radix's built-in focus trap (Dialog, AlertDialog, Sheet) — never implement manual focus traps for overlay components              | **MUST**   |
+| All interactive component transitions respect `useMotionEnabled()` — gate decorative animations, keep functional transitions                      | **MUST**   |
+| URL state (`nuqs` or `useSearchParams`) for shareable UI state (active tab, filter, sort, search query) — per ADR-0020                            | **SHOULD** |
+| Props crossing the server/client boundary must be serializable (no functions, no class instances, no Dates — use ISO strings)                     | **MUST**   |
+| Always import Radix components from `@/components/ui/*` barrels, never from `@radix-ui/*` directly in feature code                                | **MUST**   |
+| Test interactive components with RTL + `@testing-library/user-event` for keyboard/focus testing (ADR-0009)                                        | **MUST**   |
+| Library recommendations in this ADR are classified as `recommended`, `compatible`, or `forbidden` per ADR-0002 conventions                        | **MUST**   |
 
 ---
 
@@ -57,26 +57,26 @@ This is **Part 4** and final of the UX knowledge series:
 
 Every UX pattern in ADRs 0024-0026 that requires a headless accessible primitive maps to a specific Radix component:
 
-| UX Pattern (ADR source) | Radix Component | shadcn/ui Name | Notes |
-|------------------------|-----------------|----------------|-------|
-| Modal editing (ADR-0026 §1.3) | `Dialog` | `Dialog` | Centered overlay with focus trap |
-| Slide-over panel (ADR-0026 §1.3) | `Dialog` | `Sheet` | Side-anchored variant using Dialog internals |
-| Destructive confirmation (ADR-0026 §1.5) | `AlertDialog` | `AlertDialog` | Requires explicit action — no close-on-overlay-click |
-| Dropdown actions (ADR-0026 §12) | `DropdownMenu` | `DropdownMenu` | Context menu, kebab menu, bulk actions |
-| Tooltip hints (ADR-0024 §3.3) | `Tooltip` | `Tooltip` | Hover/focus-triggered, delay-managed |
-| Tabs (ADR-0025 §3) | `Tabs` | `Tabs` | Horizontal/vertical, roving tabindex built-in |
-| Accordion (ADR-0025 §4) | `Accordion` | `Accordion` | Single/multi open, collapsible |
-| Navigation menu (ADR-0024 §1.1) | `NavigationMenu` | `NavigationMenu` | Desktop mega-menu with viewport positioning |
-| Popover (ADR-0024 §3.3) | `Popover` | `Popover` | Rich content tooltip alternative |
-| Toggle (ADR-0025 §6) | `Toggle` / `ToggleGroup` | `Toggle` | Pressed/unpressed state, group for mutual exclusion |
-| Select (ADR-0012) | `Select` | `Select` | Styled native-feel dropdown |
-| Command palette (ADR-0024 §1.4) | — (cmdk wraps Dialog) | Custom | cmdk provides its own accessible combobox |
-| Toast (ADR-0024 §3.2) | — (Sonner) | `Sonner` | Standalone — not a Radix component |
+| UX Pattern (ADR source)                  | Radix Component          | shadcn/ui Name   | Notes                                                |
+| ---------------------------------------- | ------------------------ | ---------------- | ---------------------------------------------------- |
+| Modal editing (ADR-0026 §1.3)            | `Dialog`                 | `Dialog`         | Centered overlay with focus trap                     |
+| Slide-over panel (ADR-0026 §1.3)         | `Dialog`                 | `Sheet`          | Side-anchored variant using Dialog internals         |
+| Destructive confirmation (ADR-0026 §1.5) | `AlertDialog`            | `AlertDialog`    | Requires explicit action — no close-on-overlay-click |
+| Dropdown actions (ADR-0026 §12)          | `DropdownMenu`           | `DropdownMenu`   | Context menu, kebab menu, bulk actions               |
+| Tooltip hints (ADR-0024 §3.3)            | `Tooltip`                | `Tooltip`        | Hover/focus-triggered, delay-managed                 |
+| Tabs (ADR-0025 §3)                       | `Tabs`                   | `Tabs`           | Horizontal/vertical, roving tabindex built-in        |
+| Accordion (ADR-0025 §4)                  | `Accordion`              | `Accordion`      | Single/multi open, collapsible                       |
+| Navigation menu (ADR-0024 §1.1)          | `NavigationMenu`         | `NavigationMenu` | Desktop mega-menu with viewport positioning          |
+| Popover (ADR-0024 §3.3)                  | `Popover`                | `Popover`        | Rich content tooltip alternative                     |
+| Toggle (ADR-0025 §6)                     | `Toggle` / `ToggleGroup` | `Toggle`         | Pressed/unpressed state, group for mutual exclusion  |
+| Select (ADR-0012)                        | `Select`                 | `Select`         | Styled native-feel dropdown                          |
+| Command palette (ADR-0024 §1.4)          | — (cmdk wraps Dialog)    | Custom           | cmdk provides its own accessible combobox            |
+| Toast (ADR-0024 §3.2)                    | — (Sonner)               | `Sonner`         | Standalone — not a Radix component                   |
 
 ### 1.2 When to Use Radix vs Build Custom
 
 ```
-Does the pattern need: overlay positioning, focus trap, 
+Does the pattern need: overlay positioning, focus trap,
 dismiss-on-escape, roving tabindex, or ARIA role management?
   → YES: Use Radix (via shadcn/ui)
     → Is there a matching shadcn/ui component?
@@ -110,10 +110,10 @@ const DialogOverlay = ({
 }: React.ComponentPropsWithoutRef<typeof DialogPrimitive.Overlay>) => (
   <DialogPrimitive.Overlay
     className={cn(
-      'fixed inset-0 z-50 bg-background-overlay/80 backdrop-blur-sm',
+      'bg-background-overlay/80 fixed inset-0 z-50 backdrop-blur-sm',
       'data-[state=open]:animate-in data-[state=open]:fade-in-0',
       'data-[state=closed]:animate-out data-[state=closed]:fade-out-0',
-      className
+      className,
     )}
     {...props}
   />
@@ -128,11 +128,11 @@ const DialogContent = ({
     <DialogOverlay />
     <DialogPrimitive.Content
       className={cn(
-        'fixed left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2',
-        'w-full max-w-lg rounded-lg border border-border bg-surface p-6 shadow-lg',
+        'fixed top-1/2 left-1/2 z-50 -translate-x-1/2 -translate-y-1/2',
+        'border-border bg-surface w-full max-w-lg rounded-lg border p-6 shadow-lg',
         'data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95',
         'data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95',
-        className
+        className,
       )}
       {...props}
     >
@@ -144,12 +144,12 @@ const DialogContent = ({
 
 **Step 2: className override depth rules (per ADR-0002)**
 
-| Override level | Allowed? | Example |
-|---------------|----------|---------|
-| Wrapper-level `className` | ✅ Always | `<Dialog className="max-w-2xl">` |
-| cva variant props | ✅ Preferred | `<Button variant="destructive" size="lg">` |
-| Deep child selectors | ❌ Forbidden | Never target `.dialog-overlay > div > span` |
-| `!important` overrides | ❌ Forbidden | Never use `!important` on Radix internals |
+| Override level            | Allowed?     | Example                                     |
+| ------------------------- | ------------ | ------------------------------------------- |
+| Wrapper-level `className` | ✅ Always    | `<Dialog className="max-w-2xl">`            |
+| cva variant props         | ✅ Preferred | `<Button variant="destructive" size="lg">`  |
+| Deep child selectors      | ❌ Forbidden | Never target `.dialog-overlay > div > span` |
+| `!important` overrides    | ❌ Forbidden | Never use `!important` on Radix internals   |
 
 **Step 3: Animation tokens**
 
@@ -157,8 +157,18 @@ Radix components use `data-[state=open]` / `data-[state=closed]` attributes. Tai
 
 ```css
 /* globals.css — animation keyframes for Radix states */
-@keyframes dialog-enter { from { opacity: 0; scale: 0.95; } }
-@keyframes dialog-exit { to { opacity: 0; scale: 0.95; } }
+@keyframes dialog-enter {
+  from {
+    opacity: 0;
+    scale: 0.95;
+  }
+}
+@keyframes dialog-exit {
+  to {
+    opacity: 0;
+    scale: 0.95;
+  }
+}
 ```
 
 Map these to Tailwind config or use `tailwindcss-animate` (pre-approved, already part of shadcn/ui setup).
@@ -191,6 +201,7 @@ src/components/ui/
 ```
 
 Each component:
+
 - Has `'use client'` directive (Radix primitives require DOM access)
 - Re-exports compound parts (e.g., `DialogTrigger`, `DialogContent`, `DialogHeader`, `DialogTitle`, `DialogDescription`, `DialogFooter`, `DialogClose`)
 - Applies project token styling in the component file (not at consumption site)
@@ -229,29 +240,29 @@ Name the file for what the component does. The `'use client'` directive on line 
 
 Props passed from server to client components must be serializable. This is a Next.js constraint:
 
-| Allowed | Not Allowed |
-|---------|-------------|
-| `string`, `number`, `boolean` | Functions (`onClick`, callbacks) |
-| `null`, `undefined` | Class instances |
+| Allowed                          | Not Allowed                      |
+| -------------------------------- | -------------------------------- |
+| `string`, `number`, `boolean`    | Functions (`onClick`, callbacks) |
+| `null`, `undefined`              | Class instances                  |
 | Plain objects (`{ key: value }`) | `Date` objects (use ISO strings) |
-| Arrays of serializable values | `Map`, `Set`, `Symbol` |
-| JSX (`children`) | `RegExp` |
+| Arrays of serializable values    | `Map`, `Set`, `Symbol`           |
+| JSX (`children`)                 | `RegExp`                         |
 
 **Pattern for passing event handlers:**
 
 ```tsx
 // ❌ WRONG — function prop crosses server/client boundary
 // PricingSection.tsx (Server Component)
-<PricingToggle onChange={(plan) => updatePlan(plan)} />
+;<PricingToggle onChange={(plan) => updatePlan(plan)} />
 
 // ✅ CORRECT — server action is a special case, passed by reference
 // PricingSection.tsx (Server Component)
 import { updatePlan } from './actions'
 
-<PricingToggle updatePlanAction={updatePlan} />
+;<PricingToggle updatePlanAction={updatePlan} />
 
 // PricingToggle.tsx
-'use client'
+;('use client')
 
 import { useTransition } from 'react'
 
@@ -261,7 +272,7 @@ type PricingToggleProps = {
 
 export const PricingToggle = ({ updatePlanAction }: PricingToggleProps) => {
   const [isPending, startTransition] = useTransition()
-  
+
   const handleToggle = (plan: string) => {
     startTransition(() => updatePlanAction(plan))
   }
@@ -278,10 +289,10 @@ export const PricingToggle = ({ updatePlanAction }: PricingToggleProps) => {
 import { AddToCartButton } from './AddToCartButton.client'
 
 export const ProductCard = ({ product }: { product: Product }) => (
-  <div className="rounded-lg border border-border bg-surface p-4">
+  <div className='border-border bg-surface rounded-lg border p-4'>
     <img src={product.image} alt={product.name} />
-    <Typography variant="h3">{product.name}</Typography>
-    <Typography variant="body">{product.description}</Typography>
+    <Typography variant='h3'>{product.name}</Typography>
+    <Typography variant='body'>{product.description}</Typography>
     <AddToCartButton productId={product.id} />
   </div>
 )
@@ -301,7 +312,7 @@ export const AccordionSection = ({ items }: { items: FaqItem[] }) => (
           <AccordionItem key={item.id} value={item.id}>
             <AccordionTrigger>{item.question}</AccordionTrigger>
             <AccordionContent>
-              <Typography variant="body">{item.answer}</Typography>
+              <Typography variant='body'>{item.answer}</Typography>
             </AccordionContent>
           </AccordionItem>
         ))}
@@ -323,7 +334,7 @@ import { useEffect, useState } from 'react'
 
 export const useScrollSpy = (sectionIds: string[], offset = 0) => {
   const [activeId, setActiveId] = useState<string>('')
-  
+
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -333,30 +344,30 @@ export const useScrollSpy = (sectionIds: string[], offset = 0) => {
           }
         }
       },
-      { rootMargin: `-${offset}px 0px 0px 0px`, threshold: 0.5 }
+      { rootMargin: `-${offset}px 0px 0px 0px`, threshold: 0.5 },
     )
-    
+
     for (const id of sectionIds) {
       const el = document.getElementById(id)
       if (el) observer.observe(el)
     }
-    
+
     return () => observer.disconnect()
   }, [sectionIds, offset])
-  
+
   return activeId
 }
 ```
 
 ### 2.5 Anti-Patterns
 
-| Anti-Pattern | Why It's Wrong | Correct Pattern |
-|-------------|----------------|-----------------|
-| `'use client'` on the entire feature component | Opts out the whole subtree from Server Components — loses streaming, increases bundle | Extract only interactive parts to separate files with `'use client'` on line 1 |
-| Passing `className` computation from server to client | Unnecessary — Tailwind classes are strings, always serializable | Calculate classes on whatever side needs them |
-| Wrapping a Server Component in a Client Component to add a click handler | The Server Component becomes a client component | Pass the Server Component as `children` prop instead |
-| Using `useEffect` to fetch data in a client component | Defeats server-first principle | Fetch on server, pass data as props to client component |
-| Importing a server-only module in a `'use client'` file | Build error or runtime error | Keep server imports in server files, pass results as props |
+| Anti-Pattern                                                             | Why It's Wrong                                                                        | Correct Pattern                                                                |
+| ------------------------------------------------------------------------ | ------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| `'use client'` on the entire feature component                           | Opts out the whole subtree from Server Components — loses streaming, increases bundle | Extract only interactive parts to separate files with `'use client'` on line 1 |
+| Passing `className` computation from server to client                    | Unnecessary — Tailwind classes are strings, always serializable                       | Calculate classes on whatever side needs them                                  |
+| Wrapping a Server Component in a Client Component to add a click handler | The Server Component becomes a client component                                       | Pass the Server Component as `children` prop instead                           |
+| Using `useEffect` to fetch data in a client component                    | Defeats server-first principle                                                        | Fetch on server, pass data as props to client component                        |
+| Importing a server-only module in a `'use client'` file                  | Build error or runtime error                                                          | Keep server imports in server files, pass results as props                     |
 
 ---
 
@@ -392,7 +403,7 @@ import { Toaster as SonnerToaster } from 'sonner'
 
 export const Toaster = () => (
   <SonnerToaster
-    position="bottom-right"
+    position='bottom-right'
     toastOptions={{
       classNames: {
         toast: 'bg-surface border-border text-foreground shadow-lg rounded-lg',
@@ -424,8 +435,12 @@ export const CopyButton = ({ text }: { text: string }) => {
     await navigator.clipboard.writeText(text)
     toast.success('Copied to clipboard')
   }
-  
-  return <Button onClick={handleCopy} variant="ghost">Copy</Button>
+
+  return (
+    <Button onClick={handleCopy} variant='ghost'>
+      Copy
+    </Button>
+  )
 }
 ```
 
@@ -459,7 +474,7 @@ import { deleteItem } from './actions'
 
 export const DeleteButton = ({ id }: { id: string }) => {
   const [isPending, startTransition] = useTransition()
-  
+
   const handleDelete = () => {
     startTransition(async () => {
       const result = await deleteItem(id)
@@ -470,9 +485,9 @@ export const DeleteButton = ({ id }: { id: string }) => {
       }
     })
   }
-  
+
   return (
-    <Button onClick={handleDelete} variant="destructive" disabled={isPending}>
+    <Button onClick={handleDelete} variant='destructive' disabled={isPending}>
       {isPending ? 'Deleting...' : 'Delete'}
     </Button>
   )
@@ -493,14 +508,14 @@ toast('Item archived', {
 
 ### 3.4 Toast Types and When to Use Each
 
-| Toast Type | When to Use | Duration |
-|-----------|-------------|----------|
-| `toast.success()` | Completed action: saved, deleted, copied | 4s (auto-dismiss) |
-| `toast.error()` | Failed action: network error, validation rejection | 8s or persistent |
-| `toast.warning()` | Caution state: approaching limit, unsaved changes | 6s |
-| `toast.info()` | Neutral notification: new message, update available | 4s |
-| `toast()` with `action` | Undoable action: archive, move, status change | 6s (time to undo) |
-| `toast.loading()` → `toast.success()` | Long-running action: file upload, export generation | Until completion |
+| Toast Type                            | When to Use                                         | Duration          |
+| ------------------------------------- | --------------------------------------------------- | ----------------- |
+| `toast.success()`                     | Completed action: saved, deleted, copied            | 4s (auto-dismiss) |
+| `toast.error()`                       | Failed action: network error, validation rejection  | 8s or persistent  |
+| `toast.warning()`                     | Caution state: approaching limit, unsaved changes   | 6s                |
+| `toast.info()`                        | Neutral notification: new message, update available | 4s                |
+| `toast()` with `action`               | Undoable action: archive, move, status change       | 6s (time to undo) |
+| `toast.loading()` → `toast.success()` | Long-running action: file upload, export generation | Until completion  |
 
 **Accessibility:** Sonner renders toasts in an `aria-live="polite"` region by default. Error toasts should use `aria-live="assertive"` — Sonner handles this when using `toast.error()`.
 
@@ -544,26 +559,23 @@ type MobileMenuProps = {
 
 export const MobileMenu = ({ items }: MobileMenuProps) => {
   const [open, setOpen] = useState(false)
-  
+
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <button
-          className="lg:hidden p-2"
-          aria-label="Open menu"
-        >
-          <HamburgerIcon aria-hidden="true" />
+        <button className='p-2 lg:hidden' aria-label='Open menu'>
+          <HamburgerIcon aria-hidden='true' />
         </button>
       </SheetTrigger>
-      <SheetContent side="left" className="w-72 bg-surface">
-        <SheetTitle className="sr-only">Navigation menu</SheetTitle>
-        <nav aria-label="Mobile navigation">
-          <ul className="flex flex-col gap-2 pt-8">
+      <SheetContent side='left' className='bg-surface w-72'>
+        <SheetTitle className='sr-only'>Navigation menu</SheetTitle>
+        <nav aria-label='Mobile navigation'>
+          <ul className='flex flex-col gap-2 pt-8'>
             {items.map((item) => (
               <li key={item.href}>
                 <a
                   href={item.href}
-                  className="block px-4 py-3 text-foreground hover:bg-muted rounded-md"
+                  className='text-foreground hover:bg-muted block rounded-md px-4 py-3'
                   onClick={() => setOpen(false)}
                 >
                   {item.label}
@@ -588,12 +600,12 @@ export const MobileMenu = ({ items }: MobileMenuProps) => {
 
 ### 4.4 AnimatePresence for Enter/Exit
 
-If the project uses Framer Motion for drawer animations instead of CSS (per ADR-0003), compose with Radix's `forceMount` prop:
+If the project uses Framer Motion for drawer animations instead of CSS, compose with Radix's `forceMount` prop:
 
 ```tsx
 import { AnimatePresence, m } from 'framer-motion'
 
-<SheetContent forceMount>
+;<SheetContent forceMount>
   <AnimatePresence>
     {open && (
       <m.div
@@ -627,7 +639,7 @@ Gate decorative spring bounce with `useMotionEnabled()` — if reduced motion, u
 export const scrollToSection = (sectionId: string, headerOffset = 80) => {
   const element = document.getElementById(sectionId)
   if (!element) return
-  
+
   const y = element.getBoundingClientRect().top + window.scrollY - headerOffset
   window.scrollTo({ top: y, behavior: 'smooth' })
 }
@@ -670,13 +682,10 @@ type UseScrollSpyOptions = {
   threshold?: number
 }
 
-export const useScrollSpy = (
-  sectionIds: string[],
-  options: UseScrollSpyOptions = {}
-) => {
+export const useScrollSpy = (sectionIds: string[], options: UseScrollSpyOptions = {}) => {
   const { rootMargin = '-80px 0px 0px 0px', threshold = 0.4 } = options
   const [activeId, setActiveId] = useState<string>(sectionIds[0] ?? '')
-  
+
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -684,22 +693,22 @@ export const useScrollSpy = (
         const visible = entries
           .filter((entry) => entry.isIntersecting)
           .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)
-        
+
         if (visible.length > 0) {
           setActiveId(visible[0].target.id)
         }
       },
-      { rootMargin, threshold }
+      { rootMargin, threshold },
     )
-    
+
     for (const id of sectionIds) {
       const el = document.getElementById(id)
       if (el) observer.observe(el)
     }
-    
+
     return () => observer.disconnect()
   }, [sectionIds, rootMargin, threshold])
-  
+
   return activeId
 }
 ```
@@ -716,20 +725,20 @@ const sections = ['about', 'features', 'pricing', 'faq']
 
 export const SectionNav = () => {
   const activeId = useScrollSpy(sections)
-  
+
   return (
-    <nav aria-label="Page sections">
-      <ul className="flex gap-4">
+    <nav aria-label='Page sections'>
+      <ul className='flex gap-4'>
         {sections.map((id) => (
           <li key={id}>
             <a
               href={`#${id}`}
               aria-current={activeId === id ? 'true' : undefined}
               className={cn(
-                'px-3 py-1 rounded-full text-sm transition-colors',
+                'rounded-full px-3 py-1 text-sm transition-colors',
                 activeId === id
                   ? 'bg-primary text-primary-foreground'
-                  : 'text-muted-foreground hover:text-foreground'
+                  : 'text-muted-foreground hover:text-foreground',
               )}
             >
               {id.charAt(0).toUpperCase() + id.slice(1)}
@@ -761,13 +770,10 @@ export const useScrollPosition = (key: string) => {
     if (saved) {
       window.scrollTo(0, parseInt(saved, 10))
     }
-    
+
     // Save on unmount
     return () => {
-      sessionStorage.setItem(
-        `${STORAGE_PREFIX}${key}`,
-        String(window.scrollY)
-      )
+      sessionStorage.setItem(`${STORAGE_PREFIX}${key}`, String(window.scrollY))
     }
   }, [key])
 }
@@ -800,19 +806,19 @@ export const ProfileForm = () => {
   } = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
   })
-  
+
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <div className="space-y-2">
-        <Label htmlFor="name">Name</Label>
+      <div className='space-y-2'>
+        <Label htmlFor='name'>Name</Label>
         <Input
-          id="name"
+          id='name'
           {...register('name')}
           aria-invalid={!!errors.name}
           aria-describedby={errors.name ? 'name-error' : undefined}
         />
         {errors.name && (
-          <p id="name-error" className="text-sm text-destructive" role="alert">
+          <p id='name-error' className='text-destructive text-sm' role='alert'>
             {errors.name.message}
           </p>
         )}
@@ -835,28 +841,28 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 
-<Controller
-  name="role"
+;<Controller
+  name='role'
   control={control}
   render={({ field, fieldState }) => (
-    <div className="space-y-2">
-      <Label htmlFor="role">Role</Label>
+    <div className='space-y-2'>
+      <Label htmlFor='role'>Role</Label>
       <Select onValueChange={field.onChange} value={field.value}>
         <SelectTrigger
-          id="role"
+          id='role'
           aria-invalid={!!fieldState.error}
           aria-describedby={fieldState.error ? 'role-error' : undefined}
         >
-          <SelectValue placeholder="Select a role" />
+          <SelectValue placeholder='Select a role' />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="admin">Admin</SelectItem>
-          <SelectItem value="editor">Editor</SelectItem>
-          <SelectItem value="viewer">Viewer</SelectItem>
+          <SelectItem value='admin'>Admin</SelectItem>
+          <SelectItem value='editor'>Editor</SelectItem>
+          <SelectItem value='viewer'>Viewer</SelectItem>
         </SelectContent>
       </Select>
       {fieldState.error && (
-        <p id="role-error" className="text-sm text-destructive" role="alert">
+        <p id='role-error' className='text-destructive text-sm' role='alert'>
           {fieldState.error.message}
         </p>
       )}
@@ -867,13 +873,13 @@ import {
 
 ### 6.2 Validation Feedback with Correct ARIA
 
-| ARIA Attribute | When | Purpose |
-|---------------|------|---------|
-| `aria-invalid="true"` | Field has an error | Marks the field as invalid for assistive tech |
-| `aria-describedby="field-error"` | Error message is visible | Links the field to its error message |
+| ARIA Attribute                    | When                              | Purpose                                                        |
+| --------------------------------- | --------------------------------- | -------------------------------------------------------------- |
+| `aria-invalid="true"`             | Field has an error                | Marks the field as invalid for assistive tech                  |
+| `aria-describedby="field-error"`  | Error message is visible          | Links the field to its error message                           |
 | `aria-errormessage="field-error"` | Alternative to `aria-describedby` | More explicit (but less supported) — prefer `aria-describedby` |
-| `role="alert"` | On the error message element | Announces the error to screen readers when it appears |
-| `aria-live="polite"` | On a validation summary region | For form-level error summaries |
+| `role="alert"`                    | On the error message element      | Announces the error to screen readers when it appears          |
+| `aria-live="polite"`              | On a validation summary region    | For form-level error summaries                                 |
 
 ### 6.3 Inline Validation on Blur
 
@@ -882,12 +888,13 @@ RHF supports `mode: 'onBlur'` for validate-on-blur, `mode: 'onChange'` for real-
 ```tsx
 const form = useForm({
   resolver: zodResolver(schema),
-  mode: 'onBlur',           // Validate when user leaves field
+  mode: 'onBlur', // Validate when user leaves field
   reValidateMode: 'onChange', // Re-validate in real-time after first error
 })
 ```
 
 Decision tree from ADR-0024:
+
 - **Create forms (empty fields):** `mode: 'onBlur'` — don't show errors before user attempts input
 - **Edit forms (pre-filled):** `mode: 'onBlur'` — same, user is modifying known-good data
 - **Search/filter inputs:** `mode: 'onChange'` — immediate feedback is expected
@@ -906,7 +913,7 @@ export const CreateItemForm = () => {
   const form = useForm<CreateItemData>({
     resolver: zodResolver(createItemSchema),
   })
-  
+
   const onSubmit = form.handleSubmit((data) => {
     startTransition(async () => {
       const result = await createItem(data)
@@ -918,11 +925,11 @@ export const CreateItemForm = () => {
       }
     })
   })
-  
+
   return (
     <form onSubmit={onSubmit}>
       {/* fields */}
-      <Button type="submit" disabled={isPending}>
+      <Button type='submit' disabled={isPending}>
         {isPending ? 'Creating...' : 'Create Item'}
       </Button>
     </form>
@@ -949,19 +956,22 @@ type UseWizardOptions = {
 
 export const useWizard = ({ totalSteps, initialStep = 0 }: UseWizardOptions) => {
   const [currentStep, setCurrentStep] = useState(initialStep)
-  
+
   const goNext = useCallback(() => {
     setCurrentStep((s) => Math.min(s + 1, totalSteps - 1))
   }, [totalSteps])
-  
+
   const goPrev = useCallback(() => {
     setCurrentStep((s) => Math.max(s - 1, 0))
   }, [])
-  
-  const goTo = useCallback((step: number) => {
-    setCurrentStep(Math.max(0, Math.min(step, totalSteps - 1)))
-  }, [totalSteps])
-  
+
+  const goTo = useCallback(
+    (step: number) => {
+      setCurrentStep(Math.max(0, Math.min(step, totalSteps - 1)))
+    },
+    [totalSteps],
+  )
+
   return {
     currentStep,
     totalSteps,
@@ -1001,6 +1011,7 @@ What kind of state is it?
 When the UI state should be bookmarkable, shareable, or persist across browser navigation:
 
 **Active tab:**
+
 ```tsx
 'use client'
 
@@ -1008,13 +1019,13 @@ import { useQueryState } from 'nuqs'
 
 export const ProductTabs = () => {
   const [tab, setTab] = useQueryState('tab', { defaultValue: 'overview' })
-  
+
   return (
     <Tabs value={tab} onValueChange={setTab}>
       <TabsList>
-        <TabsTrigger value="overview">Overview</TabsTrigger>
-        <TabsTrigger value="specs">Specifications</TabsTrigger>
-        <TabsTrigger value="reviews">Reviews</TabsTrigger>
+        <TabsTrigger value='overview'>Overview</TabsTrigger>
+        <TabsTrigger value='specs'>Specifications</TabsTrigger>
+        <TabsTrigger value='reviews'>Reviews</TabsTrigger>
       </TabsList>
       {/* TabsContent */}
     </Tabs>
@@ -1023,6 +1034,7 @@ export const ProductTabs = () => {
 ```
 
 **Filters and search:**
+
 ```tsx
 'use client'
 
@@ -1060,6 +1072,7 @@ export const useUIStore = create<UIState>((set) => ({
 ```
 
 **When NOT to use Zustand** (per ADR-0020):
+
 - Single-component toggle → `useState`
 - Two sibling components sharing state → lift state or Context
 - URL-representable state → `nuqs`
@@ -1099,91 +1112,87 @@ export const Carousel = ({
   const [canScrollNext, setCanScrollNext] = useState(false)
   const [selectedIndex, setSelectedIndex] = useState(0)
   const [slideCount, setSlideCount] = useState(0)
-  
+
   const onSelect = useCallback(() => {
     if (!emblaApi) return
     setSelectedIndex(emblaApi.selectedScrollSnap())
     setCanScrollPrev(emblaApi.canScrollPrev())
     setCanScrollNext(emblaApi.canScrollNext())
   }, [emblaApi])
-  
+
   useEffect(() => {
     if (!emblaApi) return
     setSlideCount(emblaApi.scrollSnapList().length)
     onSelect()
     emblaApi.on('select', onSelect)
-    return () => { emblaApi.off('select', onSelect) }
+    return () => {
+      emblaApi.off('select', onSelect)
+    }
   }, [emblaApi, onSelect])
-  
+
   // Autoplay with pause on interaction
   useEffect(() => {
     if (!autoplay || !emblaApi) return
-    
+
     let timer: ReturnType<typeof setInterval>
-    
+
     const startAutoplay = () => {
       timer = setInterval(() => emblaApi.scrollNext(), autoplayInterval)
     }
-    
+
     const stopAutoplay = () => clearInterval(timer)
-    
+
     startAutoplay()
     emblaApi.on('pointerDown', stopAutoplay)
     emblaApi.on('pointerUp', startAutoplay)
-    
+
     return () => {
       stopAutoplay()
       emblaApi.off('pointerDown', stopAutoplay)
       emblaApi.off('pointerUp', startAutoplay)
     }
   }, [emblaApi, autoplay, autoplayInterval])
-  
+
   return (
     <div
-      className="relative"
-      role="region"
-      aria-roledescription="carousel"
-      aria-label="Image carousel"
+      className='relative'
+      role='region'
+      aria-roledescription='carousel'
+      aria-label='Image carousel'
     >
-      <div className="overflow-hidden" ref={emblaRef}>
-        <div className="flex">
-          {children}
-        </div>
+      <div className='overflow-hidden' ref={emblaRef}>
+        <div className='flex'>{children}</div>
       </div>
-      
+
       {/* Navigation arrows */}
       <button
         onClick={() => emblaApi?.scrollPrev()}
         disabled={!canScrollPrev}
-        aria-label="Previous slide"
-        className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-surface/80 p-2 disabled:opacity-30"
+        aria-label='Previous slide'
+        className='bg-surface/80 absolute top-1/2 left-2 -translate-y-1/2 rounded-full p-2 disabled:opacity-30'
       >
         ←
       </button>
       <button
         onClick={() => emblaApi?.scrollNext()}
         disabled={!canScrollNext}
-        aria-label="Next slide"
-        className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-surface/80 p-2 disabled:opacity-30"
+        aria-label='Next slide'
+        className='bg-surface/80 absolute top-1/2 right-2 -translate-y-1/2 rounded-full p-2 disabled:opacity-30'
       >
         →
       </button>
-      
+
       {/* Indicator dots */}
-      <div
-        className="mt-4 flex justify-center gap-2"
-        role="tablist"
-        aria-label="Slide indicators"
-      >
+      <div className='mt-4 flex justify-center gap-2' role='tablist' aria-label='Slide indicators'>
         {Array.from({ length: slideCount }).map((_, i) => (
           <button
             key={i}
-            role="tab"
+            role='tab'
             aria-selected={i === selectedIndex}
             aria-label={`Go to slide ${i + 1}`}
             className={cn(
               'h-2 w-2 rounded-full transition-colors',
-              i === selectedIndex ? 'bg-primary' : 'bg-muted'
+              i === selectedIndex ? 'bg-primary' : 'bg-muted',
             )}
             onClick={() => emblaApi?.scrollTo(i)}
           />
@@ -1194,11 +1203,7 @@ export const Carousel = ({
 }
 
 export const CarouselSlide = ({ children }: { children: React.ReactNode }) => (
-  <div
-    className="min-w-0 flex-[0_0_100%] px-2"
-    role="group"
-    aria-roledescription="slide"
-  >
+  <div className='min-w-0 flex-[0_0_100%] px-2' role='group' aria-roledescription='slide'>
     {children}
   </div>
 )
@@ -1206,11 +1211,11 @@ export const CarouselSlide = ({ children }: { children: React.ReactNode }) => (
 
 ### 8.2 Carousel Variants
 
-| Variant (ADR-0025 §1) | Embla Config | Slide Sizing |
-|-----------------------|-------------|--------------|
-| Hero carousel (full-width, 1 slide) | `{ loop: true }` | `flex-[0_0_100%]` |
-| Card carousel (multiple visible) | `{ align: 'start' }` | `flex-[0_0_33.33%]` (desktop), `flex-[0_0_80%]` (mobile) |
-| Product gallery with thumbnails | Two Embla instances synced via `emblaApi.scrollTo()` on the thumb carousel | Main: full-width, Thumbs: small |
+| Variant (ADR-0025 §1)               | Embla Config                                                               | Slide Sizing                                             |
+| ----------------------------------- | -------------------------------------------------------------------------- | -------------------------------------------------------- |
+| Hero carousel (full-width, 1 slide) | `{ loop: true }`                                                           | `flex-[0_0_100%]`                                        |
+| Card carousel (multiple visible)    | `{ align: 'start' }`                                                       | `flex-[0_0_33.33%]` (desktop), `flex-[0_0_80%]` (mobile) |
+| Product gallery with thumbnails     | Two Embla instances synced via `emblaApi.scrollTo()` on the thumb carousel | Main: full-width, Thumbs: small                          |
 
 ### 8.3 Keyboard Navigation
 
@@ -1238,12 +1243,13 @@ const handleKeyDown = (e: React.KeyboardEvent) => {
 
 ### 8.4 Autoplay and Reduced Motion
 
-Per ADR-0003:
+Autoplay rules:
+
 - **Autoplay must pause** on hover, focus, and when `prefers-reduced-motion: reduce` is active
 - Gate autoplay with `useMotionEnabled()`:
 
 ```tsx
-import { useMotionEnabled } from '@/lib/motion/hooks/useMotionEnabled'
+import { useMotionEnabled } from '@/hooks/useMotionEnabled'
 
 const motionEnabled = useMotionEnabled()
 const shouldAutoplay = autoplay && motionEnabled
@@ -1251,15 +1257,15 @@ const shouldAutoplay = autoplay && motionEnabled
 
 ### 8.5 Accessibility Checklist
 
-| Requirement | Implementation |
-|------------|----------------|
-| `role="region"` + `aria-roledescription="carousel"` on container | Identifies the widget |
-| `aria-label` on container | Names the carousel |
-| `role="group"` + `aria-roledescription="slide"` on each slide | Identifies slides |
-| Previous/Next buttons with `aria-label` | Keyboard-accessible navigation |
-| Indicator dots as `role="tab"` + `aria-selected` | Screen reader knows which is active |
-| Autoplay pauses on hover and focus | Users can read content |
-| Autoplay disabled under reduced motion | ADR-0003 requirement |
+| Requirement                                                      | Implementation                      |
+| ---------------------------------------------------------------- | ----------------------------------- |
+| `role="region"` + `aria-roledescription="carousel"` on container | Identifies the widget               |
+| `aria-label` on container                                        | Names the carousel                  |
+| `role="group"` + `aria-roledescription="slide"` on each slide    | Identifies slides                   |
+| Previous/Next buttons with `aria-label`                          | Keyboard-accessible navigation      |
+| Indicator dots as `role="tab"` + `aria-selected`                 | Screen reader knows which is active |
+| Autoplay pauses on hover and focus                               | Users can read content              |
+| Autoplay disabled under reduced motion                           | Accessibility requirement           |
 
 ---
 
@@ -1295,16 +1301,12 @@ type DataTableProps<TData> = {
   pageSize?: number
 }
 
-export const DataTable = <TData,>({
-  columns,
-  data,
-  pageSize = 10,
-}: DataTableProps<TData>) => {
+export const DataTable = <TData,>({ columns, data, pageSize = 10 }: DataTableProps<TData>) => {
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
-  
+
   const table = useReactTable({
     data,
     columns,
@@ -1326,18 +1328,18 @@ export const DataTable = <TData,>({
       pagination: { pageSize },
     },
   })
-  
+
   return (
     <div>
-      <div className="rounded-md border border-border">
-        <table className="w-full text-sm">
+      <div className='border-border rounded-md border'>
+        <table className='w-full text-sm'>
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id} className="border-b border-border bg-muted/50">
+              <tr key={headerGroup.id} className='border-border bg-muted/50 border-b'>
                 {headerGroup.headers.map((header) => (
                   <th
                     key={header.id}
-                    className="px-4 py-3 text-left font-medium text-muted-foreground"
+                    className='text-muted-foreground px-4 py-3 text-left font-medium'
                     aria-sort={
                       header.column.getIsSorted() === 'asc'
                         ? 'ascending'
@@ -1346,20 +1348,17 @@ export const DataTable = <TData,>({
                           : 'none'
                     }
                   >
-                    {header.isPlaceholder
-                      ? null
-                      : header.column.getCanSort()
-                        ? (
-                          <button
-                            className="flex items-center gap-1 hover:text-foreground"
-                            onClick={header.column.getToggleSortingHandler()}
-                          >
-                            {flexRender(header.column.columnDef.header, header.getContext())}
-                            <SortIcon direction={header.column.getIsSorted()} />
-                          </button>
-                        )
-                        : flexRender(header.column.columnDef.header, header.getContext())
-                    }
+                    {header.isPlaceholder ? null : header.column.getCanSort() ? (
+                      <button
+                        className='hover:text-foreground flex items-center gap-1'
+                        onClick={header.column.getToggleSortingHandler()}
+                      >
+                        {flexRender(header.column.columnDef.header, header.getContext())}
+                        <SortIcon direction={header.column.getIsSorted()} />
+                      </button>
+                    ) : (
+                      flexRender(header.column.columnDef.header, header.getContext())
+                    )}
                   </th>
                 ))}
               </tr>
@@ -1370,11 +1369,11 @@ export const DataTable = <TData,>({
               table.getRowModel().rows.map((row) => (
                 <tr
                   key={row.id}
-                  className="border-b border-border hover:bg-muted/30"
+                  className='border-border hover:bg-muted/30 border-b'
                   data-state={row.getIsSelected() ? 'selected' : undefined}
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <td key={cell.id} className="px-4 py-3">
+                    <td key={cell.id} className='px-4 py-3'>
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </td>
                   ))}
@@ -1384,7 +1383,7 @@ export const DataTable = <TData,>({
               <tr>
                 <td
                   colSpan={columns.length}
-                  className="px-4 py-8 text-center text-muted-foreground"
+                  className='text-muted-foreground px-4 py-8 text-center'
                 >
                   No results found
                 </td>
@@ -1393,25 +1392,25 @@ export const DataTable = <TData,>({
           </tbody>
         </table>
       </div>
-      
+
       {/* Pagination */}
-      <div className="flex items-center justify-between px-2 py-4">
-        <Typography variant="small" className="text-muted-foreground">
+      <div className='flex items-center justify-between px-2 py-4'>
+        <Typography variant='small' className='text-muted-foreground'>
           {table.getFilteredSelectedRowModel().rows.length} of{' '}
           {table.getFilteredRowModel().rows.length} row(s) selected
         </Typography>
-        <div className="flex items-center gap-2">
+        <div className='flex items-center gap-2'>
           <Button
-            variant="outline"
-            size="sm"
+            variant='outline'
+            size='sm'
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
           >
             Previous
           </Button>
           <Button
-            variant="outline"
-            size="sm"
+            variant='outline'
+            size='sm'
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
           >
@@ -1447,7 +1446,7 @@ Per ADR-0025 §8:
 ```
 Screen width?
   → ≥768px: Standard table layout
-  → <768px: 
+  → <768px:
     → ≤5 columns: Horizontal scroll with sticky first column
     → >5 columns: Card/list view (each row becomes a card)
 ```
@@ -1455,8 +1454,8 @@ Screen width?
 **Horizontal scroll with sticky column:**
 
 ```tsx
-<div className="overflow-x-auto">
-  <table className="w-full min-w-[600px]">
+<div className='overflow-x-auto'>
+  <table className='w-full min-w-[600px]'>
     {/* First column: sticky left-0 bg-surface z-10 */}
   </table>
 </div>
@@ -1494,7 +1493,7 @@ export const columns: ColumnDef<User>[] = [
       <Checkbox
         checked={table.getIsAllPageRowsSelected()}
         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
+        aria-label='Select all'
       />
     ),
     cell: ({ row }) => (
@@ -1510,7 +1509,7 @@ export const columns: ColumnDef<User>[] = [
   {
     accessorKey: 'name',
     header: 'Name',
-    cell: ({ row }) => <span className="font-medium">{row.getValue('name')}</span>,
+    cell: ({ row }) => <span className='font-medium'>{row.getValue('name')}</span>,
   },
   {
     accessorKey: 'email',
@@ -1519,7 +1518,7 @@ export const columns: ColumnDef<User>[] = [
   {
     accessorKey: 'role',
     header: 'Role',
-    cell: ({ row }) => <Badge variant="outline">{row.getValue('role')}</Badge>,
+    cell: ({ row }) => <Badge variant='outline'>{row.getValue('role')}</Badge>,
     filterFn: 'equals',
   },
   {
@@ -1578,10 +1577,7 @@ import {
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 
-import {
-  restrictToVerticalAxis,
-  restrictToParentElement,
-} from '@dnd-kit/modifiers'
+import { restrictToVerticalAxis, restrictToParentElement } from '@dnd-kit/modifiers'
 
 type SortableListProps<T extends { id: string }> = {
   items: T[]
@@ -1600,19 +1596,19 @@ export const SortableList = <T extends { id: string }>({
     }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
-    })
+    }),
   )
-  
+
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event
     if (!over || active.id === over.id) return
-    
+
     const oldIndex = items.findIndex((item) => item.id === active.id)
     const newIndex = items.findIndex((item) => item.id === over.id)
-    
+
     onReorder(arrayMove(items, oldIndex, newIndex))
   }
-  
+
   return (
     <DndContext
       sensors={sensors}
@@ -1620,11 +1616,8 @@ export const SortableList = <T extends { id: string }>({
       modifiers={[restrictToVerticalAxis, restrictToParentElement]}
       onDragEnd={handleDragEnd}
     >
-      <SortableContext
-        items={items.map((i) => i.id)}
-        strategy={verticalListSortingStrategy}
-      >
-        <ul role="listbox" aria-label="Reorderable list">
+      <SortableContext items={items.map((i) => i.id)} strategy={verticalListSortingStrategy}>
+        <ul role='listbox' aria-label='Reorderable list'>
           {items.map((item) => (
             <SortableItem key={item.id} id={item.id}>
               {renderItem(item)}
@@ -1636,39 +1629,28 @@ export const SortableList = <T extends { id: string }>({
   )
 }
 
-const SortableItem = ({
-  id,
-  children,
-}: {
-  id: string
-  children: React.ReactNode
-}) => {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id })
-  
+const SortableItem = ({ id, children }: { id: string; children: React.ReactNode }) => {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id,
+  })
+
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
     opacity: isDragging ? 0.5 : 1,
   }
-  
+
   return (
     <li
       ref={setNodeRef}
       style={style}
-      className="flex items-center gap-2 rounded-md border border-border bg-surface p-3"
-      role="option"
+      className='border-border bg-surface flex items-center gap-2 rounded-md border p-3'
+      role='option'
       aria-selected={isDragging}
       {...attributes}
       {...listeners}
     >
-      <GripVerticalIcon className="text-muted-foreground" aria-hidden="true" />
+      <GripVerticalIcon className='text-muted-foreground' aria-hidden='true' />
       {children}
     </li>
   )
@@ -1688,8 +1670,8 @@ Per ADR-0026 §3.3, kanban requires cross-container drag:
 <DndContext
   sensors={sensors}
   collisionDetection={closestCorners}
-  onDragOver={handleDragOver}   // Move between columns in real-time
-  onDragEnd={handleDragEnd}     // Finalize position
+  onDragOver={handleDragOver} // Move between columns in real-time
+  onDragEnd={handleDragEnd} // Finalize position
 >
   {columns.map((column) => (
     <SortableContext
@@ -1700,11 +1682,9 @@ Per ADR-0026 §3.3, kanban requires cross-container drag:
       <KanbanColumn column={column} />
     </SortableContext>
   ))}
-  
+
   {/* Drag overlay — renders the dragged item above everything */}
-  <DragOverlay>
-    {activeItem ? <KanbanCard item={activeItem} /> : null}
-  </DragOverlay>
+  <DragOverlay>{activeItem ? <KanbanCard item={activeItem} /> : null}</DragOverlay>
 </DndContext>
 ```
 
@@ -1729,12 +1709,12 @@ export const DropZone = ({
   maxSizeMB = 10,
 }: DropZoneProps) => {
   const [isDragOver, setIsDragOver] = useState(false)
-  
+
   const handleDrop = useCallback(
     (e: React.DragEvent) => {
       e.preventDefault()
       setIsDragOver(false)
-      
+
       const files = Array.from(e.dataTransfer.files).filter((file) => {
         // Client-side pre-validation (server validates too — ADR-0016)
         if (file.size > maxSizeMB * 1024 * 1024) return false
@@ -1748,34 +1728,33 @@ export const DropZone = ({
         }
         return true
       })
-      
+
       if (files.length > 0) onFiles(files)
     },
-    [onFiles, accept, maxSizeMB]
+    [onFiles, accept, maxSizeMB],
   )
-  
+
   return (
     <div
-      onDragOver={(e) => { e.preventDefault(); setIsDragOver(true) }}
+      onDragOver={(e) => {
+        e.preventDefault()
+        setIsDragOver(true)
+      }}
       onDragLeave={() => setIsDragOver(false)}
       onDrop={handleDrop}
       className={cn(
         'flex items-center justify-center rounded-lg border-2 border-dashed p-8',
-        'transition-colors cursor-pointer',
-        isDragOver
-          ? 'border-primary bg-primary/5'
-          : 'border-border hover:border-muted-foreground'
+        'cursor-pointer transition-colors',
+        isDragOver ? 'border-primary bg-primary/5' : 'border-border hover:border-muted-foreground',
       )}
-      role="button"
+      role='button'
       tabIndex={0}
-      aria-label="Drop files here or click to browse"
+      aria-label='Drop files here or click to browse'
     >
-      <div className="text-center">
-        <UploadIcon className="mx-auto mb-2 text-muted-foreground" />
-        <Typography variant="body">
-          Drag and drop files here, or click to browse
-        </Typography>
-        <Typography variant="small" className="text-muted-foreground">
+      <div className='text-center'>
+        <UploadIcon className='text-muted-foreground mx-auto mb-2' />
+        <Typography variant='body'>Drag and drop files here, or click to browse</Typography>
+        <Typography variant='small' className='text-muted-foreground'>
           Max {maxSizeMB}MB per file
         </Typography>
       </div>
@@ -1822,7 +1801,7 @@ import { Dialog, DialogContent } from '@/components/ui/dialog'
 
 export const CommandPalette = () => {
   const [open, setOpen] = useState(false)
-  
+
   // ⌘K / Ctrl+K to toggle
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -1834,49 +1813,43 @@ export const CommandPalette = () => {
     document.addEventListener('keydown', handler)
     return () => document.removeEventListener('keydown', handler)
   }, [])
-  
+
   const runCommand = useCallback((command: () => void) => {
     setOpen(false)
     command()
   }, [])
-  
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="overflow-hidden p-0 shadow-lg">
-        <Command className="[&_[cmdk-group-heading]]:text-muted-foreground [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-xs">
+      <DialogContent className='overflow-hidden p-0 shadow-lg'>
+        <Command className='[&_[cmdk-group-heading]]:text-muted-foreground [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:text-xs [&_[cmdk-group-heading]]:font-medium'>
           <Command.Input
-            placeholder="Type a command or search..."
-            className="h-12 w-full border-b border-border bg-transparent px-4 outline-none placeholder:text-muted-foreground"
+            placeholder='Type a command or search...'
+            className='border-border placeholder:text-muted-foreground h-12 w-full border-b bg-transparent px-4 outline-none'
           />
-          <Command.List className="max-h-[300px] overflow-y-auto p-2">
-            <Command.Empty className="py-6 text-center text-sm text-muted-foreground">
+          <Command.List className='max-h-[300px] overflow-y-auto p-2'>
+            <Command.Empty className='text-muted-foreground py-6 text-center text-sm'>
               No results found.
             </Command.Empty>
-            
-            <Command.Group heading="Navigation">
-              <CommandItem
-                onSelect={() => runCommand(() => router.push('/dashboard'))}
-              >
+
+            <Command.Group heading='Navigation'>
+              <CommandItem onSelect={() => runCommand(() => router.push('/dashboard'))}>
                 Dashboard
               </CommandItem>
-              <CommandItem
-                onSelect={() => runCommand(() => router.push('/settings'))}
-              >
+              <CommandItem onSelect={() => runCommand(() => router.push('/settings'))}>
                 Settings
               </CommandItem>
             </Command.Group>
-            
-            <Command.Separator className="my-1 h-px bg-border" />
-            
-            <Command.Group heading="Actions">
-              <CommandItem
-                onSelect={() => runCommand(() => createNewItem())}
-              >
+
+            <Command.Separator className='bg-border my-1 h-px' />
+
+            <Command.Group heading='Actions'>
+              <CommandItem onSelect={() => runCommand(() => createNewItem())}>
                 Create new item
               </CommandItem>
             </Command.Group>
-            
-            <Command.Group heading="Recent">
+
+            <Command.Group heading='Recent'>
               {recentItems.map((item) => (
                 <CommandItem
                   key={item.id}
@@ -1902,7 +1875,7 @@ const CommandItem = ({
 }) => (
   <Command.Item
     onSelect={onSelect}
-    className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-2 text-sm text-foreground aria-selected:bg-muted"
+    className='text-foreground aria-selected:bg-muted flex cursor-pointer items-center gap-2 rounded-md px-2 py-2 text-sm'
   >
     {children}
   </Command.Item>
@@ -1926,11 +1899,11 @@ import { useEffect, useState } from 'react'
 
 export const useIsMac = () => {
   const [isMac, setIsMac] = useState(false)
-  
+
   useEffect(() => {
     setIsMac(navigator.userAgent.includes('Mac'))
   }, [])
-  
+
   return isMac
 }
 
@@ -1962,18 +1935,18 @@ const FOCUSABLE_SELECTOR =
 
 export const useFocusTrap = <T extends HTMLElement>(active = true) => {
   const ref = useRef<T>(null)
-  
+
   useEffect(() => {
     if (!active || !ref.current) return
-    
+
     const container = ref.current
     const focusables = container.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)
     const first = focusables[0]
     const last = focusables[focusables.length - 1]
-    
+
     const handler = (e: KeyboardEvent) => {
       if (e.key !== 'Tab') return
-      
+
       if (e.shiftKey) {
         if (document.activeElement === first) {
           e.preventDefault()
@@ -1986,13 +1959,13 @@ export const useFocusTrap = <T extends HTMLElement>(active = true) => {
         }
       }
     }
-    
+
     container.addEventListener('keydown', handler)
     first?.focus()
-    
+
     return () => container.removeEventListener('keydown', handler)
   }, [active])
-  
+
   return ref
 }
 ```
@@ -2009,7 +1982,7 @@ import { useEffect, useRef } from 'react'
 
 export const useFocusRestore = (isOpen: boolean) => {
   const triggerRef = useRef<HTMLElement | null>(null)
-  
+
   useEffect(() => {
     if (isOpen) {
       // Save the currently focused element
@@ -2031,8 +2004,8 @@ Per ADR-0019, every page must have a skip-to-content link:
 // src/components/layout/SkipLink.tsx (Server Component — no interactivity needed)
 export const SkipLink = () => (
   <a
-    href="#main-content"
-    className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-md focus:bg-primary focus:px-4 focus:py-2 focus:text-primary-foreground focus:outline-none"
+    href='#main-content'
+    className='focus:bg-primary focus:text-primary-foreground sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:rounded-md focus:px-4 focus:py-2 focus:outline-none'
   >
     Skip to main content
   </a>
@@ -2053,16 +2026,16 @@ import { useCallback, useState } from 'react'
 
 export const useRovingTabindex = (itemCount: number) => {
   const [focusedIndex, setFocusedIndex] = useState(0)
-  
+
   const getTabIndex = useCallback(
     (index: number) => (index === focusedIndex ? 0 : -1),
-    [focusedIndex]
+    [focusedIndex],
   )
-  
+
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent, index: number) => {
       let next = index
-      
+
       switch (e.key) {
         case 'ArrowRight':
         case 'ArrowDown':
@@ -2085,12 +2058,12 @@ export const useRovingTabindex = (itemCount: number) => {
         default:
           return
       }
-      
+
       setFocusedIndex(next)
     },
-    [itemCount]
+    [itemCount],
   )
-  
+
   return { focusedIndex, setFocusedIndex, getTabIndex, handleKeyDown }
 }
 ```
@@ -2111,7 +2084,7 @@ import { useEffect } from 'react'
 
 type KeyCombo = {
   key: string
-  meta?: boolean   // ⌘ on Mac, Ctrl on Windows
+  meta?: boolean // ⌘ on Mac, Ctrl on Windows
   shift?: boolean
   alt?: boolean
 }
@@ -2126,10 +2099,10 @@ type ShortcutOptions = {
 export const useKeyboardShortcut = (
   combo: KeyCombo,
   callback: () => void,
-  options: ShortcutOptions = {}
+  options: ShortcutOptions = {},
 ) => {
   const { preventDefault = true, ignoreInputs = true } = options
-  
+
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       // Skip when typing in inputs
@@ -2138,17 +2111,17 @@ export const useKeyboardShortcut = (
         if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return
         if ((e.target as HTMLElement).isContentEditable) return
       }
-      
-      const metaMatch = combo.meta ? (e.metaKey || e.ctrlKey) : true
+
+      const metaMatch = combo.meta ? e.metaKey || e.ctrlKey : true
       const shiftMatch = combo.shift ? e.shiftKey : !e.shiftKey
       const altMatch = combo.alt ? e.altKey : !e.altKey
-      
+
       if (e.key.toLowerCase() === combo.key.toLowerCase() && metaMatch && shiftMatch && altMatch) {
         if (preventDefault) e.preventDefault()
         callback()
       }
     }
-    
+
     document.addEventListener('keydown', handler)
     return () => document.removeEventListener('keydown', handler)
   }, [combo, callback, preventDefault, ignoreInputs])
@@ -2157,26 +2130,26 @@ export const useKeyboardShortcut = (
 
 ### 13.2 Scoping (Global vs Component)
 
-| Scope | Pattern | Example |
-|-------|---------|---------|
-| Global | `useKeyboardShortcut` in a layout-level client component | ⌘K (command palette), ⌘/ (help) |
-| Component | `useKeyboardShortcut` inside a specific component, registered on mount | Escape (close modal), Enter (submit) |
-| Conditional | Pass `enabled` flag to the hook, or conditionally register | Shortcuts active only when a panel is open |
+| Scope       | Pattern                                                                | Example                                    |
+| ----------- | ---------------------------------------------------------------------- | ------------------------------------------ |
+| Global      | `useKeyboardShortcut` in a layout-level client component               | ⌘K (command palette), ⌘/ (help)            |
+| Component   | `useKeyboardShortcut` inside a specific component, registered on mount | Escape (close modal), Enter (submit)       |
+| Conditional | Pass `enabled` flag to the hook, or conditionally register             | Shortcuts active only when a panel is open |
 
 ### 13.3 Reserved Shortcuts (Never Override)
 
 Per ADR-0026 §15.4:
 
-| Shortcut | Browser Function | Never Override |
-|----------|-----------------|----------------|
-| ⌘C / Ctrl+C | Copy | ✅ |
-| ⌘V / Ctrl+V | Paste | ✅ |
-| ⌘Z / Ctrl+Z | Undo | ✅ (unless app has custom undo) |
-| ⌘T / Ctrl+T | New tab | ✅ |
-| ⌘W / Ctrl+W | Close tab | ✅ |
-| ⌘L / Ctrl+L | Address bar | ✅ |
-| F5 / ⌘R | Refresh | ✅ |
-| Tab | Tab navigation | ✅ (never capture globally) |
+| Shortcut    | Browser Function | Never Override                  |
+| ----------- | ---------------- | ------------------------------- |
+| ⌘C / Ctrl+C | Copy             | ✅                              |
+| ⌘V / Ctrl+V | Paste            | ✅                              |
+| ⌘Z / Ctrl+Z | Undo             | ✅ (unless app has custom undo) |
+| ⌘T / Ctrl+T | New tab          | ✅                              |
+| ⌘W / Ctrl+W | Close tab        | ✅                              |
+| ⌘L / Ctrl+L | Address bar      | ✅                              |
+| F5 / ⌘R     | Refresh          | ✅                              |
+| Tab         | Tab navigation   | ✅ (never capture globally)     |
 
 ### 13.4 Discoverable Shortcut Help
 
@@ -2188,15 +2161,13 @@ useKeyboardShortcut({ key: '?' }, () => setShortcutHelpOpen(true))
 Display shortcuts in a Sheet/Dialog with grouped sections. Use `<kbd>` elements for key display:
 
 ```tsx
-<div className="flex items-center justify-between py-1">
-  <span className="text-sm text-foreground">Open command palette</span>
-  <div className="flex gap-1">
-    <kbd className="rounded border border-border bg-muted px-1.5 py-0.5 text-xs font-mono">
+<div className='flex items-center justify-between py-1'>
+  <span className='text-foreground text-sm'>Open command palette</span>
+  <div className='flex gap-1'>
+    <kbd className='border-border bg-muted rounded border px-1.5 py-0.5 font-mono text-xs'>
       {isMac ? '⌘' : 'Ctrl'}
     </kbd>
-    <kbd className="rounded border border-border bg-muted px-1.5 py-0.5 text-xs font-mono">
-      K
-    </kbd>
+    <kbd className='border-border bg-muted rounded border px-1.5 py-0.5 font-mono text-xs'>K</kbd>
   </div>
 </div>
 ```
@@ -2205,39 +2176,39 @@ Display shortcuts in a Sheet/Dialog with grouped sections. Use `<kbd>` elements 
 
 ## 14. Reduced Motion Integration
 
-### 14.1 How Interactive Components Connect to ADR-0003
+### 14.1 How Interactive Components Connect to Reduced Motion
 
 The project's motion system uses `useMotionEnabled()` (positive logic — `true` means motion is allowed). Interactive components must integrate with this:
 
-| Interactive Element | Reduced Motion Behavior |
-|-------------------|------------------------|
+| Interactive Element               | Reduced Motion Behavior                                                                                          |
+| --------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
 | Dialog/Sheet enter/exit animation | Simplify to fade-only (no slide/scale). Keep the transition — it's functional (user needs to see overlay appear) |
-| Carousel auto-advance | **Disable entirely** — autoplay with reduced motion is an accessibility violation |
-| Carousel slide transition | Snap instantly (no slide animation) |
-| Drag-and-drop move animation | Snap to position (no spring/ease) |
-| Toast enter/exit | Simplify to fade-only (no slide from edge) |
-| Tab panel switch | Instant switch (no crossfade) |
-| Accordion expand/collapse | Instant expand (no height animation) |
-| Scroll-to-section | `scroll-behavior: auto` (instant jump) |
-| Command palette open/close | Fade-only (no scale/slide) |
-| Loading spinners | **Keep** — functional, not decorative (but use `opacity` pulse, not `rotate`) |
+| Carousel auto-advance             | **Disable entirely** — autoplay with reduced motion is an accessibility violation                                |
+| Carousel slide transition         | Snap instantly (no slide animation)                                                                              |
+| Drag-and-drop move animation      | Snap to position (no spring/ease)                                                                                |
+| Toast enter/exit                  | Simplify to fade-only (no slide from edge)                                                                       |
+| Tab panel switch                  | Instant switch (no crossfade)                                                                                    |
+| Accordion expand/collapse         | Instant expand (no height animation)                                                                             |
+| Scroll-to-section                 | `scroll-behavior: auto` (instant jump)                                                                           |
+| Command palette open/close        | Fade-only (no scale/slide)                                                                                       |
+| Loading spinners                  | **Keep** — functional, not decorative (but use `opacity` pulse, not `rotate`)                                    |
 
 ### 14.2 Implementation Pattern
 
 ```tsx
 'use client'
 
-import { useMotionEnabled } from '@/lib/motion/hooks/useMotionEnabled'
+import { useMotionEnabled } from '@/hooks/useMotionEnabled'
 
 export const AnimatedDialog = () => {
   const motionEnabled = useMotionEnabled()
-  
+
   return (
     <DialogContent
       className={cn(
         motionEnabled
           ? 'data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95'
-          : 'data-[state=open]:animate-in data-[state=open]:fade-in-0'
+          : 'data-[state=open]:animate-in data-[state=open]:fade-in-0',
         // ^ Reduced: fade only, no zoom
       )}
     >
@@ -2292,33 +2263,33 @@ import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog'
 describe('Dialog', () => {
   it('opens on trigger click and closes on Escape', async () => {
     const user = userEvent.setup()
-    
+
     render(
       <Dialog>
         <DialogTrigger>Open</DialogTrigger>
         <DialogContent>
           <p>Dialog content</p>
         </DialogContent>
-      </Dialog>
+      </Dialog>,
     )
-    
+
     // Dialog content not visible initially
     expect(screen.queryByText('Dialog content')).not.toBeInTheDocument()
-    
+
     // Click trigger
     await user.click(screen.getByText('Open'))
-    
+
     // Content visible
     expect(screen.getByText('Dialog content')).toBeInTheDocument()
-    
+
     // Escape closes
     await user.keyboard('{Escape}')
     expect(screen.queryByText('Dialog content')).not.toBeInTheDocument()
   })
-  
+
   it('traps focus within dialog', async () => {
     const user = userEvent.setup()
-    
+
     render(
       <Dialog>
         <DialogTrigger>Open</DialogTrigger>
@@ -2326,11 +2297,11 @@ describe('Dialog', () => {
           <button>First</button>
           <button>Second</button>
         </DialogContent>
-      </Dialog>
+      </Dialog>,
     )
-    
+
     await user.click(screen.getByText('Open'))
-    
+
     // Tab cycles within dialog, never escapes to trigger
     await user.tab()
     expect(screen.getByText('First')).toHaveFocus()
@@ -2348,19 +2319,19 @@ describe('Dialog', () => {
 ```tsx
 it('restores focus to trigger after dialog closes', async () => {
   const user = userEvent.setup()
-  
+
   render(
     <Dialog>
       <DialogTrigger>Open</DialogTrigger>
       <DialogContent>
         <button>Close</button>
       </DialogContent>
-    </Dialog>
+    </Dialog>,
   )
-  
+
   await user.click(screen.getByText('Open'))
   await user.keyboard('{Escape}')
-  
+
   expect(screen.getByText('Open')).toHaveFocus()
 })
 ```
@@ -2371,28 +2342,28 @@ it('restores focus to trigger after dialog closes', async () => {
 describe('Tabs keyboard navigation', () => {
   it('supports arrow key navigation between tabs', async () => {
     const user = userEvent.setup()
-    
+
     render(
-      <Tabs defaultValue="tab1">
+      <Tabs defaultValue='tab1'>
         <TabsList>
-          <TabsTrigger value="tab1">Tab 1</TabsTrigger>
-          <TabsTrigger value="tab2">Tab 2</TabsTrigger>
-          <TabsTrigger value="tab3">Tab 3</TabsTrigger>
+          <TabsTrigger value='tab1'>Tab 1</TabsTrigger>
+          <TabsTrigger value='tab2'>Tab 2</TabsTrigger>
+          <TabsTrigger value='tab3'>Tab 3</TabsTrigger>
         </TabsList>
-        <TabsContent value="tab1">Content 1</TabsContent>
-        <TabsContent value="tab2">Content 2</TabsContent>
-        <TabsContent value="tab3">Content 3</TabsContent>
-      </Tabs>
+        <TabsContent value='tab1'>Content 1</TabsContent>
+        <TabsContent value='tab2'>Content 2</TabsContent>
+        <TabsContent value='tab3'>Content 3</TabsContent>
+      </Tabs>,
     )
-    
+
     // Focus first tab
     await user.tab()
     expect(screen.getByText('Tab 1')).toHaveFocus()
-    
+
     // Arrow right moves to next tab
     await user.keyboard('{ArrowRight}')
     expect(screen.getByText('Tab 2')).toHaveFocus()
-    
+
     // Content updates
     expect(screen.getByText('Content 2')).toBeInTheDocument()
   })
@@ -2414,20 +2385,20 @@ window.IntersectionObserver = mockIntersectionObserver
 // To test scroll spy behavior:
 it('updates active section on intersection', () => {
   let intersectionCallback: IntersectionObserverCallback
-  
+
   window.IntersectionObserver = vi.fn((callback) => {
     intersectionCallback = callback
     return { observe: vi.fn(), unobserve: vi.fn(), disconnect: vi.fn() }
   }) as unknown as typeof IntersectionObserver
-  
+
   render(<SectionNav />)
-  
+
   // Simulate section becoming visible
   intersectionCallback(
     [{ isIntersecting: true, target: { id: 'features' } }] as IntersectionObserverEntry[],
-    {} as IntersectionObserver
+    {} as IntersectionObserver,
   )
-  
+
   expect(screen.getByText('Features')).toHaveAttribute('aria-current', 'true')
 })
 ```
@@ -2442,24 +2413,27 @@ import { fireEvent } from '@testing-library/react'
 it('reorders items via keyboard', async () => {
   const user = userEvent.setup()
   const onReorder = vi.fn()
-  
+
   render(
     <SortableList
-      items={[{ id: '1', name: 'A' }, { id: '2', name: 'B' }]}
+      items={[
+        { id: '1', name: 'A' },
+        { id: '2', name: 'B' },
+      ]}
       onReorder={onReorder}
       renderItem={(item) => <span>{item.name}</span>}
-    />
+    />,
   )
-  
+
   // Focus first item
   const firstItem = screen.getByText('A').closest('[role="option"]')!
   firstItem.focus()
-  
+
   // Space to pick up, ArrowDown to move, Space to drop
   await user.keyboard(' ')
   await user.keyboard('{ArrowDown}')
   await user.keyboard(' ')
-  
+
   expect(onReorder).toHaveBeenCalledWith([
     { id: '2', name: 'B' },
     { id: '1', name: 'A' },
@@ -2477,20 +2451,20 @@ import { expect, test } from '@playwright/test'
 
 test('command palette opens with ⌘K and navigates', async ({ page }) => {
   await page.goto('/')
-  
+
   // Open command palette
   await page.keyboard.press('Meta+k')
-  
+
   // Verify it's open
   await expect(page.getByPlaceholder('Type a command or search...')).toBeVisible()
-  
+
   // Type to search
   await page.keyboard.type('settings')
-  
+
   // Navigate with arrow keys
   await page.keyboard.press('ArrowDown')
   await page.keyboard.press('Enter')
-  
+
   // Verify navigation happened
   await expect(page).toHaveURL('/settings')
 })
@@ -2502,70 +2476,71 @@ test('command palette opens with ⌘K and navigates', async ({ page }) => {
 
 ### Implementation Anti-Patterns
 
-| Anti-Pattern | Why It's Wrong | Correct Pattern |
-|-------------|----------------|-----------------|
-| `'use client'` on entire page/feature | Opts out entire subtree from server rendering, increases bundle | Extract only interactive parts to separate files with `'use client'` on line 1 (§2) |
-| Building custom focus trap for dialogs | Radix provides this automatically, custom traps miss edge cases | Use Radix Dialog/AlertDialog/Sheet for overlays (§1.1) |
-| `onClick` on `<div>` for interactive elements | Not keyboard accessible, no implicit ARIA role | Use `<button>` for actions, `<a>` for navigation (ADR-0019) |
-| Importing `@radix-ui/*` in feature components | Breaks import boundaries, couples features to library internals | Import from `@/components/ui/*` barrels (§1.4) |
-| `react-beautiful-dnd` for drag and drop | Archived/unmaintained, no keyboard sensor by default | dnd-kit with keyboard sensor (§10) |
-| Global `useEffect` for keyboard shortcuts | No scoping, no conflict detection, listener leaks | `useKeyboardShortcut` hook with input filtering (§13) |
-| Manual `window.scroll` without offset | Scrolls under sticky header | `scrollToSection` utility with header offset (§5.1) |
-| `useFormStatus` for all submit states | Only works with `<form action={...}>` pattern | `useTransition` for universal submit state (§6.4) |
-| Carousel with only swipe/touch support | Keyboard users and screen readers can't navigate | Embla + keyboard handler + ARIA roles (§8) |
-| Toaster without project token styling | Breaks design consistency, uses default colors | Style via `classNames` prop on `<Toaster>` (§3.2) |
+| Anti-Pattern                                  | Why It's Wrong                                                  | Correct Pattern                                                                     |
+| --------------------------------------------- | --------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| `'use client'` on entire page/feature         | Opts out entire subtree from server rendering, increases bundle | Extract only interactive parts to separate files with `'use client'` on line 1 (§2) |
+| Building custom focus trap for dialogs        | Radix provides this automatically, custom traps miss edge cases | Use Radix Dialog/AlertDialog/Sheet for overlays (§1.1)                              |
+| `onClick` on `<div>` for interactive elements | Not keyboard accessible, no implicit ARIA role                  | Use `<button>` for actions, `<a>` for navigation (ADR-0019)                         |
+| Importing `@radix-ui/*` in feature components | Breaks import boundaries, couples features to library internals | Import from `@/components/ui/*` barrels (§1.4)                                      |
+| `react-beautiful-dnd` for drag and drop       | Archived/unmaintained, no keyboard sensor by default            | dnd-kit with keyboard sensor (§10)                                                  |
+| Global `useEffect` for keyboard shortcuts     | No scoping, no conflict detection, listener leaks               | `useKeyboardShortcut` hook with input filtering (§13)                               |
+| Manual `window.scroll` without offset         | Scrolls under sticky header                                     | `scrollToSection` utility with header offset (§5.1)                                 |
+| `useFormStatus` for all submit states         | Only works with `<form action={...}>` pattern                   | `useTransition` for universal submit state (§6.4)                                   |
+| Carousel with only swipe/touch support        | Keyboard users and screen readers can't navigate                | Embla + keyboard handler + ARIA roles (§8)                                          |
+| Toaster without project token styling         | Breaks design consistency, uses default colors                  | Style via `classNames` prop on `<Toaster>` (§3.2)                                   |
 
 ### Library Anti-Patterns
 
-| Anti-Pattern | Why It's Wrong | Use Instead |
-|-------------|----------------|-------------|
-| Custom tooltip implementation | Missing delay management, collision detection, ARIA | Radix Tooltip (via shadcn/ui) |
-| `react-dnd` for drag and drop | Complex API, large bundle, not actively maintained | dnd-kit |
-| Custom command palette search | Missing fuzzy matching, accessibility, keyboard nav | cmdk |
-| `ag-grid` or similar for data tables | Heavy, opinionated styling, conflicts with Tailwind-only (ADR-0002) | TanStack Table (headless) |
-| Inline `<style>` or CSS modules for component animation | Violates Tailwind-only rule (ADR-0002) | Tailwind animate utilities or Framer Motion |
-| `react-toast` / `react-hot-toast` | Less maintained, duplicates Sonner's functionality | Sonner (pre-approved) |
-| `focus-trap-react` for overlays | Radix already provides this, adding both creates conflicts | Radix's built-in focus trap |
+| Anti-Pattern                                            | Why It's Wrong                                                      | Use Instead                                 |
+| ------------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------- |
+| Custom tooltip implementation                           | Missing delay management, collision detection, ARIA                 | Radix Tooltip (via shadcn/ui)               |
+| `react-dnd` for drag and drop                           | Complex API, large bundle, not actively maintained                  | dnd-kit                                     |
+| Custom command palette search                           | Missing fuzzy matching, accessibility, keyboard nav                 | cmdk                                        |
+| `ag-grid` or similar for data tables                    | Heavy, opinionated styling, conflicts with Tailwind-only (ADR-0002) | TanStack Table (headless)                   |
+| Inline `<style>` or CSS modules for component animation | Violates Tailwind-only rule (ADR-0002)                              | Tailwind animate utilities or Framer Motion |
+| `react-toast` / `react-hot-toast`                       | Less maintained, duplicates Sonner's functionality                  | Sonner (pre-approved)                       |
+| `focus-trap-react` for overlays                         | Radix already provides this, adding both creates conflicts          | Radix's built-in focus trap                 |
 
 ### State Anti-Patterns
 
-| Anti-Pattern | Why It's Wrong | Correct Pattern |
-|-------------|----------------|-----------------|
-| Zustand for a single component's open/close state | Over-engineering — ADR-0020 escalation says start with `useState` | `useState` for local toggles |
-| `useContext` for global theme/sidebar | Context re-renders all consumers on any change | Zustand with selectors for global UI state |
-| Tab value in React state instead of URL | Not shareable, lost on refresh | `nuqs` or `useSearchParams` for shareable UI state |
-| `localStorage` for filter/sort state | Not shareable, not in URL, harder to debug | URL state for shareable, Zustand for non-shareable |
-| Prop drilling through 4+ levels to avoid state library | Unreadable, fragile | Context (2-3 levels) or Zustand (4+) per ADR-0020 |
+| Anti-Pattern                                           | Why It's Wrong                                                    | Correct Pattern                                    |
+| ------------------------------------------------------ | ----------------------------------------------------------------- | -------------------------------------------------- |
+| Zustand for a single component's open/close state      | Over-engineering — ADR-0020 escalation says start with `useState` | `useState` for local toggles                       |
+| `useContext` for global theme/sidebar                  | Context re-renders all consumers on any change                    | Zustand with selectors for global UI state         |
+| Tab value in React state instead of URL                | Not shareable, lost on refresh                                    | `nuqs` or `useSearchParams` for shareable UI state |
+| `localStorage` for filter/sort state                   | Not shareable, not in URL, harder to debug                        | URL state for shareable, Zustand for non-shareable |
+| Prop drilling through 4+ levels to avoid state library | Unreadable, fragile                                               | Context (2-3 levels) or Zustand (4+) per ADR-0020  |
 
 ---
 
 ## Library Compatibility
 
-| Library | Status | Purpose | Notes |
-|---------|--------|---------|-------|
-| Radix Primitives (via shadcn/ui) | `recommended` | Dialog, Sheet, AlertDialog, DropdownMenu, Tabs, Accordion, Tooltip, Popover, NavigationMenu, Toggle, Select | Pre-approved (ADR-0002/ADR-0023). Handles focus trap, roving tabindex, ARIA automatically |
-| Sonner | `recommended` | Toast notifications with accessible `aria-live` regions | Pre-approved. Custom styling via `classNames` prop |
-| cmdk | `recommended` | Command palette with fuzzy search, keyboard navigation, accessible combobox | ~3kB. By Paco Coursey. Pairs with Radix Dialog. Actively maintained |
-| Embla Carousel | `recommended` | Headless carousel/slider with React hooks API, plugin system | Headless, framework-agnostic core, React wrapper. SSR-safe. Actively maintained |
-| TanStack Table | `recommended` | Headless data table with sort, filter, pagination, row selection, column visibility | Headless, React hooks API. Framework-agnostic core. Actively maintained |
-| dnd-kit | `recommended` | Drag-and-drop: sortable lists, kanban, grid reorder, file drop zones | Keyboard sensor built-in, accessible by default. Actively maintained |
-| nuqs | `compatible` | Type-safe URL state management | Per ADR-0020. Install when URL state is needed for filters/tabs/search |
-| Framer Motion (via `@/lib/motion`) | `recommended` | Overlay enter/exit animations, AnimatePresence, spring presets | Default dependency per ADR-0003 |
-| Zustand | `compatible` | Global UI state (sidebar, theme, notification count) | Per ADR-0020 escalation rules. Install when Context is insufficient |
-| React Hook Form | `compatible` | Form interactivity for medium/complex forms | Per ADR-0012. Install when HTML forms are insufficient |
-| `react-beautiful-dnd` | `forbidden` | Drag and drop | Archived by Atlassian. Unmaintained. Use dnd-kit |
-| `react-dnd` | `forbidden` | Drag and drop | Complex API, large bundle, not actively maintained. Use dnd-kit |
-| `ag-grid` / `react-data-grid` | `forbidden` | Data tables | Opinionated styling, conflicts with Tailwind-only. Use TanStack Table |
-| `react-hot-toast` / `react-toastify` | `forbidden` | Toasts | Sonner is the project standard. No duplicates |
-| `focus-trap-react` | `forbidden` | Focus trap | Radix provides built-in. Adding both creates conflicts |
-| Any CSS-in-JS animation library | `forbidden` | Animations | Violates ADR-0002 (no CSS-in-JS runtime). Use Tailwind animate or Framer Motion |
-| Swiper | `compatible` | Carousel (if Embla can't cover use case) | Heavier, has built-in styles. Must disable default CSS and restyle with project tokens |
+| Library                              | Status        | Purpose                                                                                                     | Notes                                                                                     |
+| ------------------------------------ | ------------- | ----------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| Radix Primitives (via shadcn/ui)     | `recommended` | Dialog, Sheet, AlertDialog, DropdownMenu, Tabs, Accordion, Tooltip, Popover, NavigationMenu, Toggle, Select | Pre-approved (ADR-0002/ADR-0023). Handles focus trap, roving tabindex, ARIA automatically |
+| Sonner                               | `recommended` | Toast notifications with accessible `aria-live` regions                                                     | Pre-approved. Custom styling via `classNames` prop                                        |
+| cmdk                                 | `recommended` | Command palette with fuzzy search, keyboard navigation, accessible combobox                                 | ~3kB. By Paco Coursey. Pairs with Radix Dialog. Actively maintained                       |
+| Embla Carousel                       | `recommended` | Headless carousel/slider with React hooks API, plugin system                                                | Headless, framework-agnostic core, React wrapper. SSR-safe. Actively maintained           |
+| TanStack Table                       | `recommended` | Headless data table with sort, filter, pagination, row selection, column visibility                         | Headless, React hooks API. Framework-agnostic core. Actively maintained                   |
+| dnd-kit                              | `recommended` | Drag-and-drop: sortable lists, kanban, grid reorder, file drop zones                                        | Keyboard sensor built-in, accessible by default. Actively maintained                      |
+| nuqs                                 | `compatible`  | Type-safe URL state management                                                                              | Per ADR-0020. Install when URL state is needed for filters/tabs/search                    |
+| Framer Motion (via `motion/react`)   | `recommended` | Overlay enter/exit animations, AnimatePresence, spring presets                                              | Default animation dependency                                                              |
+| Zustand                              | `compatible`  | Global UI state (sidebar, theme, notification count)                                                        | Per ADR-0020 escalation rules. Install when Context is insufficient                       |
+| React Hook Form                      | `compatible`  | Form interactivity for medium/complex forms                                                                 | Per ADR-0012. Install when HTML forms are insufficient                                    |
+| `react-beautiful-dnd`                | `forbidden`   | Drag and drop                                                                                               | Archived by Atlassian. Unmaintained. Use dnd-kit                                          |
+| `react-dnd`                          | `forbidden`   | Drag and drop                                                                                               | Complex API, large bundle, not actively maintained. Use dnd-kit                           |
+| `ag-grid` / `react-data-grid`        | `forbidden`   | Data tables                                                                                                 | Opinionated styling, conflicts with Tailwind-only. Use TanStack Table                     |
+| `react-hot-toast` / `react-toastify` | `forbidden`   | Toasts                                                                                                      | Sonner is the project standard. No duplicates                                             |
+| `focus-trap-react`                   | `forbidden`   | Focus trap                                                                                                  | Radix provides built-in. Adding both creates conflicts                                    |
+| Any CSS-in-JS animation library      | `forbidden`   | Animations                                                                                                  | Violates ADR-0002 (no CSS-in-JS runtime). Use Tailwind animate or Framer Motion           |
+| Swiper                               | `compatible`  | Carousel (if Embla can't cover use case)                                                                    | Heavier, has built-in styles. Must disable default CSS and restyle with project tokens    |
 
 ---
 
 ## Consequences
 
 **Positive:**
+
 - Every interactive pattern from ADRs 0024-0026 has a concrete implementation path — library, code structure, accessibility, and testing approach
 - Radix-to-pattern mapping eliminates guessing about which headless primitive to use for each UX pattern
 - Client boundary extraction pattern prevents the #1 Next.js anti-pattern (marking entire features as `'use client'`)
@@ -2576,6 +2551,7 @@ test('command palette opens with ⌘K and navigates', async ({ page }) => {
 - State management decisions follow ADR-0020 escalation, preventing both under-engineering (prop drilling) and over-engineering (Zustand for local state)
 
 **Negative:**
+
 - Multiple library recommendations increase the overall dependency surface — each new library is a learning curve and maintenance burden
 - dnd-kit's sensor/collision/sortable model has a steeper learning curve than simpler drag libraries (but the accessibility and flexibility justify it)
 - Embla Carousel requires manual keyboard handler implementation — it doesn't provide this out of the box (code provided in §8.3)
@@ -2585,7 +2561,6 @@ test('command palette opens with ⌘K and navigates', async ({ page }) => {
 ## Related ADRs
 
 - [ADR-0002](./0002-styling.md) — Styling (Tailwind-only rule, library compatibility table, token contract for Radix restyling)
-- [ADR-0003](./0003-animation.md) — Animation (`useMotionEnabled()`, spring presets, AnimatePresence, reduced motion three-layer strategy)
 - [ADR-0004](./0004-components.md) — Component Structure (server/client boundary, `'use client'` minimization, tier system, import boundaries)
 - [ADR-0005](./0005-data-fetching.md) — Data Fetching (TanStack Query for client-side data in data tables, polling for real-time)
 - [ADR-0009](./0009-testing.md) — Testing (Vitest + RTL, Playwright E2E, `@testing-library/user-event` for keyboard/focus testing)
