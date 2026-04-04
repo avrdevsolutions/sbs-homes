@@ -38,7 +38,7 @@ applyTo: 'src/components/**/*.{ts,tsx}, src/app/**/*.{ts,tsx}'
 
 ## Animation & Primitives
 
-- Animation timing and easing MUST follow ADR-0003 transition defaults
+- Animation timing and easing MUST follow project transition defaults
 - MUST use UI primitives from ADR-0023 where they cover the use case before raw HTML
 
 ## Content Display

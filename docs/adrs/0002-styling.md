@@ -648,7 +648,6 @@ export const Card = ({ children }) => (
 ## Related ADRs
 
 - [ADR-0001](./0001-architecture.md) — Architecture (framework context, shadcn/ui reference)
-- [ADR-0003](./0003-animation.md) — Animation (uses Tailwind for simple transitions)
 - [ADR-0004](./0004-components.md) — Components (styling within tiers)
 - [ADR-0009](./0009-testing.md) — Testing (Storybook for visual regression)
 - [ADR-0023](./0023-ui-foundation-primitives.md) — UI Foundation Primitives (pre-built inventory, implementation order)

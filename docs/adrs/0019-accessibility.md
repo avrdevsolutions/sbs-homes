@@ -233,7 +233,7 @@ Authentication steps **MUST NOT** rely on cognitive function tests (e.g., rememb
 | `aria-label` for elements with no visible text (e.g., icon buttons, close buttons)                      | **MUST**     |
 | `aria-hidden="true"` for decorative elements that shouldn't be announced                                | **SHOULD**   |
 
-### Motion & Animation (Cross-Reference ADR-0003, ADR-0027 §14)
+### Motion & Animation (Cross-Reference ADR-0027 §14)
 
 | Rule                                                                                                                                                      | Level    |
 | --------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
@@ -1082,7 +1082,6 @@ ARIA should be the last resort, not the first tool. A `<button>` is inherently a
 ## Related ADRs
 
 - [ADR-0002](./0002-styling.md) — Styling (focus ring tokens, color contrast requirements)
-- [ADR-0003](./0003-animation.md) — Animation (prefers-reduced-motion, useMotionEnabled, reduced motion strategy)
 - [ADR-0004](./0004-components.md) — Components (UI tier accessibility requirements, ARIA on primitives)
 - [ADR-0009](./0009-testing.md) — Testing (axe-core integration in component tests, Playwright E2E)
 - [ADR-0012](./0012-forms.md) — Forms (label-input association, error messages, aria-invalid, redundant entry)

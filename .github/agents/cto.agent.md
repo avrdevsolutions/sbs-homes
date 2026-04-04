@@ -23,7 +23,7 @@ Never skip this step. Never rely on memory of previous sessions.
 
 ADR numbers are strictly sequential. After reading the catalog, determine the next available number. Rules:
 
-- If the user says "write ADR-0030" but the next available is ADR-0024, use **ADR-0024** and explain why.
+- If the user says "write ADR-0050" but the next available is ADR-0034, use **ADR-0034** and explain why.
 - Never skip a number. Never accept a user-suggested number without verifying it against the catalog.
 - If a gap already exists in the catalog (e.g., ADR-0024 is missing), that gap is the next number to fill.
 

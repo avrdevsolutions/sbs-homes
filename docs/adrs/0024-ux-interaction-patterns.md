@@ -8,7 +8,7 @@
 
 ## Context
 
-The project has decisions for animation (ADR-0003), component structure (ADR-0004), forms (ADR-0012), accessibility (ADR-0019), state management (ADR-0020), and UI primitives (ADR-0023). What's missing is the **UX decision layer** — given a page or feature, which interaction patterns apply, when, and why.
+The project has decisions for component structure (ADR-0004), forms (ADR-0012), accessibility (ADR-0019), state management (ADR-0020), and UI primitives (ADR-0023). What's missing is the **UX decision layer** — given a page or feature, which interaction patterns apply, when, and why.
 
 Without this, agents and developers make ad-hoc interaction decisions: inconsistent mobile menus, mixed validation timing, missing empty states, CTAs that use anchors when they should use buttons. This ADR provides pattern knowledge and decision trees for **core UX interactions universal to any web application**.
 
@@ -42,7 +42,7 @@ This is **Part 1** of a UX knowledge series:
 | CTA hierarchy uses max 1 primary CTA per viewport section | **SHOULD** |
 | Prefer inline feedback over toasts for user-initiated actions with visible context | **SHOULD** |
 | Use skeleton loading over spinner for content regions with known layout | **SHOULD** |
-| Animation timing and easing follow ADR-0003 transition defaults | **MUST** |
+| Animation timing and easing follow project transition defaults | **MUST** |
 | UI primitives from ADR-0023 are used where they cover the use case | **MUST** |
 
 ---
@@ -95,7 +95,7 @@ Is the page long (>2 viewport heights)?
 
 **Pattern:**
 - Use `<a href="#section-id">` for scroll links (progressive enhancement — works without JS)
-- Apply `scroll-behavior: smooth` via CSS (or Framer Motion `scrollIntoView` for animated scroll, per ADR-0003)
+- Apply `scroll-behavior: smooth` via CSS (or Framer Motion `scrollIntoView` for animated scroll)
 - Set `scroll-margin-top` on target sections to account for sticky header height
 - Update URL hash on scroll (optional — `IntersectionObserver` tracks active section)
 
@@ -132,7 +132,7 @@ Is the page long (>2 viewport heights)?
 - Appears after scrolling past 1-2 viewport heights (threshold trigger)
 - Fixed position, bottom-right corner (avoiding content overlap)
 - Smooth scroll to top on click
-- Fade in/out with animation (ADR-0003 viewport reveal pattern)
+- Fade in/out with animation (viewport reveal pattern)
 
 **Accessibility:**
 - `<button aria-label="Back to top">` — not an anchor
@@ -476,7 +476,7 @@ Is this the user's first time here (no data created yet)?
 
 **Pattern:**
 - Shape matches the content it replaces (rectangle for text, circle for avatar, card shape for cards)
-- Pulse animation (Tailwind `animate-pulse`) — respects `prefers-reduced-motion` (ADR-0003)
+- Pulse animation (Tailwind `animate-pulse`) — respects `prefers-reduced-motion`
 - Replace skeleton with content atomically — no partial reveals that cause layout shift
 - Co-locate skeleton with the component it replaces (ADR-0004 Next.js loading.tsx pattern)
 
@@ -1095,7 +1095,7 @@ Is there a shared visual element between the source and destination page?
 
 **Browser support:** View Transitions API is supported in Chrome/Edge 111+, Safari 18+. Firefox support is in progress. Always use as progressive enhancement — feature-detect with `document.startViewTransition` before use.
 
-**Relationship to ADR-0003:** View Transitions are CSS/browser-native and complement (not replace) Framer Motion. Use View Transitions for page-level route changes. Use Framer Motion for within-page animations (scroll, viewport reveals, presence). Don't use both for the same transition.
+**Relationship to Motion:** View Transitions are CSS/browser-native and complement (not replace) Framer Motion. Use View Transitions for page-level route changes. Use Framer Motion for within-page animations (scroll, viewport reveals, presence). Don't use both for the same transition.
 
 **Reference:** Vercel uses crossfade view transitions between dashboard pages. Linear uses shared-element transitions for issue cards opening to detail views.
 
@@ -1107,7 +1107,7 @@ Is there a shared visual element between the source and destination page?
 |---------|--------|---------|-------|
 | Radix Primitives (via shadcn/ui) | `recommended` | Dialog, Dropdown, Tooltip, NavigationMenu, Tabs focus/keyboard | Pre-approved in ADR-0002/ADR-0023. Handles focus trap, roving tabindex, ARIA automatically |
 | Sonner | `recommended` | Toast notifications with accessible `aria-live` regions | Pre-approved. Use for all toast feedback patterns |
-| Framer Motion (via `@/lib/motion`) | `recommended` | Scroll-to-section smoothing, presence animations for overlays | Default dependency per ADR-0003 |
+| Framer Motion (via `@/lib/motion`) | `recommended` | Scroll-to-section smoothing, presence animations for overlays | Default animation dependency |
 | Zustand | `compatible` | Storing UI interaction state (sidebar open, wizard step) when React state insufficient | Per ADR-0020 escalation rules |
 | `react-hook-form` | `compatible` | Form UX patterns (validation timing, multi-step) for medium/complex forms | Per ADR-0012, install when needed |
 | `next-themes` | `recommended` | Dark mode with flash prevention, system preference sync, Tailwind `dark:` class strategy | By Paco Coursey. ~2kB. Handles SSR flash, localStorage persistence, `prefers-color-scheme` sync |
@@ -1135,7 +1135,6 @@ Is there a shared visual element between the source and destination page?
 
 ## Related ADRs
 
-- [ADR-0003](./0003-animation.md) — Animation (transition timing, reduced motion, presence animations)
 - [ADR-0004](./0004-components.md) — Component Structure (server/client boundary, component tiers)
 - [ADR-0012](./0012-forms.md) — Forms (validation mechanics, Server Actions, form primitives)
 - [ADR-0019](./0019-accessibility.md) — Accessibility (WCAG rules, keyboard rules, ARIA patterns, testing)

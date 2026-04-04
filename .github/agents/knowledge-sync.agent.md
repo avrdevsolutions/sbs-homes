@@ -299,7 +299,7 @@ When an ADR defines multiple components/primitives:
 
 When syncing an updated ADR to existing skills:
 
-1. List all existing skills with the ADR's domain prefix (e.g., `animation-*` for ADR-0003).
+1. List all existing skills with the ADR's domain prefix (e.g., `seo-*` for ADR-0013).
 2. Read each skill's SKILL.md to understand its current scope.
 3. Identify what changed in the ADR.
 4. Update only the affected skills — do not rewrite skills that didn't change.

@@ -10,7 +10,7 @@
 
 Performance directly impacts SEO rankings, user experience, and conversion rates. Google uses Core Web Vitals as a ranking factor (ADR-0013). A 1-second delay in page load reduces conversions by 7% (Amazon study). Next.js provides powerful performance primitives — Server Components (zero client JS), streaming, image optimization, font optimization, code splitting — but they must be used correctly.
 
-This ADR covers **platform and infrastructure performance**: images, fonts, code splitting, bundle budgets, streaming, CLS prevention, Lighthouse CI, and Core Web Vitals targets. It ties together caching (ADR-0017), component architecture (ADR-0004), styling (ADR-0002), and animation (ADR-0003) into a unified performance strategy.
+This ADR covers **platform and infrastructure performance**: images, fonts, code splitting, bundle budgets, streaming, CLS prevention, Lighthouse CI, and Core Web Vitals targets. It ties together caching (ADR-0017), component architecture (ADR-0004), and styling (ADR-0002) into a unified performance strategy.
 
 For **React runtime and rendering performance** — `useMemo`, `useCallback`, `React.memo`, `useTransition`, `useDeferredValue`, `useLayoutEffect`, re-render prevention, and component composition patterns — see [ADR-0021](./0021-performance-react.md).
 
@@ -333,7 +333,7 @@ export default function DashboardPage() {
 | Dynamic content above the fold | Reserve space with skeleton/placeholder |
 | Ads or embeds loading late | Reserve space with fixed-height container |
 | Toasts/banners pushing content | Use fixed/absolute positioning (Sonner does this correctly) |
-| CSS animations on layout properties | Animate only `transform` and `opacity` (ADR-0003) |
+| CSS animations on layout properties | Animate only `transform` and `opacity` |
 
 ```tsx
 // ❌ Image without dimensions — causes CLS when image loads
@@ -545,7 +545,7 @@ export default async function Page() {
 
 ### Why Performance Is a First-Class ADR
 
-Performance is not an afterthought — it's a direct ranking factor (Google Core Web Vitals), a conversion driver (Amazon's 1-second study), and a user experience differentiator. Many of the rules in this ADR reference other ADRs (Server Components from ADR-0004, caching from ADR-0017, animation from ADR-0003) — this ADR ties them together into a unified performance strategy with measurable targets.
+Performance is not an afterthought — it's a direct ranking factor (Google Core Web Vitals), a conversion driver (Amazon's 1-second study), and a user experience differentiator. Many of the rules in this ADR reference other ADRs (Server Components from ADR-0004, caching from ADR-0017) — this ADR ties them together into a unified performance strategy with measurable targets.
 
 ### Why Lighthouse Score Targets
 
@@ -592,7 +592,6 @@ Lighthouse provides a standardized, reproducible score. A ≥90 target is ambiti
 
 - [ADR-0001](./0001-architecture.md) — Architecture (Next.js, Server Components, deployment)
 - [ADR-0002](./0002-styling.md) — Styling (Tailwind CSS is zero-runtime — no CSS-in-JS performance cost)
-- [ADR-0003](./0003-animation.md) — Animation (only animate transform/opacity, LazyMotion for bundle size)
 - [ADR-0004](./0004-components.md) — Components (Server Components by default, minimal client boundary)
 - [ADR-0013](./0013-seo-metadata.md) — SEO (Core Web Vitals are a Google ranking factor)
 - [ADR-0014](./0014-logging-observability.md) — Logging (Vercel Analytics / Sentry for Web Vitals monitoring)

@@ -23,7 +23,7 @@ corepack enable && corepack prepare pnpm@latest --activate
 | `next` | 15.5.x | Framework |
 | `react` | ^18.3 | UI runtime |
 | `react-dom` | ^18.3 | DOM renderer |
-| `motion` | ^12.38 | Animation (Framer Motion v12) — per [ADR-0003](adrs/0003-animation.md) |
+| `motion` | ^12.38 | Animation (Framer Motion v12) |
 | `clsx` | ^2.1 | Conditional className utility |
 | `tailwind-merge` | ^2.5 | Merge Tailwind classes |
 | `zod` | ^3.24 | Schema validation |
