@@ -49,6 +49,7 @@ Before writing, present the planned scope using `askQuestions`:
 3. **Series context** (if applicable) — If this ADR is part of a multi-ADR series, reference the series plan and show how this ADR's boundaries connect to the previous and next ADRs. Verify no patterns fall through the cracks between ADR boundaries.
 
 Options:
+
 - **Approve scope** — proceed to writing
 - **Request changes** — free-form input to add, remove, or restructure
 

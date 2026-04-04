@@ -69,6 +69,7 @@ Skills MUST NOT reference other skills by name.
 - ❌ `see skill 'components-primitives-first'`
 
 Instead:
+
 - If the referenced rule is a **universal constraint** → it belongs in the instruction layer (`copilot-instructions.md` or `applyTo` files). The agent already has it. The skill doesn't need to mention it.
 - If the referenced content is **domain-specific and needed for the current task** → repeat the relevant rule or pattern inline (a few lines of duplication is acceptable).
 - If the referenced content is a **separate task entirely** → don't reference it at all. The agent will discover that skill separately when it starts that task.
@@ -107,17 +108,19 @@ Instructions are auto-loaded by the IDE whenever a file matching the `applyTo` g
 
 ```markdown
 ---
-applyTo: "<glob pattern>"
+applyTo: '<glob pattern>'
 ---
 
 # <Domain> Constraints
 
 ## <Section Name>
+
 - Rule statement (MUST/MUST NOT/SHOULD/SHOULD NOT)
 - Rule statement
 - ...
 
 ## <Section Name>
+
 - Rule statement
 - ...
 ```
@@ -133,12 +136,12 @@ applyTo: "<glob pattern>"
 
 GitHub Copilot loads instructions in layers. Understanding which layer fires when determines where a rule belongs:
 
-| Layer | When it loads | What goes here |
-|-------|--------------|----------------|
-| `copilot-instructions.md` | Every interaction, always | Universal rules: package manager, token policy, export conventions, server-component default, primitives-first, framework version facts |
-| `*.instructions.md` (applyTo) | When agent edits/reads matching files | Scope-specific constraints that only matter when working in that file scope |
-| Agent file body | When the agent is selected/invoked | Planning-phase constraints, forbidden outputs, workflow rules |
-| Skills | When Copilot matches the description | Patterns, code examples, decision trees, anti-patterns |
+| Layer                         | When it loads                         | What goes here                                                                                                                          |
+| ----------------------------- | ------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| `copilot-instructions.md`     | Every interaction, always             | Universal rules: package manager, token policy, export conventions, server-component default, primitives-first, framework version facts |
+| `*.instructions.md` (applyTo) | When agent edits/reads matching files | Scope-specific constraints that only matter when working in that file scope                                                             |
+| Agent file body               | When the agent is selected/invoked    | Planning-phase constraints, forbidden outputs, workflow rules                                                                           |
+| Skills                        | When Copilot matches the description  | Patterns, code examples, decision trees, anti-patterns                                                                                  |
 
 **Critical**: `applyTo` instruction files do NOT load during planning phases. A subagent writing a brief to `.github/flow-generator/` will not see `ui-primitives.instructions.md` (scoped to `src/components/ui/**`) until it starts editing UI files. Never put planning-critical rules in `applyTo` files — put them in the agent body or a skill.
 
@@ -210,6 +213,7 @@ The `description` is Copilot's Level 1 discovery signal (~100 tokens). It must:
 - Stay under 1024 characters
 
 Example:
+
 ```yaml
 description: >-
   Framer Motion component APIs — MotionInView, MotionSection, MotionBox,
@@ -276,6 +280,7 @@ Present the verification summary to the user.
 ## Handling Large ADRs (500+ lines)
 
 Large ADRs typically produce skills grouped by agent task:
+
 - Setup/installation (one skill)
 - Core usage patterns (one or two skills)
 - Advanced patterns (one skill)
