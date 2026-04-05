@@ -57,7 +57,7 @@ export type InteriorLifestyleSectionContent = {
 
 export type FloorPlanTab = {
   label: string
-  placeholderLabel: string
+  image: ImageAsset
 }
 
 export type FloorPlansSectionContent = {
@@ -343,11 +343,26 @@ export const landingPageContent: LandingPageContent = {
     id: 'floor-plans',
     eyebrow: '04 - Floor Plans',
     title: 'General Arrangement',
-    description:
-      'Ground floor and first floor plans with room schedule - real plan drawings provided later.',
+    description: 'Ground floor and first floor plans with room dimensions and layout.',
     tabs: [
-      { label: 'Ground Floor', placeholderLabel: 'Ground floor plan — provided separately' },
-      { label: 'First Floor', placeholderLabel: 'First floor plan — provided separately' },
+      {
+        label: 'Ground Floor',
+        image: {
+          src: '/images/plans/ground-floor-plan.svg',
+          alt: 'Ground floor plan showing entrance hall, living room, kitchen, dining area, and utility spaces',
+          width: 1200,
+          height: 900,
+        },
+      },
+      {
+        label: 'First Floor',
+        image: {
+          src: '/images/plans/first-floor-plan.svg',
+          alt: 'First floor plan showing master bedroom, secondary bedrooms, bathrooms, and landing',
+          width: 1200,
+          height: 900,
+        },
+      },
     ],
   },
   technologyDivider: {

@@ -2,9 +2,25 @@
 
 import { useState } from 'react'
 
-import { Typography } from '@/components/ui'
+import Image from 'next/image'
+
+import { AnimatePresence, motion } from 'motion/react'
+
 import type { FloorPlanTab } from '@/dictionaries/landing-page'
+import { useMotionEnabled } from '@/hooks/useMotionEnabled'
 import { cn } from '@/lib/utils'
+
+const tabVariantsFull = {
+  hidden: { opacity: 0, y: 8 },
+  visible: { opacity: 1, y: 0 },
+  exit: { opacity: 0, y: -8 },
+}
+
+const tabVariantsReduced = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1 },
+  exit: { opacity: 0 },
+}
 
 type FloorPlanTabsProps = {
   tabs: FloorPlanTab[]
@@ -12,6 +28,8 @@ type FloorPlanTabsProps = {
 
 export const FloorPlanTabs = ({ tabs }: FloorPlanTabsProps) => {
   const [activeIndex, setActiveIndex] = useState(0)
+  const motionEnabled = useMotionEnabled()
+  const variants = motionEnabled ? tabVariantsFull : tabVariantsReduced
 
   return (
     <div>
@@ -28,7 +46,7 @@ export const FloorPlanTabs = ({ tabs }: FloorPlanTabsProps) => {
             aria-checked={activeIndex === index}
             onClick={() => setActiveIndex(index)}
             className={cn(
-              'flex-1 px-6 py-3 font-display text-button uppercase tracking-widest transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2',
+              'flex-1 px-4 py-3 font-display text-button uppercase tracking-widest transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 sm:px-6',
               activeIndex === index
                 ? 'bg-foreground text-background'
                 : 'bg-transparent text-foreground/60 hover:text-foreground/80',
@@ -39,15 +57,28 @@ export const FloorPlanTabs = ({ tabs }: FloorPlanTabsProps) => {
         ))}
       </div>
 
-      <div aria-live='polite'>
-        <div
-          className='flex aspect-[4/3] w-full items-center justify-center'
-          style={{ backgroundColor: 'rgba(28, 28, 30, 0.06)' }}
-        >
-          <Typography variant='body-sm' className='opacity-40'>
-            {tabs[activeIndex].placeholderLabel}
-          </Typography>
-        </div>
+      <div aria-live='polite' className='relative overflow-hidden'>
+        <AnimatePresence mode='wait'>
+          <motion.div
+            key={activeIndex}
+            variants={variants}
+            initial='hidden'
+            animate='visible'
+            exit='exit'
+            transition={{ duration: 0.2, ease: 'easeOut' }}
+            className='relative w-full'
+            style={{ aspectRatio: '3971 / 2533' }}
+          >
+            <Image
+              src={tabs[activeIndex].image.src}
+              alt={tabs[activeIndex].image.alt}
+              fill
+              className='object-contain'
+              priority={activeIndex === 0}
+              unoptimized
+            />
+          </motion.div>
+        </AnimatePresence>
       </div>
     </div>
   )
