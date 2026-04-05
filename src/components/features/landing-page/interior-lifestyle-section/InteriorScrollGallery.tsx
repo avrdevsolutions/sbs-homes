@@ -96,82 +96,86 @@ export const InteriorScrollGallery = ({ rooms, header }: InteriorScrollGalleryPr
            * Header starts centered on warm bg, moves to top,
            * warm bg dissolves, images crossfade underneath.
            *
-           * Timeline layout (total ~ 0.80 for 4 rooms):
-           *   0.00–0.03  Hold: header centered on warm bg
-           *   0.03–0.15  Animate: reveal (header up, bg out, image 0 in)
-           *   0.15–0.22  Hold: room 0 settled
-           *   0.22–0.34  Animate: crossfade to room 1
-           *   0.34–0.42  Hold: room 1 settled
-           *   0.42–0.54  Animate: crossfade to room 2
-           *   0.54–0.62  Hold: room 2 settled
-           *   0.62–0.74  Animate: crossfade to room 3
-           *   0.74–0.80  Hold: room 3 settled
+           * Timeline layout (total = 1.00 for 4 rooms):
+           *   0.00–0.04  Hold: header centered on warm bg
+           *   0.04–0.18  Animate: reveal (header up, bg out, image 0 in)
+           *   0.18–0.28  Hold: room 0 settled
+           *   0.28–0.40  Animate: crossfade to room 1
+           *   0.40–0.50  Hold: room 1 settled
+           *   0.50–0.62  Animate: crossfade to room 2
+           *   0.62–0.72  Hold: room 2 settled
+           *   0.72–0.84  Animate: crossfade to room 3
+           *   0.84–1.00  Hold: room 3 settled
            * ──────────────────────────────────────────────────── */
 
           const master = gsap.timeline()
 
-          /* ── Phase 0: Cinematic reveal (0.03 → 0.15) ──────── */
-          master.to('[data-int-desc]', { opacity: 0, y: -10, duration: 0.015 }, 0.03)
-          master.to('[data-int-sep]', { opacity: 0, duration: 0.015 }, 0.03)
-          master.to('[data-int-header-wrap]', { y: topY, duration: 0.08, ease: 'none' }, 0.035)
-          master.to('[data-int-warm-bg]', { opacity: 0, duration: 0.05, ease: 'none' }, 0.04)
-          master.to(IMAGE(0), { scale: 1, opacity: 1, duration: 0.09, ease: 'none' }, 0.04)
+          /* ── Phase 0: Cinematic reveal (0.04 → 0.18) ──────── */
+          master.to('[data-int-desc]', { opacity: 0, y: -10, duration: 0.02 }, 0.04)
+          master.to('[data-int-sep]', { opacity: 0, duration: 0.02 }, 0.04)
+          master.to(
+            '[data-int-header-wrap]',
+            { y: topY, duration: 0.1, ease: 'power1.inOut' },
+            0.045,
+          )
+          master.to('[data-int-warm-bg]', { opacity: 0, duration: 0.07, ease: 'none' }, 0.05)
+          master.to(IMAGE(0), { scale: 1, opacity: 1, duration: 0.12, ease: 'power1.out' }, 0.05)
           master.to(
             '[data-int-scrim-top], [data-int-scrim-bottom], [data-int-scrim-right]',
-            { opacity: 1, duration: 0.04 },
-            0.07,
+            { opacity: 1, duration: 0.06 },
+            0.09,
           )
-          master.to('[data-int-title]', { color: '#ffffff', duration: 0.03 }, 0.085)
-          master.set('[data-int-warm-bg]', { pointerEvents: 'none' }, 0.1)
-          master.to('[data-int-legend-wrap]', { opacity: 1, y: 0, duration: 0.03 }, 0.1)
-          master.to(TEXT(0), { opacity: 1, y: 0, duration: 0.03, ease: 'none' }, 0.11)
+          master.to('[data-int-title]', { color: '#ffffff', duration: 0.04 }, 0.11)
+          master.set('[data-int-warm-bg]', { pointerEvents: 'none' }, 0.13)
+          master.to('[data-int-legend-wrap]', { opacity: 1, y: 0, duration: 0.04 }, 0.13)
+          master.to(TEXT(0), { opacity: 1, y: 0, duration: 0.04, ease: 'power1.out' }, 0.14)
           master.fromTo(
             '[data-int-plan-area]',
             { opacity: 0 },
-            { opacity: 1, duration: 0.04, ease: 'none' },
-            0.1,
+            { opacity: 1, duration: 0.05, ease: 'none' },
+            0.13,
           )
-          /* ── hold 0.15–0.22 ── nothing moves ──────────────── */
+          /* ── hold 0.18–0.28 ── nothing moves ──────────────── */
 
           /* ── Room crossfades — generated for rooms 1..N ────── */
-          const roomStarts = [0.22, 0.42, 0.62]
+          const roomStarts = [0.28, 0.5, 0.72]
 
           for (let r = 1; r < total; r++) {
             const t = roomStarts[r - 1]
             if (t === undefined) break
             const prev = r - 1
 
-            /* Outgoing */
-            master.to(IMAGE(prev), { scale: 0.97, opacity: 0.15, duration: 0.09, ease: 'none' }, t)
-            master.to(TEXT(prev), { opacity: 0, y: -12, duration: 0.03, ease: 'none' }, t)
+            /* Outgoing — clean fade, no scale shift */
+            master.to(IMAGE(prev), { opacity: 0, duration: 0.1, ease: 'none' }, t)
+            master.to(TEXT(prev), { opacity: 0, y: -12, duration: 0.04, ease: 'none' }, t)
 
             /* Incoming */
-            master.to(IMAGE(r), { scale: 1, opacity: 1, duration: 0.09, ease: 'none' }, t)
-            master.to(TEXT(r), { opacity: 1, y: 0, duration: 0.03, ease: 'none' }, t + 0.07)
+            master.to(IMAGE(r), { scale: 1, opacity: 1, duration: 0.1, ease: 'none' }, t)
+            master.to(TEXT(r), { opacity: 1, y: 0, duration: 0.04, ease: 'power1.out' }, t + 0.08)
 
             /* Counter swap */
-            master.to(COUNTER(prev), { opacity: 0, duration: 0.025, ease: 'none' }, t + 0.04)
-            master.to(COUNTER(r), { opacity: 1, duration: 0.025, ease: 'none' }, t + 0.05)
+            master.to(COUNTER(prev), { opacity: 0, duration: 0.03, ease: 'none' }, t + 0.04)
+            master.to(COUNTER(r), { opacity: 1, duration: 0.03, ease: 'none' }, t + 0.06)
 
             /* Plan swap */
-            master.to(PLAN(prev), { opacity: 0, duration: 0.025, ease: 'none' }, t + 0.04)
+            master.to(PLAN(prev), { opacity: 0, duration: 0.03, ease: 'none' }, t + 0.04)
             master.fromTo(
               PLAN(r),
               { opacity: 0 },
-              { opacity: 1, duration: 0.025, ease: 'none' },
-              t + 0.06,
+              { opacity: 1, duration: 0.03, ease: 'none' },
+              t + 0.07,
             )
           }
 
           /* ── Force timeline to span for final hold ─────────── */
-          master.set({}, {}, 0.8)
+          master.set({}, {}, 1.0)
 
           ScrollTrigger.create({
             trigger: el,
             start: 'top top',
-            end: () => `+=${vh * 8}`,
+            end: () => `+=${vh * 10}`,
             pin: true,
-            scrub: 0.6,
+            scrub: 1.2,
             animation: master,
           })
         },
@@ -182,7 +186,7 @@ export const InteriorScrollGallery = ({ rooms, header }: InteriorScrollGalleryPr
 
   return (
     <div ref={sceneRef} className='relative h-screen w-full overflow-hidden bg-secondary-200'>
-      <div className='relative size-full' style={{ willChange: 'transform, opacity' }}>
+      <div className='relative size-full'>
         {/* ── Warm background — dissolves to reveal images ──── */}
         <div data-int-warm-bg className='absolute inset-0 bg-secondary-200' style={{ zIndex: 5 }} />
 
