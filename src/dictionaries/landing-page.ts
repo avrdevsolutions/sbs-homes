@@ -263,7 +263,7 @@ export const landingPageContent: LandingPageContent = {
           height: 1080,
         },
         overlay: {
-          src: '/images/interiors/test.png',
+          src: '/images/interiors/living-area-tv-view-overlay.png',
           alt: 'Living area architectural overlay showing spatial layout',
           width: 1920,
           height: 1080,
@@ -280,7 +280,7 @@ export const landingPageContent: LandingPageContent = {
           height: 1080,
         },
         overlay: {
-          src: '/images/interiors/living-area-garden-view-overlay.webp',
+          src: '/images/interiors/living-area-garden-view-overlay.png',
           alt: 'Garden view living area architectural overlay',
           width: 1920,
           height: 1080,
@@ -297,7 +297,7 @@ export const landingPageContent: LandingPageContent = {
           height: 1080,
         },
         overlay: {
-          src: '/images/interiors/kitchen-open-plan-overlay.webp',
+          src: '/images/interiors/kitchen-open-plan-overlay.png',
           alt: 'Kitchen architectural overlay showing spatial arrangement',
           width: 1920,
           height: 1080,
@@ -314,7 +314,7 @@ export const landingPageContent: LandingPageContent = {
           height: 1080,
         },
         overlay: {
-          src: '/images/interiors/master-bedroom-overlay.webp',
+          src: '/images/interiors/master-bedroom-overlay.png',
           alt: 'Master bedroom architectural overlay',
           width: 1920,
           height: 1080,

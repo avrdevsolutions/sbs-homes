@@ -10,8 +10,8 @@ type ExteriorViewsSectionProps = {
 }
 
 export const ExteriorViewsSection = ({ content }: ExteriorViewsSectionProps) => (
-  <Section id={content.id} spacing='none' background='warm' fullBleed>
-    {/* Desktop: Cinematic GSAP scroll gallery — pinned crossfade with Ken Burns */}
+  <Section id={content.id} spacing='none' fullBleed>
+    {/* Desktop: Horizontal card gallery with focal scaling driven by GSAP scroll */}
     <div className='hidden md:block'>
       <ExteriorScrollGallery
         vantagePoints={content.vantagePoints}
@@ -23,8 +23,8 @@ export const ExteriorViewsSection = ({ content }: ExteriorViewsSectionProps) => 
       />
     </div>
 
-    {/* Mobile: Static card stack */}
-    <div className='md:hidden'>
+    {/* Mobile: Static card stack on warm background */}
+    <div className='bg-secondary-100 md:hidden'>
       <Container>
         <div className='pb-10 pt-26'>
           <SectionBlockHeader

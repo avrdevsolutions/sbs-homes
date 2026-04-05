@@ -2,6 +2,8 @@ import { SectionBlockHeader } from '@/components/shared'
 import { Container, Section } from '@/components/ui'
 import type { InteriorLifestyleSectionContent } from '@/dictionaries/landing-page'
 
+import { RoomPanel } from './RoomPanel'
+
 type InteriorLifestyleSectionProps = {
   content: InteriorLifestyleSectionContent
 }
@@ -21,7 +23,10 @@ export const InteriorLifestyleSection = ({ content }: InteriorLifestyleSectionPr
         </div>
       </Container>
 
-      {/* Room panels */}
+      {/* Room panels — full-bleed parallax image stack */}
+      {content.rooms.map((room, i) => (
+        <RoomPanel key={room.id} room={room} index={i} />
+      ))}
     </Section>
   )
 }
