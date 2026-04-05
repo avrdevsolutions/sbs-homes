@@ -3,7 +3,7 @@
 import { motion } from 'motion/react'
 
 import { Section, Separator, Typography } from '@/components/ui'
-import type { DividerSectionContent } from '@/dictionaries/landing-page'
+import type { IntroSectionContent } from '@/dictionaries/landing-page'
 import { useMotionEnabled } from '@/hooks/useMotionEnabled'
 
 /* ── Transition presets (module scope) ──────────────────────── */
@@ -35,28 +35,28 @@ const lineDrawVariants = {
   },
 }
 
-type TechnologyDividerSectionProps = {
-  content: DividerSectionContent
+type IntroSectionProps = {
+  content: IntroSectionContent
 }
 
-export const TechnologyDividerSection = ({ content }: TechnologyDividerSectionProps) => {
+export const IntroSection = ({ content }: IntroSectionProps) => {
   const motionEnabled = useMotionEnabled()
 
   return (
     <Section
       id={content.id}
       spacing='none'
-      background='dark'
+      background='warm'
       className='relative flex min-h-dvh items-center justify-center overflow-hidden text-center'
     >
       {/* Background word — ambient scale-in */}
       <motion.span
         initial={motionEnabled ? { opacity: 0, scale: 0.85 } : false}
-        whileInView={{ opacity: 0.02, scale: 1 }}
+        whileInView={{ opacity: 0.035, scale: 1 }}
         viewport={{ once: true, amount: 0.3 }}
         transition={{ duration: 1.4, ease: EXPO_OUT }}
         aria-hidden='true'
-        className='pointer-events-none absolute inset-0 flex items-center justify-center font-display uppercase'
+        className='pointer-events-none absolute inset-0 flex items-center justify-center font-display uppercase text-foreground'
         style={{
           fontSize: '16vw',
           letterSpacing: '0.1em',
@@ -82,6 +82,15 @@ export const TechnologyDividerSection = ({ content }: TechnologyDividerSectionPr
         <motion.div variants={fadeUpVariants}>
           <Typography variant='h1' as='h2' className='mx-auto' style={{ maxWidth: '16ch' }}>
             {content.title}
+          </Typography>
+        </motion.div>
+        <motion.div variants={fadeUpVariants}>
+          <Typography
+            variant='body'
+            className='mx-auto mt-6 text-secondary-600'
+            style={{ maxWidth: '42ch' }}
+          >
+            {content.description}
           </Typography>
         </motion.div>
         <motion.div

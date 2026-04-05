@@ -83,88 +83,105 @@ export const ExteriorScrollGallery = ({ vantagePoints, header }: ExteriorScrollG
           gsap.set('[data-ext-legend-wrap]', { opacity: 0, y: 20 })
 
           /* ────────────────────────────────────────────────────
-           * APPLE-STYLE TIMELINE — text leads, plan trails
+           * APPLE-STYLE TIMELINE — Dead Space Pacing (P01)
+           *   + Staggered Choreography (P02) + Heavy Scroll (P03)
            *
-           * Same choreography as Interior section:
+           * Per-scene choreography (staggered, not simultaneous):
            *   1. Counter swaps instantly (always visible)
-           *   2. Old text exits + new text enters (opacity only)
-           *   3. Image slides in (hero moment)
-           *   4. Plan: old fades with image, new appears after
+           *   2. Old legend exits left
+           *   3. Image slides in (hero moment — longest duration)
+           *   4. New legend enters from right
+           *   5. Plan: old fades, new appears after image settles
            *
-           *   0.00–0.12  Reveal: header up, bg out, scrims + legend in
-           *   0.12–0.15  HOLD — scene 1 registers
-           *   0.15–0.26  Scene 0 → 1
-           *   0.26–0.29  HOLD — scene 2 registers
-           *   0.29–0.40  Scene 1 → 2
-           *   0.40–0.45  HOLD — final scene registers
+           *   0.00–0.10  DEAD ZONE — user registers the section
+           *   0.10–0.32  Reveal: header up, bg dissolve, image in, chrome
+           *   0.32–0.38  HOLD — scene 1 settles
+           *   0.38–0.56  Scene 0 → 1 (image-led choreography)
+           *   0.56–0.62  HOLD — scene 2 settles
+           *   0.62–0.80  Scene 1 → 2 (image-led choreography)
+           *   0.80–0.85  HOLD — final scene settles
+           *   0.85–0.92  DEAD ZONE — user absorbs
            * ──────────────────────────────────────────────────── */
 
-          const TEXT_DUR = 0.03 // text exit/enter — snappy
-          const WIPE = 0.08 // image slide — the hero moment
-          const PLAN_DUR = 0.03 // plan fade
-          const HOLD = 0.03 // breathing room between scenes
-          const CYCLE = WIPE + PLAN_DUR
+          const TEXT_DUR = 0.06 // text exit/enter — wider for readability
+          const WIPE = 0.12 // image slide — the hero moment
+          const PLAN_DUR = 0.05 // plan fade
           const master = gsap.timeline()
 
-          /* ── Reveal (0.00 → 0.12) ─────────────────────────── */
-          master.to('[data-ext-desc]', { opacity: 0, y: -8, duration: 0.03 }, 0.0)
-          master.to('[data-ext-sep]', { opacity: 0, duration: 0.03 }, 0.0)
-          master.to('[data-ext-header-wrap]', { y: topY, duration: 0.08, ease: 'power2.out' }, 0.01)
-          master.to('[data-ext-warm-bg]', { opacity: 0, duration: 0.06 }, 0.02)
-          master.to(IMAGE(0), { xPercent: 0, scale: 1, duration: 0.09, ease: 'power2.out' }, 0.03)
+          /* ── Dead Start (0.00 → 0.10) — nothing moves ─────── */
+
+          /* ── Reveal (0.10 → 0.32) ─────────────────────────── */
+          // Layer 1: Header content transition
+          master.to('[data-ext-desc]', { opacity: 0, y: -8, duration: 0.05, ease: 'none' }, 0.1)
+          master.to('[data-ext-sep]', { opacity: 0, duration: 0.05, ease: 'none' }, 0.1)
+          master.to('[data-ext-header-wrap]', { y: topY, duration: 0.12, ease: 'none' }, 0.11)
+
+          // Layer 2: Image reveal — hero moment (5% gap from Layer 1)
+          master.to('[data-ext-warm-bg]', { opacity: 0, duration: 0.1, ease: 'none' }, 0.16)
+          master.to(IMAGE(0), { xPercent: 0, scale: 1, duration: 0.14, ease: 'none' }, 0.17)
+
+          // Layer 3: Chrome elements (5% gap from Layer 2)
           master.to(
             '[data-ext-scrim-top], [data-ext-scrim-bottom]',
-            { opacity: 1, duration: 0.04 },
-            0.06,
+            { opacity: 1, duration: 0.06, ease: 'none' },
+            0.24,
           )
-          master.to('[data-ext-title]', { color: '#ffffff', duration: 0.03 }, 0.07)
-          master.set('[data-ext-warm-bg]', { pointerEvents: 'none' }, 0.09)
-          master.to('[data-ext-legend-wrap]', { opacity: 1, y: 0, duration: 0.03 }, 0.08)
-          master.to('[data-ext-plan-area]', { opacity: 1, duration: 0.03 }, 0.09)
+          master.to('[data-ext-title]', { color: '#ffffff', duration: 0.05, ease: 'none' }, 0.25)
+          master.set('[data-ext-warm-bg]', { pointerEvents: 'none' }, 0.26)
+          master.to(
+            '[data-ext-legend-wrap]',
+            { opacity: 1, y: 0, duration: 0.05, ease: 'none' },
+            0.27,
+          )
+          master.to('[data-ext-plan-area]', { opacity: 1, duration: 0.05, ease: 'none' }, 0.28)
 
-          /* ── Scene transitions ─────────────────────────────── */
-          const sceneStarts = [0.15, 0.15 + CYCLE + HOLD]
+          /* ── Scene transitions (0.38 → 0.80) ──────────────── */
+          const sceneStarts = [0.38, 0.62]
 
           for (let s = 1; s < TOTAL; s++) {
             const t = sceneStarts[s - 1]
             if (t === undefined) break
             const prev = s - 1
 
-            /* 1. Counter — instant swap, always visible */
-            master.set(COUNTER(prev), { opacity: 0 }, t)
-            master.set(COUNTER(s), { opacity: 1 }, t)
+            /* 1. Image slide leads — hero moment starts first */
+            master.to(IMAGE(s), { xPercent: 0, scale: 1, duration: WIPE, ease: 'none' }, t)
 
-            /* 2. Legend text — old slides out left, new slides in from right */
+            /* 2. Old legend + counter exit early in wipe */
+            master.set(COUNTER(prev), { opacity: 0 }, t + 0.02)
+            master.set(COUNTER(s), { opacity: 1 }, t + 0.02)
             master.to(
               LEGEND(prev),
-              { x: -40, opacity: 0, duration: TEXT_DUR, ease: 'power2.in' },
-              t,
+              { x: -40, opacity: 0, duration: TEXT_DUR, ease: 'none' },
+              t + 0.02,
             )
+
+            /* 3. New legend enters right after old finishes (continuous swap) */
             master.to(
               LEGEND(s),
-              { x: 0, opacity: 1, duration: TEXT_DUR, ease: 'power2.out' },
-              t + TEXT_DUR,
+              { x: 0, opacity: 1, duration: TEXT_DUR, ease: 'none' },
+              t + 0.02 + TEXT_DUR + 0.01,
             )
 
-            /* 3. Image slide — the hero moment */
-            master.to(IMAGE(s), { xPercent: 0, scale: 1, duration: WIPE, ease: 'power2.inOut' }, t)
-
-            /* 4. Plan — old disappears with image, new appears after */
-            master.to(PLAN(prev), { opacity: 0, duration: PLAN_DUR }, t)
-            master.to(PLAN(s), { opacity: 1, duration: PLAN_DUR }, t + PLAN_DUR + WIPE * 0.35)
+            /* 4. Plan swaps aligned with legend timing */
+            master.to(PLAN(prev), { opacity: 0, duration: PLAN_DUR, ease: 'none' }, t + 0.04)
+            master.to(
+              PLAN(s),
+              { opacity: 1, duration: PLAN_DUR, ease: 'none' },
+              t + 0.04 + PLAN_DUR,
+            )
           }
 
-          /* Final hold so last scene doesn't cut off */
-          const endMark = sceneStarts[sceneStarts.length - 1]! + CYCLE + HOLD * 2
-          master.set({}, {}, endMark)
+          /* ── Dead End — pad to 0.92 (tight absorb zone) ──── */
+          master.set({}, {}, 0.92)
 
-          /* ── ScrollTrigger: pin + pure scrub ───────────────── */
+          /* ── ScrollTrigger: pin + heavy scrub (Pattern 03) ── */
           ScrollTrigger.create({
             trigger: el,
             start: 'top top',
-            end: () => `+=${vh * 7}`,
+            end: () => `+=${vh * 8}`,
             pin: true,
-            scrub: 0.6,
+            scrub: 1.5,
+            anticipatePin: 1,
             animation: master,
           })
         },

@@ -4,15 +4,20 @@ import type { ImageAsset } from '@/dictionaries/common'
 
 export type HeroSectionContent = {
   id: string
+  eyebrow: string
+  headline: string
+  headlineAccent: string
+  subtitle: string
+  cta: { label: string; href: string }
+  watermark: string
+}
+
+export type IntroSectionContent = {
+  id: string
   sectionNumber: string
   title: string
-  subtitle: string
-  image: ImageAsset
-  cta: {
-    label: string
-    href: string
-  }
-  scrollLabel: string
+  description: string
+  backgroundWord: string
 }
 
 export type PlaceholderSectionContent = {
@@ -156,6 +161,7 @@ export type ComponentDetailsSectionContent = {
 
 export type LandingPageContent = {
   hero: HeroSectionContent
+  intro: IntroSectionContent
   exteriorViews: ExteriorViewsSectionContent
   interiorLifestyle: InteriorLifestyleSectionContent
   floorPlans: FloorPlansSectionContent
@@ -168,22 +174,22 @@ export type LandingPageContent = {
 
 export const landingPageContent: LandingPageContent = {
   hero: {
+    id: 'sbs',
+    eyebrow: 'Sustainable Building Solutions',
+    headline: 'Homes Built to',
+    headlineAccent: 'Last Centuries',
+    subtitle:
+      'Where engineering meets craft. Every wall, floor, and roof panel precision-cut to the millimetre — then brought together on-site in a single, seamless build.',
+    cta: { label: 'Explore the Homes', href: '#the-homes' },
+    watermark: 'SBS',
+  },
+  intro: {
     id: 'the-homes',
     sectionNumber: '01',
     title: 'These Are SBS Homes',
-    subtitle:
-      'A Showcase Project of Four Contemporary Homes. Precision-Manufactured. Timber-Engineered. Assembled On-Site.',
-    image: {
-      src: '/images/exteriors/terrace-front-numbered.webp',
-      alt: 'Modern contemporary timber-clad home with clean architectural lines and landscaped approach',
-      width: 1920,
-      height: 1080,
-    },
-    cta: {
-      label: 'Explore the homes',
-      href: '#exterior-views',
-    },
-    scrollLabel: 'Scroll',
+    description:
+      'Four contemporary homes that prove sustainable construction can be beautiful, precise, and fast. Each one timber-engineered off-site, assembled on-site in weeks, and built to last generations.',
+    backgroundWord: 'Homes',
   },
   exteriorViews: {
     id: 'exterior-views',

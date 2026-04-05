@@ -92,50 +92,56 @@ export const InteriorScrollGallery = ({ rooms, header }: InteriorScrollGalleryPr
           gsap.set('[data-int-plan-area]', { opacity: 0 })
 
           /* ────────────────────────────────────────────────────
-           * APPLE-STYLE TIMELINE — text leads, plan trails
+           * APPLE-STYLE TIMELINE — Dead Space Pacing (P01)
+           *   + Staggered Choreography (P02) + Heavy Scroll (P03)
            *
            * Each room transition:
            *   1. Counter swaps instantly (always visible)
-           *   2. Old text exits + new text enters (fast, at wipe start)
+           *   2. Old text exits + new text enters
            *   3. Image wipes bottom-to-top (hero moment)
            *   4. Plan fades in at the tail end of the wipe
-           *   Tiny hold between rooms so each state registers
            *
-           *   0.00–0.12  Reveal
-           *   0.12–0.15  HOLD — first room
-           *   0.15–0.28  Room 0 → 1
-           *   0.28–0.31  HOLD
-           *   0.31–0.44  Room 1 → 2
-           *   0.44–0.47  HOLD
-           *   0.47–0.60  Room 2 → 3
-           *   0.60–0.65  HOLD — final room
+           *   0.00–0.10  DEAD ZONE — user registers the section
+           *   0.10–0.28  Reveal: header up, bg dissolve, chrome
+           *   0.28–0.33  HOLD — first room settles
+           *   0.33–0.46  Room 0 → 1
+           *   0.46–0.50  HOLD
+           *   0.50–0.63  Room 1 → 2
+           *   0.63–0.67  HOLD
+           *   0.67–0.80  Room 2 → 3
+           *   0.80–1.00  DEAD ZONE — user absorbs
            * ──────────────────────────────────────────────────── */
 
-          const TEXT_DUR = 0.03 // text exit/enter — snappy
+          const TEXT_DUR = 0.04 // text exit/enter
           const WIPE = 0.08 // image wipe — the hero moment
-          const PLAN_DUR = 0.03 // plan fade — at the tail
-          const HOLD = 0.03 // breathing room between rooms
-          const CYCLE = WIPE + PLAN_DUR // transition width
+          const PLAN_DUR = 0.04 // plan fade — at the tail
           const master = gsap.timeline()
 
-          /* ── Reveal (0.00 → 0.12) ─────────────────────────── */
-          master.to('[data-int-desc]', { opacity: 0, y: -8, duration: 0.03 }, 0.0)
-          master.to('[data-int-sep]', { opacity: 0, duration: 0.03 }, 0.0)
-          master.to('[data-int-header-wrap]', { y: topY, duration: 0.08, ease: 'power2.out' }, 0.01)
-          master.to('[data-int-warm-bg]', { opacity: 0, duration: 0.06 }, 0.02)
+          /* ── Dead Start (0.00 → 0.10) — nothing moves ─────── */
+
+          /* ── Reveal (0.10 → 0.28) ─────────────────────────── */
+          // Layer 1: Header content transition
+          master.to('[data-int-desc]', { opacity: 0, y: -8, duration: 0.04 }, 0.1)
+          master.to('[data-int-sep]', { opacity: 0, duration: 0.04 }, 0.1)
+          master.to('[data-int-header-wrap]', { y: topY, duration: 0.1, ease: 'power2.out' }, 0.11)
+
+          // Layer 2: Background dissolve (5% gap from Layer 1)
+          master.to('[data-int-warm-bg]', { opacity: 0, duration: 0.08 }, 0.15)
+
+          // Layer 3: Chrome elements (6% gap from Layer 2)
           master.to(
             '[data-int-scrim-top], [data-int-scrim-bottom], [data-int-scrim-right]',
-            { opacity: 1, duration: 0.04 },
-            0.06,
+            { opacity: 1, duration: 0.05 },
+            0.21,
           )
-          master.to('[data-int-title]', { color: '#ffffff', duration: 0.03 }, 0.07)
-          master.set('[data-int-warm-bg]', { pointerEvents: 'none' }, 0.09)
-          master.to('[data-int-legend-wrap]', { opacity: 1, y: 0, duration: 0.03 }, 0.08)
-          master.to(TEXT(0), { opacity: 1, y: 0, duration: 0.03, ease: 'power2.out' }, 0.09)
-          master.to('[data-int-plan-area]', { opacity: 1, duration: 0.03 }, 0.09)
+          master.to('[data-int-title]', { color: '#ffffff', duration: 0.04 }, 0.22)
+          master.set('[data-int-warm-bg]', { pointerEvents: 'none' }, 0.23)
+          master.to('[data-int-legend-wrap]', { opacity: 1, y: 0, duration: 0.04 }, 0.24)
+          master.to(TEXT(0), { opacity: 1, y: 0, duration: 0.04, ease: 'power2.out' }, 0.25)
+          master.to('[data-int-plan-area]', { opacity: 1, duration: 0.04 }, 0.25)
 
-          /* ── Room transitions ──────────────────────────────── */
-          const roomStarts = [0.15, 0.15 + CYCLE + HOLD, 0.15 + (CYCLE + HOLD) * 2]
+          /* ── Room transitions (0.33 → 0.80) ─── 17% gaps ── */
+          const roomStarts = [0.33, 0.5, 0.67]
 
           for (let r = 1; r < total; r++) {
             const t = roomStarts[r - 1]
@@ -166,16 +172,16 @@ export const InteriorScrollGallery = ({ rooms, header }: InteriorScrollGalleryPr
             master.to(PLAN(r), { opacity: 1, duration: PLAN_DUR }, t + PLAN_DUR + WIPE * 0.35)
           }
 
-          /* Final hold so last room doesn't cut off */
-          const endMark = roomStarts[roomStarts.length - 1]! + CYCLE + HOLD * 2
-          master.set({}, {}, endMark)
+          /* ── Dead End — pad to 1.0 so trailing dead space is real ── */
+          master.set({}, {}, 1.0)
 
+          /* ── ScrollTrigger: pin + heavy scrub (Pattern 03) ── */
           ScrollTrigger.create({
             trigger: el,
             start: 'top top',
-            end: () => `+=${vh * 7}`,
+            end: () => `+=${vh * 6}`,
             pin: true,
-            scrub: 0.6,
+            scrub: 0.8,
             animation: master,
           })
         },

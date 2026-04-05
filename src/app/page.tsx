@@ -5,6 +5,7 @@ import {
   ExteriorViewsSection,
   FloorPlansSection,
   HeroSection,
+  IntroSection,
   InteriorLifestyleSection,
   StructuralFloorPlansSection,
   TechnologyDividerSection,
@@ -14,6 +15,7 @@ import { landingPageContent } from '@/dictionaries/landing-page'
 const HomePage = () => (
   <>
     <HeroSection content={landingPageContent.hero} />
+    <IntroSection content={landingPageContent.intro} />
     <ExteriorViewsSection content={landingPageContent.exteriorViews} />
     <InteriorLifestyleSection content={landingPageContent.interiorLifestyle} />
     <FloorPlansSection content={landingPageContent.floorPlans} />
