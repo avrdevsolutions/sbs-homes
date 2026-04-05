@@ -41,13 +41,13 @@ export const GalleryLegend = memo(({ vantagePoints, total }: GalleryLegendProps)
                 willChange: 'transform, opacity',
               }}
             >
-              <Typography variant='overline' as='span' className='text-primary-600'>
+              <Typography variant='overline' as='span' className='text-white/90'>
                 {String(i + 1).padStart(2, '0')}
               </Typography>
             </span>
           ))}
         </div>
-        <Typography variant='overline' as='span' className='text-secondary-400'>
+        <Typography variant='overline' as='span' className='text-white/40'>
           / {String(total).padStart(2, '0')}
         </Typography>
       </div>
@@ -65,12 +65,12 @@ export const GalleryLegend = memo(({ vantagePoints, total }: GalleryLegendProps)
               willChange: 'transform, opacity',
             }}
           >
-            <Typography variant='h4' as='h3' className='text-secondary-900'>
+            <Typography variant='h4' as='h3' className='text-white'>
               {vp.title}
             </Typography>
             <Typography
               variant='body-sm'
-              className='mt-1.5 text-secondary-500'
+              className='mt-1.5 text-white/60'
               style={{ maxWidth: '40ch' }}
             >
               {vp.description}
