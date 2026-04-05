@@ -46,7 +46,7 @@ export const InteriorScrollGallery = ({ rooms, header }: InteriorScrollGalleryPr
 
           if (reduceMotion) {
             gsap.set('[data-int-warm-bg]', { opacity: 0, pointerEvents: 'none' })
-            gsap.set(IMAGE(0), { scale: 1, opacity: 1 })
+            gsap.set(IMAGE(0), { clipPath: 'inset(0% 0 0 0)' })
             gsap.set('[data-int-scrim-top], [data-int-scrim-bottom], [data-int-scrim-right]', {
               opacity: 1,
             })
@@ -76,106 +76,106 @@ export const InteriorScrollGallery = ({ rooms, header }: InteriorScrollGalleryPr
           /* ── Initial states ────────────────────────────────── */
           gsap.set('[data-int-header-wrap]', { y: centeredY })
           for (let i = 0; i < total; i++) {
-            gsap.set(IMAGE(i), { scale: 1.05, opacity: 0 })
+            if (i === 0) {
+              gsap.set(IMAGE(i), { clipPath: 'inset(0% 0 0 0)', opacity: 1 })
+            } else {
+              gsap.set(IMAGE(i), { clipPath: 'inset(100% 0 0 0)', opacity: 1 })
+            }
             gsap.set(PLAN(i), { opacity: i === 0 ? 1 : 0 })
-            gsap.set(TEXT(i), { opacity: 0, y: 20 })
-            gsap.set(COUNTER(i), {
-              opacity: i === 0 ? 1 : 0,
-            })
+            gsap.set(TEXT(i), { opacity: 0, y: 14 })
+            gsap.set(COUNTER(i), { opacity: i === 0 ? 1 : 0 })
           }
           gsap.set('[data-int-scrim-top], [data-int-scrim-bottom], [data-int-scrim-right]', {
             opacity: 0,
           })
-          gsap.set('[data-int-legend-wrap]', { opacity: 0, y: 30 })
+          gsap.set('[data-int-legend-wrap]', { opacity: 0, y: 20 })
           gsap.set('[data-int-plan-area]', { opacity: 0 })
 
           /* ────────────────────────────────────────────────────
-           * SCENE-BASED ARCHITECTURE
+           * APPLE-STYLE TIMELINE — text leads, plan trails
            *
-           * Same approach as Exterior section:
-           * Header starts centered on warm bg, moves to top,
-           * warm bg dissolves, images crossfade underneath.
+           * Each room transition:
+           *   1. Counter swaps instantly (always visible)
+           *   2. Old text exits + new text enters (fast, at wipe start)
+           *   3. Image wipes bottom-to-top (hero moment)
+           *   4. Plan fades in at the tail end of the wipe
+           *   Tiny hold between rooms so each state registers
            *
-           * Timeline layout (total = 1.00 for 4 rooms):
-           *   0.00–0.04  Hold: header centered on warm bg
-           *   0.04–0.18  Animate: reveal (header up, bg out, image 0 in)
-           *   0.18–0.28  Hold: room 0 settled
-           *   0.28–0.40  Animate: crossfade to room 1
-           *   0.40–0.50  Hold: room 1 settled
-           *   0.50–0.62  Animate: crossfade to room 2
-           *   0.62–0.72  Hold: room 2 settled
-           *   0.72–0.84  Animate: crossfade to room 3
-           *   0.84–1.00  Hold: room 3 settled
+           *   0.00–0.12  Reveal
+           *   0.12–0.15  HOLD — first room
+           *   0.15–0.28  Room 0 → 1
+           *   0.28–0.31  HOLD
+           *   0.31–0.44  Room 1 → 2
+           *   0.44–0.47  HOLD
+           *   0.47–0.60  Room 2 → 3
+           *   0.60–0.65  HOLD — final room
            * ──────────────────────────────────────────────────── */
 
+          const TEXT_DUR = 0.03 // text exit/enter — snappy
+          const WIPE = 0.08 // image wipe — the hero moment
+          const PLAN_DUR = 0.03 // plan fade — at the tail
+          const HOLD = 0.03 // breathing room between rooms
+          const CYCLE = WIPE + PLAN_DUR // transition width
           const master = gsap.timeline()
 
-          /* ── Phase 0: Cinematic reveal (0.04 → 0.18) ──────── */
-          master.to('[data-int-desc]', { opacity: 0, y: -10, duration: 0.02 }, 0.04)
-          master.to('[data-int-sep]', { opacity: 0, duration: 0.02 }, 0.04)
-          master.to(
-            '[data-int-header-wrap]',
-            { y: topY, duration: 0.1, ease: 'power1.inOut' },
-            0.045,
-          )
-          master.to('[data-int-warm-bg]', { opacity: 0, duration: 0.07, ease: 'none' }, 0.05)
-          master.to(IMAGE(0), { scale: 1, opacity: 1, duration: 0.12, ease: 'power1.out' }, 0.05)
+          /* ── Reveal (0.00 → 0.12) ─────────────────────────── */
+          master.to('[data-int-desc]', { opacity: 0, y: -8, duration: 0.03 }, 0.0)
+          master.to('[data-int-sep]', { opacity: 0, duration: 0.03 }, 0.0)
+          master.to('[data-int-header-wrap]', { y: topY, duration: 0.08, ease: 'power2.out' }, 0.01)
+          master.to('[data-int-warm-bg]', { opacity: 0, duration: 0.06 }, 0.02)
           master.to(
             '[data-int-scrim-top], [data-int-scrim-bottom], [data-int-scrim-right]',
-            { opacity: 1, duration: 0.06 },
-            0.09,
+            { opacity: 1, duration: 0.04 },
+            0.06,
           )
-          master.to('[data-int-title]', { color: '#ffffff', duration: 0.04 }, 0.11)
-          master.set('[data-int-warm-bg]', { pointerEvents: 'none' }, 0.13)
-          master.to('[data-int-legend-wrap]', { opacity: 1, y: 0, duration: 0.04 }, 0.13)
-          master.to(TEXT(0), { opacity: 1, y: 0, duration: 0.04, ease: 'power1.out' }, 0.14)
-          master.fromTo(
-            '[data-int-plan-area]',
-            { opacity: 0 },
-            { opacity: 1, duration: 0.05, ease: 'none' },
-            0.13,
-          )
-          /* ── hold 0.18–0.28 ── nothing moves ──────────────── */
+          master.to('[data-int-title]', { color: '#ffffff', duration: 0.03 }, 0.07)
+          master.set('[data-int-warm-bg]', { pointerEvents: 'none' }, 0.09)
+          master.to('[data-int-legend-wrap]', { opacity: 1, y: 0, duration: 0.03 }, 0.08)
+          master.to(TEXT(0), { opacity: 1, y: 0, duration: 0.03, ease: 'power2.out' }, 0.09)
+          master.to('[data-int-plan-area]', { opacity: 1, duration: 0.03 }, 0.09)
 
-          /* ── Room crossfades — generated for rooms 1..N ────── */
-          const roomStarts = [0.28, 0.5, 0.72]
+          /* ── Room transitions ──────────────────────────────── */
+          const roomStarts = [0.15, 0.15 + CYCLE + HOLD, 0.15 + (CYCLE + HOLD) * 2]
 
           for (let r = 1; r < total; r++) {
             const t = roomStarts[r - 1]
             if (t === undefined) break
             const prev = r - 1
 
-            /* Outgoing — clean fade, no scale shift */
-            master.to(IMAGE(prev), { opacity: 0, duration: 0.1, ease: 'none' }, t)
-            master.to(TEXT(prev), { opacity: 0, y: -12, duration: 0.04, ease: 'none' }, t)
+            /* 1. Counter — instant swap, always visible */
+            master.set(COUNTER(prev), { opacity: 0 }, t)
+            master.set(COUNTER(r), { opacity: 1 }, t)
 
-            /* Incoming */
-            master.to(IMAGE(r), { scale: 1, opacity: 1, duration: 0.1, ease: 'none' }, t)
-            master.to(TEXT(r), { opacity: 1, y: 0, duration: 0.04, ease: 'power1.out' }, t + 0.08)
-
-            /* Counter swap */
-            master.to(COUNTER(prev), { opacity: 0, duration: 0.03, ease: 'none' }, t + 0.04)
-            master.to(COUNTER(r), { opacity: 1, duration: 0.03, ease: 'none' }, t + 0.06)
-
-            /* Plan swap */
-            master.to(PLAN(prev), { opacity: 0, duration: 0.03, ease: 'none' }, t + 0.04)
-            master.fromTo(
-              PLAN(r),
-              { opacity: 0 },
-              { opacity: 1, duration: 0.03, ease: 'none' },
-              t + 0.07,
+            /* 2. Text — old fades out (no y movement), new fades in */
+            master.to(TEXT(prev), { opacity: 0, duration: TEXT_DUR, ease: 'power2.in' }, t)
+            master.to(
+              TEXT(r),
+              { opacity: 1, y: 0, duration: TEXT_DUR, ease: 'power2.out' },
+              t + TEXT_DUR,
             )
+
+            /* 3. Image wipe — the hero moment, starts immediately */
+            master.to(
+              IMAGE(r),
+              { clipPath: 'inset(0% 0 0 0)', duration: WIPE, ease: 'power2.inOut' },
+              t,
+            )
+
+            /* 4. Plan — old disappears WITH the image, new appears AFTER */
+            master.to(PLAN(prev), { opacity: 0, duration: PLAN_DUR }, t)
+            master.to(PLAN(r), { opacity: 1, duration: PLAN_DUR }, t + PLAN_DUR + WIPE * 0.35)
           }
 
-          /* ── Force timeline to span for final hold ─────────── */
-          master.set({}, {}, 1.0)
+          /* Final hold so last room doesn't cut off */
+          const endMark = roomStarts[roomStarts.length - 1]! + CYCLE + HOLD * 2
+          master.set({}, {}, endMark)
 
           ScrollTrigger.create({
             trigger: el,
             start: 'top top',
-            end: () => `+=${vh * 10}`,
+            end: () => `+=${vh * 7}`,
             pin: true,
-            scrub: 1.2,
+            scrub: 0.6,
             animation: master,
           })
         },
@@ -197,7 +197,11 @@ export const InteriorScrollGallery = ({ rooms, header }: InteriorScrollGalleryPr
               key={room.id}
               data-int-image={i}
               className='absolute inset-0 overflow-hidden'
-              style={{ zIndex: i, willChange: 'transform, opacity' }}
+              style={{
+                zIndex: i + 1,
+                willChange: 'clip-path',
+                clipPath: i === 0 ? 'inset(0% 0 0 0)' : 'inset(100% 0 0 0)',
+              }}
             >
               <Image
                 src={room.image.src}
@@ -287,7 +291,7 @@ export const InteriorScrollGallery = ({ rooms, header }: InteriorScrollGalleryPr
               {/* Right: plan image */}
               <div
                 data-int-plan-area
-                className='relative ml-auto hidden shrink-0 lg:block'
+                className='relative ml-auto hidden shrink-0 overflow-hidden lg:block'
                 style={{
                   width: 320,
                   height: 220,
@@ -302,16 +306,15 @@ export const InteriorScrollGallery = ({ rooms, header }: InteriorScrollGalleryPr
                     className='absolute inset-0'
                     style={{
                       opacity: i === 0 ? 1 : 0,
-                      willChange: 'opacity',
                     }}
                   >
                     <Image
                       src={room.plan.src}
                       alt={room.plan.alt}
-                      width={room.plan.width}
-                      height={room.plan.height}
+                      fill
+                      sizes='320px'
                       loading='lazy'
-                      className='size-full object-contain'
+                      className='object-contain'
                     />
                   </div>
                 ))}

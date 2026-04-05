@@ -37,8 +37,7 @@ export const GalleryLegend = memo(({ vantagePoints, total }: GalleryLegendProps)
               className='absolute inset-0'
               style={{
                 opacity: i === 0 ? 1 : 0,
-                transform: i === 0 ? 'translateY(0)' : 'translateY(100%)',
-                willChange: 'transform, opacity',
+                willChange: 'opacity',
               }}
             >
               <Typography variant='overline' as='span' className='text-white/90'>

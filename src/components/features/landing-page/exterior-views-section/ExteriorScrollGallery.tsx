@@ -79,95 +79,90 @@ export const ExteriorScrollGallery = ({ vantagePoints, header }: ExteriorScrollG
           gsap.set(IMAGE(1), { xPercent: 105, scale: 1.05 })
           gsap.set(IMAGE(2), { xPercent: 105, scale: 1.05 })
           gsap.set('[data-ext-scrim-top], [data-ext-scrim-bottom]', { opacity: 0 })
-          gsap.set('[data-ext-plan-area]', { opacity: 0, scale: 0.92 })
-          gsap.set('[data-ext-legend-wrap]', { opacity: 0, y: 30 })
+          gsap.set('[data-ext-plan-area]', { opacity: 0 })
+          gsap.set('[data-ext-legend-wrap]', { opacity: 0, y: 20 })
 
           /* ────────────────────────────────────────────────────
-           * SCENE-BASED ARCHITECTURE
+           * APPLE-STYLE TIMELINE — text leads, plan trails
            *
-           * PURE SCRUB — THE APPLE APPROACH
+           * Same choreography as Interior section:
+           *   1. Counter swaps instantly (always visible)
+           *   2. Old text exits + new text enters (opacity only)
+           *   3. Image slides in (hero moment)
+           *   4. Plan: old fades with image, new appears after
            *
-           * One master timeline, scroll-driven, no snap.
-           * Each scene has an ANIMATE zone where things move
-           * and a HOLD zone where nothing changes — the user
-           * reads the content while momentum naturally dies.
-           *
-           * Timeline layout (total duration = 1.0):
-           *   0.00–0.03  Hold: title card visible
-           *   0.03–0.15  Animate: cinematic reveal
-           *   0.15–0.22  Hold: scene 1 settled
-           *   0.22–0.32  Animate: image swap to scene 2
-           *   0.32–0.40  Hold: scene 2 settled
-           *   0.40–0.50  Animate: image swap to scene 3
-           *   0.50–0.60  Hold: scene 3 settled
-           *
-           * Exit scale is a SEPARATE ScrollTrigger — fires as
-           * the section naturally scrolls off the viewport.
+           *   0.00–0.12  Reveal: header up, bg out, scrims + legend in
+           *   0.12–0.15  HOLD — scene 1 registers
+           *   0.15–0.26  Scene 0 → 1
+           *   0.26–0.29  HOLD — scene 2 registers
+           *   0.29–0.40  Scene 1 → 2
+           *   0.40–0.45  HOLD — final scene registers
            * ──────────────────────────────────────────────────── */
 
+          const TEXT_DUR = 0.03 // text exit/enter — snappy
+          const WIPE = 0.08 // image slide — the hero moment
+          const PLAN_DUR = 0.03 // plan fade
+          const HOLD = 0.03 // breathing room between scenes
+          const CYCLE = WIPE + PLAN_DUR
           const master = gsap.timeline()
 
-          /* ── Scene 1: Cinematic reveal (0.03 → 0.15) ──────── */
-          master.to('[data-ext-desc]', { opacity: 0, y: -10, duration: 0.015 }, 0.03)
-          master.to('[data-ext-sep]', { opacity: 0, duration: 0.015 }, 0.03)
-          master.to('[data-ext-header-wrap]', { y: topY, duration: 0.08, ease: 'none' }, 0.035)
-          master.to('[data-ext-warm-bg]', { opacity: 0, duration: 0.05, ease: 'none' }, 0.04)
-          master.to(IMAGE(0), { xPercent: 0, scale: 1, duration: 0.09, ease: 'none' }, 0.04)
+          /* ── Reveal (0.00 → 0.12) ─────────────────────────── */
+          master.to('[data-ext-desc]', { opacity: 0, y: -8, duration: 0.03 }, 0.0)
+          master.to('[data-ext-sep]', { opacity: 0, duration: 0.03 }, 0.0)
+          master.to('[data-ext-header-wrap]', { y: topY, duration: 0.08, ease: 'power2.out' }, 0.01)
+          master.to('[data-ext-warm-bg]', { opacity: 0, duration: 0.06 }, 0.02)
+          master.to(IMAGE(0), { xPercent: 0, scale: 1, duration: 0.09, ease: 'power2.out' }, 0.03)
           master.to(
             '[data-ext-scrim-top], [data-ext-scrim-bottom]',
             { opacity: 1, duration: 0.04 },
-            0.07,
+            0.06,
           )
-          master.to('[data-ext-title]', { color: '#ffffff', duration: 0.03 }, 0.085)
-          master.set('[data-ext-warm-bg]', { pointerEvents: 'none' }, 0.1)
-          master.fromTo(
-            '[data-ext-plan-area]',
-            { opacity: 0 },
-            { opacity: 1, duration: 0.04, ease: 'none' },
-            0.1,
-          )
-          master.to('[data-ext-legend-wrap]', { opacity: 1, y: 0, duration: 0.03 }, 0.12)
-          /* ── hold 0.15–0.22 ── nothing moves ──────────────── */
+          master.to('[data-ext-title]', { color: '#ffffff', duration: 0.03 }, 0.07)
+          master.set('[data-ext-warm-bg]', { pointerEvents: 'none' }, 0.09)
+          master.to('[data-ext-legend-wrap]', { opacity: 1, y: 0, duration: 0.03 }, 0.08)
+          master.to('[data-ext-plan-area]', { opacity: 1, duration: 0.03 }, 0.09)
 
-          /* ── Scene 2: Image swap (0.22 → 0.32) ────────────── */
-          master.to(IMAGE(1), { xPercent: 0, scale: 1, duration: 0.08, ease: 'none' }, 0.22)
-          master.to(IMAGE(0), { scale: 0.95, duration: 0.07, ease: 'none' }, 0.22)
-          master.to(COUNTER(0), { y: '-100%', opacity: 0, duration: 0.025, ease: 'none' }, 0.25)
-          master.to(COUNTER(1), { y: '0%', opacity: 1, duration: 0.025, ease: 'none' }, 0.26)
-          master.to(LEGEND(0), { x: -40, opacity: 0, duration: 0.03, ease: 'none' }, 0.25)
-          master.to(LEGEND(1), { x: 0, opacity: 1, duration: 0.03, ease: 'none' }, 0.27)
-          master.to(PLAN(0), { opacity: 0, duration: 0.025, ease: 'none' }, 0.25)
-          master.fromTo(
-            PLAN(1),
-            { opacity: 0 },
-            { opacity: 1, duration: 0.025, ease: 'none' },
-            0.26,
-          )
-          /* ── hold 0.32–0.40 ── nothing moves ──────────────── */
+          /* ── Scene transitions ─────────────────────────────── */
+          const sceneStarts = [0.15, 0.15 + CYCLE + HOLD]
 
-          /* ── Scene 3: Image swap (0.40 → 0.50) ────────────── */
-          master.to(IMAGE(2), { xPercent: 0, scale: 1, duration: 0.08, ease: 'none' }, 0.4)
-          master.to(IMAGE(1), { scale: 0.95, duration: 0.07, ease: 'none' }, 0.4)
-          master.to(COUNTER(1), { y: '-100%', opacity: 0, duration: 0.025, ease: 'none' }, 0.43)
-          master.to(COUNTER(2), { y: '0%', opacity: 1, duration: 0.025, ease: 'none' }, 0.44)
-          master.to(LEGEND(1), { x: -40, opacity: 0, duration: 0.03, ease: 'none' }, 0.43)
-          master.to(LEGEND(2), { x: 0, opacity: 1, duration: 0.03, ease: 'none' }, 0.45)
-          master.to(PLAN(1), { opacity: 0, duration: 0.025, ease: 'none' }, 0.43)
-          master.fromTo(
-            PLAN(2),
-            { opacity: 0 },
-            { opacity: 1, duration: 0.025, ease: 'none' },
-            0.44,
-          )
+          for (let s = 1; s < TOTAL; s++) {
+            const t = sceneStarts[s - 1]
+            if (t === undefined) break
+            const prev = s - 1
 
-          /* ── Force timeline to span 0.60 for final hold ────── */
-          master.set({}, {}, 0.6)
+            /* 1. Counter — instant swap, always visible */
+            master.set(COUNTER(prev), { opacity: 0 }, t)
+            master.set(COUNTER(s), { opacity: 1 }, t)
+
+            /* 2. Legend text — old slides out left, new slides in from right */
+            master.to(
+              LEGEND(prev),
+              { x: -40, opacity: 0, duration: TEXT_DUR, ease: 'power2.in' },
+              t,
+            )
+            master.to(
+              LEGEND(s),
+              { x: 0, opacity: 1, duration: TEXT_DUR, ease: 'power2.out' },
+              t + TEXT_DUR,
+            )
+
+            /* 3. Image slide — the hero moment */
+            master.to(IMAGE(s), { xPercent: 0, scale: 1, duration: WIPE, ease: 'power2.inOut' }, t)
+
+            /* 4. Plan — old disappears with image, new appears after */
+            master.to(PLAN(prev), { opacity: 0, duration: PLAN_DUR }, t)
+            master.to(PLAN(s), { opacity: 1, duration: PLAN_DUR }, t + PLAN_DUR + WIPE * 0.35)
+          }
+
+          /* Final hold so last scene doesn't cut off */
+          const endMark = sceneStarts[sceneStarts.length - 1]! + CYCLE + HOLD * 2
+          master.set({}, {}, endMark)
 
           /* ── ScrollTrigger: pin + pure scrub ───────────────── */
           ScrollTrigger.create({
             trigger: el,
             start: 'top top',
-            end: () => `+=${vh * 6}`,
+            end: () => `+=${vh * 7}`,
             pin: true,
             scrub: 0.6,
             animation: master,
