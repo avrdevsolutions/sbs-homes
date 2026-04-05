@@ -1,3 +1,5 @@
+import type { ReactNode } from 'react'
+
 import type { ImageAsset } from '@/dictionaries/common'
 
 export type HeroSectionContent = {
@@ -40,9 +42,9 @@ export type ExteriorViewsSectionContent = {
 export type InteriorRoom = {
   id: string
   title: string
-  subtitle: string
+  subtitle: ReactNode
   image: ImageAsset
-  overlay: ImageAsset
+  plan: ImageAsset
 }
 
 export type InteriorLifestyleSectionContent = {
@@ -255,16 +257,21 @@ export const landingPageContent: LandingPageContent = {
       {
         id: 'living-area-gather',
         title: 'Living Area',
-        subtitle: 'A Space to Gather',
+        subtitle: (
+          <>
+            A Space to <br />
+            Gather
+          </>
+        ),
         image: {
           src: '/images/interiors/living-area-tv-view.webp',
           alt: 'Open-plan living area with natural light, timber flooring and modern furnishings',
           width: 1920,
           height: 1080,
         },
-        overlay: {
+        plan: {
           src: '/images/interiors/living-area-tv-view-overlay.png',
-          alt: 'Living area architectural overlay showing spatial layout',
+          alt: 'Living area plan showing spatial layout',
           width: 1920,
           height: 1080,
         },
@@ -279,9 +286,9 @@ export const landingPageContent: LandingPageContent = {
           width: 1920,
           height: 1080,
         },
-        overlay: {
+        plan: {
           src: '/images/interiors/living-area-garden-view-overlay.png',
-          alt: 'Garden view living area architectural overlay',
+          alt: 'Garden view living area plan',
           width: 1920,
           height: 1080,
         },
@@ -289,16 +296,21 @@ export const landingPageContent: LandingPageContent = {
       {
         id: 'kitchen',
         title: 'Open-Plan Kitchen',
-        subtitle: 'For Everyday Living',
+        subtitle: (
+          <>
+            For Everyday <br />
+            Living
+          </>
+        ),
         image: {
           src: '/images/interiors/kitchen-open-plan.webp',
           alt: 'Open-plan kitchen with pendant lighting and dining area',
           width: 1920,
           height: 1080,
         },
-        overlay: {
+        plan: {
           src: '/images/interiors/kitchen-open-plan-overlay.png',
-          alt: 'Kitchen architectural overlay showing spatial arrangement',
+          alt: 'Kitchen plan showing spatial arrangement',
           width: 1920,
           height: 1080,
         },
@@ -306,16 +318,21 @@ export const landingPageContent: LandingPageContent = {
       {
         id: 'master-bedroom',
         title: 'Master Bedroom',
-        subtitle: 'A Private Retreat',
+        subtitle: (
+          <>
+            A Private <br />
+            Retreat
+          </>
+        ),
         image: {
           src: '/images/interiors/master-bedroom.webp',
           alt: 'Master bedroom with vaulted ceiling, full-height glazing and natural materials',
           width: 1920,
           height: 1080,
         },
-        overlay: {
+        plan: {
           src: '/images/interiors/master-bedroom-overlay.png',
-          alt: 'Master bedroom architectural overlay',
+          alt: 'Master bedroom plan',
           width: 1920,
           height: 1080,
         },

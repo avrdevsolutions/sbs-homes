@@ -35,7 +35,7 @@ export const RoomPanel = memo(({ room, index }: RoomPanelProps) => {
 
           if (reduceMotion) {
             gsap.set('[data-room-text]', { opacity: 1, y: 0 })
-            gsap.set('[data-room-overlay]', { opacity: 1 })
+            gsap.set('[data-room-plan]', { opacity: 1 })
             return
           }
 
@@ -57,7 +57,7 @@ export const RoomPanel = memo(({ room, index }: RoomPanelProps) => {
 
           /* ── Overlay reveal ───────────────────────────────── */
           gsap.fromTo(
-            '[data-room-overlay]',
+            '[data-room-plan]',
             { opacity: 0, y: 24 },
             {
               opacity: 1,
@@ -135,15 +135,15 @@ export const RoomPanel = memo(({ room, index }: RoomPanelProps) => {
 
       {/* ── Overlay image — bottom-right corner ─────────────── */}
       <div
-        data-room-overlay
+        data-room-plan
         className='absolute bottom-8 right-8 hidden md:bottom-10 md:right-10 md:block lg:bottom-12 lg:right-16'
         style={{ opacity: 0 }}
       >
         <Image
-          src={room.overlay.src}
-          alt={room.overlay.alt}
-          width={room.overlay.width}
-          height={room.overlay.height}
+          src={room.plan.src}
+          alt={room.plan.alt}
+          width={room.plan.width}
+          height={room.plan.height}
           sizes='30vw'
           className='w-[30vw] max-w-[420px]'
         />
