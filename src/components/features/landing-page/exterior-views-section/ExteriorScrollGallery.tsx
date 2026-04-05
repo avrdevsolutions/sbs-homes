@@ -8,10 +8,8 @@ import { useGSAP } from '@gsap/react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
-import { Container, Separator, Typography } from '@/components/ui'
+import { Separator, Typography } from '@/components/ui'
 import type { ExteriorVantagePoint } from '@/dictionaries/landing-page'
-
-import { GalleryLegend } from './GalleryLegend'
 
 gsap.registerPlugin(useGSAP, ScrollTrigger)
 
@@ -19,8 +17,6 @@ const TOTAL = 3
 
 /* ── Selectors ─────────────────────────────────────────────────── */
 const IMAGE = (i: number) => `[data-ext-image="${i}"]`
-const PLAN = (i: number) => `[data-ext-plan="${i}"]`
-const LEGEND = (i: number) => `[data-ext-legend="${i}"]`
 const COUNTER = (i: number) => `[data-ext-counter="${i}"]`
 
 type ExteriorScrollGalleryProps = {
@@ -49,13 +45,10 @@ export const ExteriorScrollGallery = ({ vantagePoints, header }: ExteriorScrollG
 
           if (reduceMotion) {
             gsap.set('[data-ext-warm-bg]', { opacity: 0 })
-            gsap.set(IMAGE(0), { xPercent: 0, scale: 1 })
-            gsap.set('[data-ext-scrim-top], [data-ext-scrim-bottom]', { opacity: 1 })
+            gsap.set('[data-ext-frame]', { opacity: 1 })
             gsap.set('[data-ext-header-wrap]', { y: 0 })
-            gsap.set('[data-ext-title]', { color: '#ffffff' })
             gsap.set('[data-ext-desc], [data-ext-sep]', { opacity: 0, display: 'none' })
-            gsap.set('[data-ext-plan-area]', { opacity: 1 })
-            gsap.set('[data-ext-legend-wrap]', { opacity: 1 })
+            gsap.set('[data-ext-counter-wrap]', { opacity: 1 })
             return
           }
 
@@ -71,117 +64,100 @@ export const ExteriorScrollGallery = ({ vantagePoints, header }: ExteriorScrollG
           if (!headerWrap) return
           const headerH = headerWrap.offsetHeight
           const centeredY = (vh - headerH) / 2
-          const topY = vh * 0.08
+          const topY = 24
 
           /* ── Initial states ────────────────────────────────── */
           gsap.set('[data-ext-header-wrap]', { y: centeredY })
-          gsap.set(IMAGE(0), { xPercent: 105, scale: 1.05 })
-          gsap.set(IMAGE(1), { xPercent: 105, scale: 1.05 })
-          gsap.set(IMAGE(2), { xPercent: 105, scale: 1.05 })
-          gsap.set('[data-ext-scrim-top], [data-ext-scrim-bottom]', { opacity: 0 })
-          gsap.set('[data-ext-plan-area]', { opacity: 0 })
-          gsap.set('[data-ext-legend-wrap]', { opacity: 0, y: 20 })
+          gsap.set('[data-ext-frame]', { opacity: 0 })
+          gsap.set('[data-ext-counter-wrap]', { opacity: 0 })
+
+          /* Images 1 & 2 fully clipped from left (hidden).
+             As wipe progresses, left-inset shrinks → reveals. */
+          gsap.set(IMAGE(1), { clipPath: 'inset(0% 0% 0% 100%)' })
+          gsap.set(IMAGE(2), { clipPath: 'inset(0% 0% 0% 100%)' })
+          gsap.set('[data-ext-wipe-line]', { opacity: 0, left: '100%' })
 
           /* ────────────────────────────────────────────────────
-           * APPLE-STYLE TIMELINE — Dead Space Pacing (P01)
-           *   + Staggered Choreography (P02) + Heavy Scroll (P03)
+           * ROUNDED FRAME + WIPE TRANSITIONS
            *
-           * Per-scene choreography (staggered, not simultaneous):
-           *   1. Counter swaps instantly (always visible)
-           *   2. Old legend exits left
-           *   3. Image slides in (hero moment — longest duration)
-           *   4. New legend enters from right
-           *   5. Plan: old fades, new appears after image settles
+           * White bg throughout. Section header on white above
+           * the frame — never inside it. Rounded-rect card below
+           * header holds stacked images. Each image layer carries
+           * its own legend text + plan image — they wipe in WITH
+           * the image. 20px vertical divider sweeps at the edge.
            *
-           *   0.00–0.10  DEAD ZONE — user registers the section
-           *   0.10–0.32  Reveal: header up, bg dissolve, image in, chrome
-           *   0.32–0.38  HOLD — scene 1 settles
-           *   0.38–0.56  Scene 0 → 1 (image-led choreography)
-           *   0.56–0.62  HOLD — scene 2 settles
-           *   0.62–0.80  Scene 1 → 2 (image-led choreography)
-           *   0.80–0.85  HOLD — final scene settles
-           *   0.85–0.92  DEAD ZONE — user absorbs
+           *   0.00–0.16  Header lifts → counter → image appears
+           *   0.16–0.24  HOLD — absorb image 0
+           *   0.24–0.40  WIPE 1 — image 1 + its legend/plan
+           *              sweeps in from right with divider line
+           *   0.40–0.52  HOLD — absorb image 1
+           *   0.52–0.68  WIPE 2 — image 2 sweeps in same way
+           *   0.68–0.78  HOLD — absorb image 2
+           *   0.78–0.88  Frame scales down (1 → 0.88)
+           *   0.88–0.92  DEAD ZONE
            * ──────────────────────────────────────────────────── */
 
-          const TEXT_DUR = 0.06 // text exit/enter — wider for readability
-          const WIPE = 0.12 // image slide — the hero moment
-          const PLAN_DUR = 0.05 // plan fade
+          const WIPE = 0.16
           const master = gsap.timeline()
 
-          /* ── Dead Start (0.00 → 0.10) — nothing moves ─────── */
+          /* ── Reveal (0.00 → 0.16) ─────────────────────────── *
+           *  1. Header lifts to top (starts immediately)
+           *  2. Desc + sep fade out as header nears top
+           *  3. Counter appears after header settles
+           *  4. Image fades in last
+           * ──────────────────────────────────────────────────── */
+          master.to('[data-ext-header-wrap]', { y: topY, duration: 0.1, ease: 'none' }, 0.0)
+          master.to('[data-ext-desc]', { opacity: 0, y: -8, duration: 0.03, ease: 'none' }, 0.06)
+          master.to('[data-ext-sep]', { opacity: 0, duration: 0.03, ease: 'none' }, 0.06)
+          master.to('[data-ext-counter-wrap]', { opacity: 1, duration: 0.03, ease: 'none' }, 0.1)
+          master.to('[data-ext-warm-bg]', { opacity: 0, duration: 0.07, ease: 'none' }, 0.12)
+          master.to('[data-ext-frame]', { opacity: 1, duration: 0.07, ease: 'none' }, 0.12)
+          master.set('[data-ext-warm-bg]', { pointerEvents: 'none' }, 0.16)
 
-          /* ── Reveal (0.10 → 0.32) ─────────────────────────── */
-          // Layer 1: Header content transition
-          master.to('[data-ext-desc]', { opacity: 0, y: -8, duration: 0.05, ease: 'none' }, 0.1)
-          master.to('[data-ext-sep]', { opacity: 0, duration: 0.05, ease: 'none' }, 0.1)
-          master.to('[data-ext-header-wrap]', { y: topY, duration: 0.12, ease: 'none' }, 0.11)
-
-          // Layer 2: Image reveal — hero moment (5% gap from Layer 1)
-          master.to('[data-ext-warm-bg]', { opacity: 0, duration: 0.1, ease: 'none' }, 0.16)
-          master.to(IMAGE(0), { xPercent: 0, scale: 1, duration: 0.14, ease: 'none' }, 0.17)
-
-          // Layer 3: Chrome elements (5% gap from Layer 2)
+          /* ── Wipe 1: Image 1 enters from right (0.24 → 0.40) ─
+           * clipPath left-inset goes from 100% → 0%. The image
+           * layer carries its own legend + plan, so they appear
+           * naturally as the wipe reveals them. */
           master.to(
-            '[data-ext-scrim-top], [data-ext-scrim-bottom]',
-            { opacity: 1, duration: 0.06, ease: 'none' },
+            IMAGE(1),
+            { clipPath: 'inset(0% 0% 0% 0%)', duration: WIPE, ease: 'none' },
             0.24,
           )
-          master.to('[data-ext-title]', { color: '#ffffff', duration: 0.05, ease: 'none' }, 0.25)
-          master.set('[data-ext-warm-bg]', { pointerEvents: 'none' }, 0.26)
+          /* 40px divider line sweeps with the clip edge */
+          master.set('[data-ext-wipe-line]', { opacity: 1, left: '100%' }, 0.24)
+          master.to('[data-ext-wipe-line]', { left: '0%', duration: WIPE, ease: 'none' }, 0.24)
+          master.set('[data-ext-wipe-line]', { opacity: 0 }, 0.24 + WIPE + 0.001)
+          /* Counter swap at wipe midpoint */
+          const mid1 = 0.24 + WIPE * 0.5
+          master.set(COUNTER(0), { opacity: 0 }, mid1)
+          master.set(COUNTER(1), { opacity: 1 }, mid1)
+
+          /* ── Wipe 2: Image 2 enters from right (0.52 → 0.68) ─ */
           master.to(
-            '[data-ext-legend-wrap]',
-            { opacity: 1, y: 0, duration: 0.05, ease: 'none' },
-            0.27,
+            IMAGE(2),
+            { clipPath: 'inset(0% 0% 0% 0%)', duration: WIPE, ease: 'none' },
+            0.52,
           )
-          master.to('[data-ext-plan-area]', { opacity: 1, duration: 0.05, ease: 'none' }, 0.28)
+          master.set('[data-ext-wipe-line]', { opacity: 1, left: '100%' }, 0.52)
+          master.to('[data-ext-wipe-line]', { left: '0%', duration: WIPE, ease: 'none' }, 0.52)
+          master.set('[data-ext-wipe-line]', { opacity: 0 }, 0.52 + WIPE + 0.001)
+          const mid2 = 0.52 + WIPE * 0.5
+          master.set(COUNTER(1), { opacity: 0 }, mid2)
+          master.set(COUNTER(2), { opacity: 1 }, mid2)
 
-          /* ── Scene transitions (0.38 → 0.80) ──────────────── */
-          const sceneStarts = [0.38, 0.62]
+          /* ── Scale down (0.78 → 0.88) ──────────────────────── */
+          master.to('[data-ext-frame]', { scale: 0.88, duration: 0.1, ease: 'none' }, 0.78)
 
-          for (let s = 1; s < TOTAL; s++) {
-            const t = sceneStarts[s - 1]
-            if (t === undefined) break
-            const prev = s - 1
-
-            /* 1. Image slide leads — hero moment starts first */
-            master.to(IMAGE(s), { xPercent: 0, scale: 1, duration: WIPE, ease: 'none' }, t)
-
-            /* 2. Old legend + counter exit early in wipe */
-            master.set(COUNTER(prev), { opacity: 0 }, t + 0.02)
-            master.set(COUNTER(s), { opacity: 1 }, t + 0.02)
-            master.to(
-              LEGEND(prev),
-              { x: -40, opacity: 0, duration: TEXT_DUR, ease: 'none' },
-              t + 0.02,
-            )
-
-            /* 3. New legend enters right after old finishes (continuous swap) */
-            master.to(
-              LEGEND(s),
-              { x: 0, opacity: 1, duration: TEXT_DUR, ease: 'none' },
-              t + 0.02 + TEXT_DUR + 0.01,
-            )
-
-            /* 4. Plan swaps aligned with legend timing */
-            master.to(PLAN(prev), { opacity: 0, duration: PLAN_DUR, ease: 'none' }, t + 0.04)
-            master.to(
-              PLAN(s),
-              { opacity: 1, duration: PLAN_DUR, ease: 'none' },
-              t + 0.04 + PLAN_DUR,
-            )
-          }
-
-          /* ── Dead End — pad to 0.92 (tight absorb zone) ──── */
+          /* ── Dead End ──────────────────────────────────────── */
           master.set({}, {}, 0.92)
 
-          /* ── ScrollTrigger: pin + heavy scrub (Pattern 03) ── */
+          /* ── ScrollTrigger ─────────────────────────────────── */
           ScrollTrigger.create({
             trigger: el,
             start: 'top top',
-            end: () => `+=${vh * 8}`,
+            end: () => `+=${vh * 7}`,
             pin: true,
-            scrub: 1.5,
-            anticipatePin: 1,
+            scrub: 0.8,
             animation: master,
           })
         },
@@ -192,148 +168,180 @@ export const ExteriorScrollGallery = ({ vantagePoints, header }: ExteriorScrollG
 
   return (
     <div ref={sceneRef} className='relative h-screen w-full overflow-hidden bg-secondary-100'>
-      <div
-        data-ext-scene
-        style={{ willChange: 'transform, opacity' }}
-        className='relative size-full'
-      >
-        {/* ── Z-5 · Warm background — dissolves to reveal image ── */}
-        <div data-ext-warm-bg className='absolute inset-0 bg-secondary-100' style={{ zIndex: 5 }} />
+      {/* ── White cover — dissolves to reveal the frame card ──── */}
+      <div data-ext-warm-bg className='absolute inset-0 bg-secondary-100' style={{ zIndex: 5 }} />
 
-        {/* ── Z-2 · Full-bleed images — stacked, clipped, highest = latest ─ */}
-        <div className='absolute inset-0 overflow-hidden' style={{ zIndex: 2 }}>
-          {vantagePoints.map((vp, i) => (
-            <div
-              key={vp.id}
-              data-ext-image={i}
-              className='absolute inset-0 overflow-hidden'
-              style={{
-                zIndex: i,
-                willChange: 'transform, opacity',
-              }}
-            >
-              <Image
-                src={vp.image.src}
-                alt={vp.image.alt}
-                fill
-                sizes='100vw'
-                priority={i === 0}
-                className='object-cover'
+      {/* Content container — capped at 1920px, centered on ultra-wide */}
+      <div className='absolute inset-0 mx-auto' style={{ maxWidth: '120rem' }}>
+        {/* ── Section header — white bg, dark text, above the frame ── */}
+        <div className='absolute inset-x-0 top-0 px-5 md:px-10 lg:px-14' style={{ zIndex: 20 }}>
+          <div
+            data-ext-header-wrap
+            className='flex items-start justify-between gap-8 pt-5 md:pt-6'
+            style={{ willChange: 'transform' }}
+          >
+            {/* Left: eyebrow + title */}
+            <div className='min-w-0'>
+              <Typography data-ext-eyebrow variant='overline' className='text-primary-600'>
+                {header.eyebrow}
+              </Typography>
+              <Typography
+                data-ext-title
+                variant='h2'
+                as='h2'
+                className='mt-2 text-secondary-900'
+                style={{ maxWidth: '28ch' }}
+              >
+                {header.title}
+              </Typography>
+              <Typography
+                data-ext-desc
+                variant='body'
+                className='mt-3 text-secondary-900'
+                style={{ maxWidth: '44ch', opacity: 0.6 }}
+              >
+                {header.description}
+              </Typography>
+              <Separator
+                data-ext-sep
+                variant='accent'
+                className='mt-5 w-12 bg-primary-600 opacity-50'
               />
             </div>
-          ))}
-        </div>
 
-        {/* ── Z-2 · Cinematic gradient scrims ──────────────────── */}
-        <div
-          data-ext-scrim-top
-          className='absolute inset-x-0 top-0'
-          style={{
-            zIndex: 10,
-            height: '45%',
-            opacity: 0,
-            background:
-              'linear-gradient(to bottom, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.35) 55%, transparent 100%)',
-          }}
-        />
-        <div
-          data-ext-scrim-bottom
-          className='absolute inset-x-0 bottom-0'
-          style={{
-            zIndex: 10,
-            height: '40%',
-            opacity: 0,
-            background:
-              'linear-gradient(to top, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.28) 50%, transparent 100%)',
-          }}
-        />
-
-        {/* ── Z-3 · Header + site-plan row ─────────────────────── */}
-        <div className='absolute inset-x-0 top-0' style={{ zIndex: 20 }}>
-          <Container>
+            {/* Right: counter (01 / 03) */}
             <div
-              data-ext-header-wrap
-              className='flex items-start justify-between gap-8'
-              style={{ willChange: 'transform' }}
+              data-ext-counter-wrap
+              className='mt-6 shrink-0'
+              style={{ opacity: 0, willChange: 'opacity' }}
             >
-              {/* Left: section heading */}
-              <div className='min-w-0'>
-                <Typography data-ext-eyebrow variant='overline' className='text-primary-600'>
-                  {header.eyebrow}
+              <div className='flex items-baseline gap-1'>
+                <div className='relative overflow-hidden' style={{ width: '2ch', height: '1.2em' }}>
+                  {vantagePoints.map((_, i) => (
+                    <span
+                      key={i}
+                      data-ext-counter={i}
+                      className='absolute inset-0'
+                      style={{ opacity: i === 0 ? 1 : 0, willChange: 'opacity' }}
+                    >
+                      <Typography variant='overline' as='span' className='text-primary-600'>
+                        {String(i + 1).padStart(2, '0')}
+                      </Typography>
+                    </span>
+                  ))}
+                </div>
+                <Typography variant='overline' as='span' className='text-secondary-900'>
+                  / {String(TOTAL).padStart(2, '0')}
                 </Typography>
-                <Typography
-                  data-ext-title
-                  variant='h2'
-                  as='h2'
-                  className='mt-4 text-secondary-900'
-                  style={{ maxWidth: '22ch', willChange: 'color' }}
-                >
-                  {header.title}
-                </Typography>
-                <Typography
-                  data-ext-desc
-                  variant='body'
-                  className='mt-4 text-secondary-900'
-                  style={{ maxWidth: '44ch', opacity: 0.6 }}
-                >
-                  {header.description}
-                </Typography>
-                <Separator
-                  data-ext-sep
-                  variant='accent'
-                  className='mt-6 w-12 bg-primary-600 opacity-50'
-                />
-              </div>
-
-              {/* Right: frosted-glass site-plan card */}
-              <div
-                data-ext-plan-area
-                className='relative ml-auto hidden shrink-0 lg:block'
-                style={{
-                  width: 400,
-                  height: 200,
-                  opacity: 0,
-                  willChange: 'transform, opacity',
-                }}
-              >
-                {vantagePoints.map((vp, i) => (
-                  <div
-                    key={vp.id}
-                    data-ext-plan={i}
-                    className='absolute inset-0 rounded-xl shadow-lg ring-1 ring-white/30'
-                    style={{
-                      opacity: i === 0 ? 1 : 0,
-                      padding: '0.75rem',
-                      background: 'rgba(255,255,255,0.6)',
-                      backdropFilter: 'blur(20px) saturate(1.5)',
-                      WebkitBackdropFilter: 'blur(20px) saturate(1.5)',
-                      willChange: 'transform, opacity',
-                    }}
-                  >
-                    <Image
-                      src={vp.sitePlan.src}
-                      alt={vp.sitePlan.alt}
-                      width={vp.sitePlan.width}
-                      height={vp.sitePlan.height}
-                      loading='lazy'
-                      className='size-full object-contain'
-                    />
-                  </div>
-                ))}
               </div>
             </div>
-          </Container>
+          </div>
         </div>
 
-        {/* ── Z-3 · Bottom legend ──────────────────────────────── */}
+        {/* Rounded frame card — positioned below header.
+          Each image layer is self-contained: photo + gradient
+          scrim + plan card + legend text. When a wipe reveals
+          the next image, its plan and legend come WITH it —
+          no separate overlay animation needed. */}
         <div
-          data-ext-legend-wrap
-          className='absolute inset-x-0 bottom-0 pb-8 md:pb-10 lg:pb-12'
-          style={{ zIndex: 20, opacity: 0 }}
+          className='absolute inset-x-0 px-5 md:px-10 lg:px-14'
+          style={{ zIndex: 2, top: '16vh', bottom: '3vh' }}
         >
-          <Container>
-            <GalleryLegend vantagePoints={vantagePoints} total={TOTAL} />
-          </Container>
+          <div
+            data-ext-frame
+            className='relative size-full overflow-hidden'
+            style={{
+              borderRadius: '16px',
+              opacity: 0,
+              willChange: 'transform, opacity',
+              transformOrigin: '50% 50%',
+              boxShadow: '0 8px 32px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.06)',
+            }}
+          >
+            {/* ── Image layers ──────────────────────────────────── */}
+            {vantagePoints.map((vp, i) => (
+              <div
+                key={vp.id}
+                data-ext-image={i}
+                className='absolute inset-0'
+                style={{
+                  zIndex: i + 1,
+                  ...(i > 0 ? { willChange: 'clip-path' } : {}),
+                }}
+              >
+                <Image
+                  src={vp.image.src}
+                  alt={vp.image.alt}
+                  fill
+                  sizes='94vw'
+                  priority={i === 0}
+                  className='object-cover'
+                />
+
+                {/* Bottom gradient scrim — legend readability */}
+                <div
+                  className='pointer-events-none absolute inset-x-0 bottom-0'
+                  style={{
+                    height: '55%',
+                    background:
+                      'linear-gradient(to top, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.45) 35%, rgba(0,0,0,0.12) 65%, transparent 100%)',
+                  }}
+                />
+
+                {/* Plan card — top right (inside this layer, clips with wipe) */}
+                <div
+                  className='absolute right-4 top-3 overflow-hidden rounded-xl shadow-lg ring-1 ring-white/30 lg:right-6 lg:top-4'
+                  style={{
+                    width: 200,
+                    height: 120,
+                    padding: '0.5rem',
+                    background: 'rgba(255,255,255,0.6)',
+                    backdropFilter: 'blur(20px) saturate(1.5)',
+                    WebkitBackdropFilter: 'blur(20px) saturate(1.5)',
+                  }}
+                >
+                  <Image
+                    src={vp.sitePlan.src}
+                    alt={vp.sitePlan.alt}
+                    width={vp.sitePlan.width}
+                    height={vp.sitePlan.height}
+                    loading='lazy'
+                    className='size-full object-contain'
+                  />
+                </div>
+
+                {/* Legend text — bottom left (inside this layer, clips with wipe) */}
+                <div className='absolute bottom-0 left-0 p-5 md:p-6 lg:p-7'>
+                  <Typography variant='h4' as='h3' className='text-white'>
+                    {vp.title}
+                  </Typography>
+                  <Typography
+                    variant='body-sm'
+                    className='mt-1.5 text-white/60'
+                    style={{ maxWidth: '38ch' }}
+                  >
+                    {vp.description}
+                  </Typography>
+                </div>
+              </div>
+            ))}
+
+            {/* ── 40px wipe divider line ────────────────────────── *
+             *  Sweeps right-to-left, centered on the clip edge.
+             *  Gives a physical, mechanical feel to the transition. */}
+            <div
+              data-ext-wipe-line
+              className='absolute inset-y-0'
+              style={{
+                zIndex: 10,
+                width: 40,
+                opacity: 0,
+                left: '100%',
+                transform: 'translateX(-50%)',
+                background: '#f5f3f0',
+              }}
+            />
+          </div>
         </div>
       </div>
     </div>

@@ -1,5 +1,3 @@
-import type { ReactNode } from 'react'
-
 import type { ImageAsset } from '@/dictionaries/common'
 
 export type HeroSectionContent = {
@@ -47,7 +45,7 @@ export type ExteriorViewsSectionContent = {
 export type InteriorRoom = {
   id: string
   title: string
-  subtitle: ReactNode
+  subtitle: string
   image: ImageAsset
   plan: ImageAsset
 }
@@ -263,12 +261,7 @@ export const landingPageContent: LandingPageContent = {
       {
         id: 'living-area-gather',
         title: 'Living Area',
-        subtitle: (
-          <>
-            A Space to <br />
-            Gather
-          </>
-        ),
+        subtitle: 'A Space to Gather',
         image: {
           src: '/images/interiors/living-area-tv-view.webp',
           alt: 'Open-plan living area with natural light, timber flooring and modern furnishings',
@@ -302,12 +295,7 @@ export const landingPageContent: LandingPageContent = {
       {
         id: 'kitchen',
         title: 'Open-Plan Kitchen',
-        subtitle: (
-          <>
-            For Everyday <br />
-            Living
-          </>
-        ),
+        subtitle: 'For Everyday Living',
         image: {
           src: '/images/interiors/kitchen-open-plan.webp',
           alt: 'Open-plan kitchen with pendant lighting and dining area',
@@ -324,12 +312,7 @@ export const landingPageContent: LandingPageContent = {
       {
         id: 'master-bedroom',
         title: 'Master Bedroom',
-        subtitle: (
-          <>
-            A Private <br />
-            Retreat
-          </>
-        ),
+        subtitle: 'A Private Retreat',
         image: {
           src: '/images/interiors/master-bedroom.webp',
           alt: 'Master bedroom with vaulted ceiling, full-height glazing and natural materials',

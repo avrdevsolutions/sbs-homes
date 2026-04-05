@@ -42,7 +42,8 @@ The user invoked you directly with an animation task. You do NOT need an approve
 1. **Orient** — Read the target component(s) and any existing motion code in the area.
 2. **Plan** — Decide the animation approach: which technique(s), MotionSection vs manual, phase timing. Write a brief plan as a comment to the user (NOT a full brief document). Keep this under 5 minutes.
 3. **Implement** — Write the code. Follow the same Implementation Rules and Quality Gates as orchestrated mode.
-4. **Verify** — Run `pnpm build`. Fix any errors. Present the result to the user.
+
+Never run pnpm build unless you are told to do it!
 
 ## Required Reading — CRITICAL (before any implementation)
 
@@ -162,7 +163,6 @@ Write the manifest immediately after each section (crash-recovery checkpoint).
 
 #### 2e — Verify
 
-After each section, run `pnpm build` to verify TypeScript compiles cleanly. Fix any type errors before continuing.
 
 #### 2f — Next Section
 
@@ -250,9 +250,8 @@ Animations follow performance rules. Check:
 
 Final build check:
 
-1. `pnpm build` succeeds with zero errors.
-2. No TypeScript type errors.
-3. No unused imports from implementation.
+1. No TypeScript type errors.
+2. No unused imports from implementation.
 
 ### Gate Reporting
 
@@ -277,7 +276,7 @@ When re-invoked after a revision request (`status: "revision-requested"`):
 - Structural changes required by the animation pattern (scroll wrappers, server/client splits, extracted per-item components) ARE in scope.
 - You do not handle SEO metadata, API routes, or database access.
 - You do not add new UX interactions.
-- Your output must compile (`pnpm build`) before reporting completion.
+
 
 ## Forbidden Outputs — CRITICAL
 

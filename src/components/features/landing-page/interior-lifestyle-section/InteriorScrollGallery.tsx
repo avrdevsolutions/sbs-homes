@@ -8,16 +8,14 @@ import { useGSAP } from '@gsap/react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
-import { Container, Separator, Typography } from '@/components/ui'
+import { Separator, Typography } from '@/components/ui'
 import type { InteriorRoom } from '@/dictionaries/landing-page'
 
 gsap.registerPlugin(useGSAP, ScrollTrigger)
 
 /* ── Selectors ─────────────────────────────────────────────────── */
 const IMAGE = (i: number) => `[data-int-image="${i}"]`
-const PLAN = (i: number) => `[data-int-plan="${i}"]`
-const TEXT = (i: number) => `[data-int-text="${i}"]`
-const COUNTER = (i: number) => `[data-int-cnum="${i}"]`
+const COUNTER = (i: number) => `[data-int-counter="${i}"]`
 
 type InteriorScrollGalleryProps = {
   rooms: InteriorRoom[]
@@ -45,17 +43,11 @@ export const InteriorScrollGallery = ({ rooms, header }: InteriorScrollGalleryPr
           const { isDesktop, reduceMotion } = context.conditions!
 
           if (reduceMotion) {
-            gsap.set('[data-int-warm-bg]', { opacity: 0, pointerEvents: 'none' })
-            gsap.set(IMAGE(0), { clipPath: 'inset(0% 0 0 0)' })
-            gsap.set('[data-int-scrim-top], [data-int-scrim-bottom], [data-int-scrim-right]', {
-              opacity: 1,
-            })
+            gsap.set('[data-int-warm-bg]', { opacity: 0 })
+            gsap.set('[data-int-frame]', { opacity: 1 })
             gsap.set('[data-int-header-wrap]', { y: 0 })
-            gsap.set('[data-int-title]', { color: '#ffffff' })
             gsap.set('[data-int-desc], [data-int-sep]', { opacity: 0, display: 'none' })
-            gsap.set('[data-int-legend-wrap]', { opacity: 1 })
-            gsap.set('[data-int-plan-area]', { opacity: 1 })
-            gsap.set(TEXT(0), { opacity: 1, y: 0 })
+            gsap.set('[data-int-counter-wrap]', { opacity: 1 })
             return
           }
 
@@ -71,115 +63,89 @@ export const InteriorScrollGallery = ({ rooms, header }: InteriorScrollGalleryPr
           if (!headerWrap) return
           const headerH = headerWrap.offsetHeight
           const centeredY = (vh - headerH) / 2
-          const topY = vh * 0.08
+          const topY = 24
 
           /* ── Initial states ────────────────────────────────── */
           gsap.set('[data-int-header-wrap]', { y: centeredY })
-          for (let i = 0; i < total; i++) {
-            if (i === 0) {
-              gsap.set(IMAGE(i), { clipPath: 'inset(0% 0 0 0)', opacity: 1 })
-            } else {
-              gsap.set(IMAGE(i), { clipPath: 'inset(100% 0 0 0)', opacity: 1 })
-            }
-            gsap.set(PLAN(i), { opacity: i === 0 ? 1 : 0 })
-            gsap.set(TEXT(i), { opacity: 0, y: 14 })
-            gsap.set(COUNTER(i), { opacity: i === 0 ? 1 : 0 })
+          gsap.set('[data-int-frame]', { opacity: 0 })
+          gsap.set('[data-int-counter-wrap]', { opacity: 0 })
+
+          /* Images 1–3 fully clipped from top (hidden).
+             As wipe progresses, top-inset shrinks → reveals bottom-to-top. */
+          for (let i = 1; i < total; i++) {
+            gsap.set(IMAGE(i), { clipPath: 'inset(100% 0% 0% 0%)' })
           }
-          gsap.set('[data-int-scrim-top], [data-int-scrim-bottom], [data-int-scrim-right]', {
-            opacity: 0,
-          })
-          gsap.set('[data-int-legend-wrap]', { opacity: 0, y: 20 })
-          gsap.set('[data-int-plan-area]', { opacity: 0 })
+          gsap.set('[data-int-wipe-line]', { opacity: 0, top: '100%' })
 
           /* ────────────────────────────────────────────────────
-           * APPLE-STYLE TIMELINE — Dead Space Pacing (P01)
-           *   + Staggered Choreography (P02) + Heavy Scroll (P03)
+           * ROUNDED FRAME + BOTTOM-TO-TOP WIPE TRANSITIONS
            *
-           * Each room transition:
-           *   1. Counter swaps instantly (always visible)
-           *   2. Old text exits + new text enters
-           *   3. Image wipes bottom-to-top (hero moment)
-           *   4. Plan fades in at the tail end of the wipe
+           * Same visual language as Section 02 (Exterior) but
+           * wipes bottom-to-top. 20px horizontal divider sweeps
+           * upward at the clip edge. 4 rooms instead of 3.
            *
-           *   0.00–0.10  DEAD ZONE — user registers the section
-           *   0.10–0.28  Reveal: header up, bg dissolve, chrome
-           *   0.28–0.33  HOLD — first room settles
-           *   0.33–0.46  Room 0 → 1
-           *   0.46–0.50  HOLD
-           *   0.50–0.63  Room 1 → 2
-           *   0.63–0.67  HOLD
-           *   0.67–0.80  Room 2 → 3
-           *   0.80–1.00  DEAD ZONE — user absorbs
+           *   0.00–0.04  DEAD ZONE — warm bg, centered header
+           *   0.00–0.16  Header lifts → counter → image appears
+           *   0.16–0.20  HOLD — absorb room 0
+           *   0.20–0.34  WIPE 1 — room 1 sweeps up
+           *   0.34–0.42  HOLD — absorb room 1
+           *   0.42–0.56  WIPE 2 — room 2 sweeps up
+           *   0.56–0.64  HOLD — absorb room 2
+           *   0.64–0.78  WIPE 3 — room 3 sweeps up
+           *   0.78–0.84  HOLD — absorb room 3
+           *   0.84–0.90  Frame scales down (1 → 0.88)
+           *   0.90–0.94  DEAD ZONE
            * ──────────────────────────────────────────────────── */
 
-          const TEXT_DUR = 0.04 // text exit/enter
-          const WIPE = 0.08 // image wipe — the hero moment
-          const PLAN_DUR = 0.04 // plan fade — at the tail
+          const WIPE = 0.14
           const master = gsap.timeline()
 
-          /* ── Dead Start (0.00 → 0.10) — nothing moves ─────── */
+          /* ── Reveal (0.00 → 0.16) ─────────────────────────── *
+           *  1. Header lifts to top (starts immediately)
+           *  2. Desc + sep fade out as header nears top
+           *  3. Counter appears after header settles
+           *  4. Image fades in last
+           * ──────────────────────────────────────────────────── */
+          master.to('[data-int-header-wrap]', { y: topY, duration: 0.1, ease: 'none' }, 0.0)
+          master.to('[data-int-desc]', { opacity: 0, y: -8, duration: 0.03, ease: 'none' }, 0.06)
+          master.to('[data-int-sep]', { opacity: 0, duration: 0.03, ease: 'none' }, 0.06)
+          master.to('[data-int-counter-wrap]', { opacity: 1, duration: 0.03, ease: 'none' }, 0.1)
+          master.to('[data-int-warm-bg]', { opacity: 0, duration: 0.07, ease: 'none' }, 0.12)
+          master.to('[data-int-frame]', { opacity: 1, duration: 0.07, ease: 'none' }, 0.12)
+          master.set('[data-int-warm-bg]', { pointerEvents: 'none' }, 0.16)
 
-          /* ── Reveal (0.10 → 0.28) ─────────────────────────── */
-          // Layer 1: Header content transition
-          master.to('[data-int-desc]', { opacity: 0, y: -8, duration: 0.04 }, 0.1)
-          master.to('[data-int-sep]', { opacity: 0, duration: 0.04 }, 0.1)
-          master.to('[data-int-header-wrap]', { y: topY, duration: 0.1, ease: 'power2.out' }, 0.11)
-
-          // Layer 2: Background dissolve (5% gap from Layer 1)
-          master.to('[data-int-warm-bg]', { opacity: 0, duration: 0.08 }, 0.15)
-
-          // Layer 3: Chrome elements (6% gap from Layer 2)
-          master.to(
-            '[data-int-scrim-top], [data-int-scrim-bottom], [data-int-scrim-right]',
-            { opacity: 1, duration: 0.05 },
-            0.21,
-          )
-          master.to('[data-int-title]', { color: '#ffffff', duration: 0.04 }, 0.22)
-          master.set('[data-int-warm-bg]', { pointerEvents: 'none' }, 0.23)
-          master.to('[data-int-legend-wrap]', { opacity: 1, y: 0, duration: 0.04 }, 0.24)
-          master.to(TEXT(0), { opacity: 1, y: 0, duration: 0.04, ease: 'power2.out' }, 0.25)
-          master.to('[data-int-plan-area]', { opacity: 1, duration: 0.04 }, 0.25)
-
-          /* ── Room transitions (0.33 → 0.80) ─── 17% gaps ── */
-          const roomStarts = [0.33, 0.5, 0.67]
+          /* ── Wipe transitions — bottom-to-top ─────────────── */
+          const wipeStarts = [0.2, 0.42, 0.64]
 
           for (let r = 1; r < total; r++) {
-            const t = roomStarts[r - 1]
+            const t = wipeStarts[r - 1]
             if (t === undefined) break
-            const prev = r - 1
 
-            /* 1. Counter — instant swap, always visible */
-            master.set(COUNTER(prev), { opacity: 0 }, t)
-            master.set(COUNTER(r), { opacity: 1 }, t)
+            /* Image wipe: clipPath top-inset 100% → 0% (bottom-to-top reveal) */
+            master.to(IMAGE(r), { clipPath: 'inset(0% 0% 0% 0%)', duration: WIPE, ease: 'none' }, t)
 
-            /* 2. Text — old fades out (no y movement), new fades in */
-            master.to(TEXT(prev), { opacity: 0, duration: TEXT_DUR, ease: 'power2.in' }, t)
-            master.to(
-              TEXT(r),
-              { opacity: 1, y: 0, duration: TEXT_DUR, ease: 'power2.out' },
-              t + TEXT_DUR,
-            )
+            /* 20px horizontal divider line sweeps upward with the clip edge */
+            master.set('[data-int-wipe-line]', { opacity: 1, top: '100%' }, t)
+            master.to('[data-int-wipe-line]', { top: '0%', duration: WIPE, ease: 'none' }, t)
+            master.set('[data-int-wipe-line]', { opacity: 0 }, t + WIPE + 0.001)
 
-            /* 3. Image wipe — the hero moment, starts immediately */
-            master.to(
-              IMAGE(r),
-              { clipPath: 'inset(0% 0 0 0)', duration: WIPE, ease: 'power2.inOut' },
-              t,
-            )
-
-            /* 4. Plan — old disappears WITH the image, new appears AFTER */
-            master.to(PLAN(prev), { opacity: 0, duration: PLAN_DUR }, t)
-            master.to(PLAN(r), { opacity: 1, duration: PLAN_DUR }, t + PLAN_DUR + WIPE * 0.35)
+            /* Counter swap at wipe midpoint */
+            const mid = t + WIPE * 0.5
+            master.set(COUNTER(r - 1), { opacity: 0 }, mid)
+            master.set(COUNTER(r), { opacity: 1 }, mid)
           }
 
-          /* ── Dead End — pad to 1.0 so trailing dead space is real ── */
-          master.set({}, {}, 1.0)
+          /* ── Scale down (0.84 → 0.90) ──────────────────────── */
+          master.to('[data-int-frame]', { scale: 0.88, duration: 0.06, ease: 'none' }, 0.84)
 
-          /* ── ScrollTrigger: pin + heavy scrub (Pattern 03) ── */
+          /* ── Dead End ──────────────────────────────────────── */
+          master.set({}, {}, 0.94)
+
+          /* ── ScrollTrigger ─────────────────────────────────── */
           ScrollTrigger.create({
             trigger: el,
             start: 'top top',
-            end: () => `+=${vh * 6}`,
+            end: () => `+=${vh * 8}`,
             pin: true,
             scrub: 0.8,
             animation: master,
@@ -192,201 +158,166 @@ export const InteriorScrollGallery = ({ rooms, header }: InteriorScrollGalleryPr
 
   return (
     <div ref={sceneRef} className='relative h-screen w-full overflow-hidden bg-secondary-200'>
-      <div className='relative size-full'>
-        {/* ── Warm background — dissolves to reveal images ──── */}
-        <div data-int-warm-bg className='absolute inset-0 bg-secondary-200' style={{ zIndex: 5 }} />
+      {/* ── Warm cover — dissolves to reveal the frame card ──── */}
+      <div data-int-warm-bg className='absolute inset-0 bg-secondary-200' style={{ zIndex: 5 }} />
 
-        {/* ── Stacked images ─────────────────────────────────── */}
-        <div className='absolute inset-0 overflow-hidden' style={{ zIndex: 2 }}>
-          {rooms.map((room, i) => (
-            <div
-              key={room.id}
-              data-int-image={i}
-              className='absolute inset-0 overflow-hidden'
-              style={{
-                zIndex: i + 1,
-                willChange: 'clip-path',
-                clipPath: i === 0 ? 'inset(0% 0 0 0)' : 'inset(100% 0 0 0)',
-              }}
-            >
-              <Image
-                src={room.image.src}
-                alt={room.image.alt}
-                fill
-                sizes='100vw'
-                priority={i === 0}
-                className='object-cover'
+      {/* Content container — capped at 1920px, centered on ultra-wide */}
+      <div className='absolute inset-0 mx-auto' style={{ maxWidth: '120rem' }}>
+        {/* ── Section header — warm bg, dark text, above the frame ── */}
+        <div className='absolute inset-x-0 top-0 px-5 md:px-10 lg:px-14' style={{ zIndex: 20 }}>
+          <div
+            data-int-header-wrap
+            className='flex items-start justify-between gap-8 pt-5 md:pt-6'
+            style={{ willChange: 'transform' }}
+          >
+            {/* Left: eyebrow + title */}
+            <div className='min-w-0'>
+              <Typography variant='overline' className='text-primary-600'>
+                {header.eyebrow}
+              </Typography>
+              <Typography
+                variant='h2'
+                as='h2'
+                className='mt-2 text-secondary-900'
+                style={{ maxWidth: '28ch' }}
+              >
+                {header.title}
+              </Typography>
+              <Typography
+                data-int-desc
+                variant='body'
+                className='mt-3 text-secondary-900'
+                style={{ maxWidth: '44ch', opacity: 0.6 }}
+              >
+                {header.description}
+              </Typography>
+              <Separator
+                data-int-sep
+                variant='accent'
+                className='mt-5 w-12 bg-primary-600 opacity-50'
               />
             </div>
-          ))}
+
+            {/* Right: counter (01 / 04) */}
+            <div
+              data-int-counter-wrap
+              className='mt-6 shrink-0'
+              style={{ opacity: 0, willChange: 'opacity' }}
+            >
+              <div className='flex items-baseline gap-1'>
+                <div className='relative overflow-hidden' style={{ width: '2ch', height: '1.2em' }}>
+                  {rooms.map((_, i) => (
+                    <span
+                      key={i}
+                      data-int-counter={i}
+                      className='absolute inset-0'
+                      style={{ opacity: i === 0 ? 1 : 0, willChange: 'opacity' }}
+                    >
+                      <Typography variant='overline' as='span' className='text-primary-600'>
+                        {String(i + 1).padStart(2, '0')}
+                      </Typography>
+                    </span>
+                  ))}
+                </div>
+                <Typography variant='overline' as='span' className='text-secondary-900'>
+                  / {String(total).padStart(2, '0')}
+                </Typography>
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* ── Gradient scrims ─────────────────────────────────── */}
+        {/* ── Rounded frame card ──────────────────────────────── */}
         <div
-          data-int-scrim-top
-          className='absolute inset-x-0 top-0'
-          style={{
-            zIndex: 10,
-            height: '45%',
-            opacity: 0,
-            background:
-              'linear-gradient(to bottom, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.35) 55%, transparent 100%)',
-          }}
-        />
-        <div
-          data-int-scrim-bottom
-          className='absolute inset-x-0 bottom-0'
-          style={{
-            zIndex: 10,
-            height: '50%',
-            opacity: 0,
-            background:
-              'linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.4) 45%, transparent 100%)',
-          }}
-        />
-        {/* Right-side gradient for plan readability */}
-        <div
-          data-int-scrim-right
-          className='absolute inset-y-0 right-0'
-          style={{
-            zIndex: 10,
-            width: '40%',
-            opacity: 0,
-            background:
-              'linear-gradient(to left, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.2) 50%, transparent 100%)',
-          }}
-        />
-
-        {/* ── Header — centered initially, GSAP moves to top ── */}
-        <div className='absolute inset-x-0 top-0' style={{ zIndex: 20 }}>
-          <Container>
-            <div
-              data-int-header-wrap
-              className='flex items-start justify-between gap-8'
-              style={{ willChange: 'transform' }}
-            >
-              {/* Left: section heading */}
-              <div className='min-w-0'>
-                <Typography variant='overline' className='text-primary-600'>
-                  {header.eyebrow}
-                </Typography>
-                <Typography
-                  data-int-title
-                  variant='h2'
-                  as='h2'
-                  className='mt-4 text-secondary-900'
-                  style={{ maxWidth: '22ch', willChange: 'color' }}
-                >
-                  {header.title}
-                </Typography>
-                <Typography
-                  data-int-desc
-                  variant='body'
-                  className='mt-4 text-secondary-900'
-                  style={{ maxWidth: '44ch', opacity: 0.6 }}
-                >
-                  {header.description}
-                </Typography>
-                <Separator
-                  data-int-sep
-                  variant='accent'
-                  className='mt-6 w-12 bg-primary-600 opacity-50'
-                />
-              </div>
-
-              {/* Right: plan image */}
+          className='absolute inset-x-0 px-5 md:px-10 lg:px-14'
+          style={{ zIndex: 2, top: '16vh', bottom: '3vh' }}
+        >
+          <div
+            data-int-frame
+            className='relative size-full overflow-hidden'
+            style={{
+              borderRadius: '16px',
+              opacity: 0,
+              willChange: 'transform, opacity',
+              transformOrigin: '50% 50%',
+              boxShadow: '0 8px 32px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.06)',
+            }}
+          >
+            {/* ── Image layers ──────────────────────────────── */}
+            {rooms.map((room, i) => (
               <div
-                data-int-plan-area
-                className='relative ml-auto hidden shrink-0 overflow-hidden lg:block'
+                key={room.id}
+                data-int-image={i}
+                className='absolute inset-0'
                 style={{
-                  width: 320,
-                  height: 220,
-                  opacity: 0,
-                  willChange: 'opacity',
+                  zIndex: i + 1,
+                  ...(i > 0 ? { willChange: 'clip-path' } : {}),
                 }}
               >
-                {rooms.map((room, i) => (
-                  <div
-                    key={room.id}
-                    data-int-plan={i}
-                    className='absolute inset-0'
-                    style={{
-                      opacity: i === 0 ? 1 : 0,
-                    }}
-                  >
-                    <Image
-                      src={room.plan.src}
-                      alt={room.plan.alt}
-                      fill
-                      sizes='320px'
-                      loading='lazy'
-                      className='object-contain'
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
-          </Container>
-        </div>
+                <Image
+                  src={room.image.src}
+                  alt={room.image.alt}
+                  fill
+                  sizes='94vw'
+                  priority={i === 0}
+                  className='object-cover'
+                />
 
-        {/* ── Bottom legend — room text + counter ──────────────── */}
-        <div
-          data-int-legend-wrap
-          className='absolute inset-x-0 bottom-0 pb-8 md:pb-10 lg:pb-12'
-          style={{ zIndex: 20, opacity: 0 }}
-        >
-          <Container>
-            <div className='flex items-end justify-between gap-8'>
-              {/* Left: Room text blocks — stacked, GSAP animates */}
-              <div className='relative min-w-0 flex-1'>
-                {rooms.map((room, i) => (
-                  <div
-                    key={room.id}
-                    data-int-text={i}
-                    className={i === 0 ? 'relative' : 'absolute inset-x-0 top-0'}
-                    style={{
-                      opacity: 0,
-                      transform: 'translateY(20px)',
-                      willChange: 'transform, opacity',
-                    }}
-                  >
-                    <Typography variant='overline' as='span' className='text-primary-600'>
-                      {room.title}
-                    </Typography>
-                    <Typography
-                      variant='h3'
-                      as='h3'
-                      className='mt-2 block text-white'
-                      style={{ maxWidth: '20ch' }}
-                    >
-                      {room.subtitle}
-                    </Typography>
-                  </div>
-                ))}
-              </div>
+                {/* Bottom gradient scrim — legend readability */}
+                <div
+                  className='pointer-events-none absolute inset-x-0 bottom-0'
+                  style={{
+                    height: '55%',
+                    background:
+                      'linear-gradient(to top, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.45) 35%, rgba(0,0,0,0.12) 65%, transparent 100%)',
+                  }}
+                />
 
-              {/* Right: Counter — same width as plan area to align right edges */}
-              <div
-                className='relative hidden shrink-0 lg:block'
-                style={{ width: 320, height: '1.4em' }}
-              >
-                {rooms.map((_, i) => (
-                  <span
-                    key={i}
-                    data-int-cnum={i}
-                    className='absolute right-0 top-0 font-mono text-xs tracking-widest'
-                    style={{
-                      opacity: i === 0 ? 1 : 0,
-                      willChange: 'opacity',
-                    }}
-                  >
-                    <span className='text-primary-600'>{String(i + 1).padStart(2, '0')}</span>
-                    <span className='text-white'> / {String(total).padStart(2, '0')}</span>
-                  </span>
-                ))}
+                {/* Plan overlay — top right (inside layer, clips with wipe) */}
+                <div
+                  className='absolute right-4 top-3 overflow-hidden lg:right-6 lg:top-4'
+                  style={{
+                    width: 200,
+                    height: 120,
+                  }}
+                >
+                  <Image
+                    src={room.plan.src}
+                    alt={room.plan.alt}
+                    width={room.plan.width}
+                    height={room.plan.height}
+                    loading='lazy'
+                    className='size-full object-contain'
+                  />
+                </div>
+
+                {/* Legend text — bottom left (inside layer, clips with wipe) */}
+                <div className='absolute bottom-0 left-0 p-5 md:p-6 lg:p-7'>
+                  <Typography variant='overline' as='span' className='text-primary-400'>
+                    {room.title}
+                  </Typography>
+                  <Typography variant='h4' as='h3' className='mt-1 text-white'>
+                    {room.subtitle}
+                  </Typography>
+                </div>
               </div>
-            </div>
-          </Container>
+            ))}
+
+            {/* ── 40px horizontal wipe divider line ──────────── *
+             *  Sweeps bottom-to-top, centered on the clip edge. */}
+            <div
+              data-int-wipe-line
+              className='absolute inset-x-0'
+              style={{
+                zIndex: 10,
+                height: 40,
+                opacity: 0,
+                top: '100%',
+                transform: 'translateY(-50%)',
+                background: '#edebe8',
+              }}
+            />
+          </div>
         </div>
       </div>
     </div>
