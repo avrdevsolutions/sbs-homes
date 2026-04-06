@@ -39,7 +39,7 @@ export const AssemblyScrollScene = ({
 
       mm.add(
         {
-          isDesktop: '(min-width: 768px)',
+          animate: '(prefers-reduced-motion: no-preference)',
           reduceMotion: '(prefers-reduced-motion: reduce)',
         },
         (context) => {
@@ -176,7 +176,7 @@ export const AssemblyScrollScene = ({
         style={{ backgroundColor: BG_START }}
       >
         {/* Section header */}
-        <div className='assembly-header pointer-events-none absolute left-0 top-0 z-20 w-full pt-20'>
+        <div className='assembly-header pointer-events-none absolute left-0 top-0 z-20 w-full pt-12 md:pt-20'>
           <Container size='xl'>
             <Stack gap='6'>
               <Typography variant='overline' className='text-primary-600'>
@@ -200,9 +200,9 @@ export const AssemblyScrollScene = ({
         {/* Main content area */}
         <div className='flex flex-1 items-center'>
           <Container size='xl'>
-            <div className='relative grid grid-cols-12 items-center gap-8'>
-              {/* Image stack — centered column */}
-              <div className='col-span-6 col-start-4'>
+            <div className='flex flex-col items-center md:relative md:grid md:grid-cols-12 md:items-center md:gap-8'>
+              {/* Image stack */}
+              <div className='w-3/5 shrink-0 md:col-span-6 md:col-start-4 md:w-auto'>
                 <div className='relative aspect-square'>
                   {steps.map((step, i) => (
                     <div
@@ -224,37 +224,35 @@ export const AssemblyScrollScene = ({
                 </div>
               </div>
 
-              {/* Text overlays — alternating left / right */}
-              {steps.map((step, i) => {
-                const isLeft = i % 2 === 0
-                return (
-                  <div
-                    key={step.name}
-                    className={cn(
-                      'assembly-step-text absolute row-start-1 self-center',
-                      isLeft
-                        ? 'col-span-3 col-start-1 text-left'
-                        : 'col-span-3 col-start-10 text-left',
-                    )}
-                    data-step={i}
-                    style={{ opacity: 0, transform: 'translateY(20px)' }}
-                  >
-                    <Typography variant='overline' className='mb-2 text-primary-600'>
-                      {String(i + 1).padStart(2, '0')}
-                    </Typography>
-                    <Typography variant='h4' as='h3' className='mb-2 text-white'>
-                      {step.name}
-                    </Typography>
-                    <Typography
-                      variant='body-sm'
-                      className='text-white'
-                      style={{ opacity: 0.5, maxWidth: '24ch' }}
+              {/* Text overlays — centered below image on mobile, alternating sides on desktop */}
+              <div className='relative mt-6 h-32 w-full md:absolute md:inset-0 md:mt-0 md:grid md:h-auto md:grid-cols-12 md:items-center md:gap-8'>
+                {steps.map((step, i) => {
+                  const isLeft = i % 2 === 0
+                  return (
+                    <div
+                      key={step.name}
+                      className={cn(
+                        'assembly-step-text absolute',
+                        'inset-x-0 top-0 px-6 text-center',
+                        'md:inset-auto md:row-start-1 md:self-center md:px-0 md:text-left',
+                        isLeft ? 'md:col-span-3 md:col-start-1' : 'md:col-span-3 md:col-start-10',
+                      )}
+                      data-step={i}
+                      style={{ opacity: 0, transform: 'translateY(20px)' }}
                     >
-                      {step.description}
-                    </Typography>
-                  </div>
-                )
-              })}
+                      <Typography variant='overline' className='mb-2 text-primary-600'>
+                        {String(i + 1).padStart(2, '0')}
+                      </Typography>
+                      <Typography variant='h4' as='h3' className='mb-2 text-white'>
+                        {step.name}
+                      </Typography>
+                      <Typography variant='body-sm' className='text-white' style={{ opacity: 0.5 }}>
+                        {step.description}
+                      </Typography>
+                    </div>
+                  )
+                })}
+              </div>
             </div>
           </Container>
         </div>
@@ -263,12 +261,12 @@ export const AssemblyScrollScene = ({
         <div className='pb-8'>
           <Container size='xl'>
             <div className='flex items-center gap-4'>
-              <div className='flex gap-2' role='img' aria-label='Assembly progress'>
+              <div className='flex gap-1.5 md:gap-2' role='img' aria-label='Assembly progress'>
                 {steps.map((step, i) => (
                   <div
                     key={step.name}
-                    className='relative h-1 overflow-hidden rounded-full'
-                    style={{ width: 32, backgroundColor: 'rgba(255,255,255,0.08)' }}
+                    className='relative h-1 w-6 overflow-hidden rounded-full md:w-8'
+                    style={{ backgroundColor: 'rgba(255,255,255,0.08)' }}
                   >
                     <div
                       className='assembly-progress-fill absolute inset-0 rounded-full'
