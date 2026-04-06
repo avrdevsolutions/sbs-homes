@@ -36,7 +36,7 @@ export const SectionBlockHeader = ({
       <Typography
         variant='body'
         className={cn('text-foreground', centered && 'mx-auto', dark && 'text-white')}
-        style={{ maxWidth: centered ? '48ch' : '44ch', opacity: descriptionOpacity }}
+        style={{ maxWidth: centered ? '40ch' : '36ch', opacity: descriptionOpacity }}
       >
         {description}
       </Typography>

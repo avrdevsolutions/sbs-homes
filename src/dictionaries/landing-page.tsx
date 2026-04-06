@@ -122,12 +122,27 @@ export type ComponentCardContent = {
   layers: ComponentLayer[]
 }
 
+export type ConstructionAnnotation = {
+  label: string
+  number: string
+  /** x anchor on the cutaway image (px in 4960×2730 space) */
+  anchorX: number
+  /** y anchor on the cutaway image (px in 4960×2730 space) */
+  anchorY: number
+  /** indicator color (hex) */
+  color: string
+}
+
 export type ConstructionOverviewSectionContent = {
   id: string
   eyebrow: string
   title: string
   description: string
   placeholderLabel: string
+  exteriorImage: ImageAsset
+  cutawayImage: ImageAsset
+  annotations: ConstructionAnnotation[]
+  cutawayParagraphs: string[]
   structuralComponents: string[]
   detailsLink: {
     label: string
@@ -138,6 +153,7 @@ export type ConstructionOverviewSectionContent = {
 export type AssemblyStep = {
   name: string
   description: string
+  image: ImageAsset
 }
 
 export type AssemblySequenceSectionContent = {
@@ -165,6 +181,7 @@ export type LandingPageContent = {
   floorPlans: FloorPlansSectionContent
   technologyDivider: DividerSectionContent
   constructionOverview: ConstructionOverviewSectionContent
+  panelPlans: FloorPlansSectionContent
   assemblySequence: AssemblySequenceSectionContent
   structuralFloorPlans: StructuralFloorPlansSectionContent
   componentDetails: ComponentDetailsSectionContent
@@ -367,6 +384,30 @@ export const landingPageContent: LandingPageContent = {
     description:
       'Five key components - engineered in a factory, not improvised on a building site.',
     placeholderLabel: 'Exploded cutaway animation content',
+    exteriorImage: {
+      src: '/images/exteriors/terrace-front-numbered.webp',
+      alt: 'Front view of a terrace of four homes with unit numbers 1 through 4',
+      width: 1500,
+      height: 750,
+    },
+    cutawayImage: {
+      src: '/images/exteriors/construction-cutaway.webp',
+      alt: 'Cutaway view showing internal structural components of the timber panel construction',
+      width: 1500,
+      height: 750,
+    },
+    cutawayParagraphs: [
+      'Off-site timber panel construction transforms the building process from traditional on-site construction to precision industrial assembly.',
+      'The structural components of the house are manufactured as fully engineered timber panels in a controlled factory environment. Each panel integrates structural elements, insulation layers and technical components before arriving on site.',
+      'The building process therefore becomes a rapid and highly precise assembly operation, ensuring consistent quality, reduced construction time and greater cost efficiency.',
+    ],
+    annotations: [
+      { label: 'Ground Floor Slab', number: '01', anchorX: 2500, anchorY: 2230, color: '#9CA3AF' },
+      { label: 'External Walls', number: '02', anchorX: 3250, anchorY: 2060, color: '#D4A843' },
+      { label: 'Internal Walls', number: '03', anchorX: 2720, anchorY: 1890, color: '#D97706' },
+      { label: 'Intermediate Floor', number: '04', anchorX: 3200, anchorY: 1685, color: '#C0C0C0' },
+      { label: 'Roof', number: '05', anchorX: 3050, anchorY: 1000, color: '#7BA7CC' },
+    ],
     structuralComponents: [
       'Foundation Slab',
       'External Walls',
@@ -379,44 +420,116 @@ export const landingPageContent: LandingPageContent = {
       href: '#the-components',
     },
   },
+  panelPlans: {
+    id: 'panel-plans',
+    eyebrow: '06 - Panel Plans',
+    title: 'General Arrangement',
+    description:
+      'Panel layout plans for ground floor and first floor — showing how off-site timber panels map to the building footprint.',
+    tabs: [
+      {
+        label: 'Ground Floor',
+        image: {
+          src: '/images/plans/panel-plan-ground-floor.svg',
+          alt: 'Ground floor panel plan showing the layout of prefabricated timber panels across the ground floor footprint',
+          width: 1200,
+          height: 900,
+        },
+      },
+      {
+        label: 'First Floor',
+        image: {
+          src: '/images/plans/panel-plan-first-floor.svg',
+          alt: 'First floor panel plan showing the layout of prefabricated timber panels across the first floor footprint',
+          width: 1200,
+          height: 900,
+        },
+      },
+    ],
+  },
   assemblySequence: {
     id: 'assembly',
-    eyebrow: '06 - Assembly Sequence',
+    eyebrow: '07 - Assembly Sequence',
     title: 'From Slab to Roof in Seven Steps',
     description:
       'A controlled, sequential assembly process. Each phase completes before the next begins.',
     placeholderLabel: 'Build sequence animation content',
     steps: [
-      { name: 'Foundation Slab', description: 'Concrete slab poured and cured on prepared ground' },
+      {
+        name: 'Foundation Slab',
+        description: 'Concrete slab poured and cured on prepared ground',
+        image: {
+          src: '/images/construction/assembly/step-1-ground-floor-slab.png',
+          alt: 'Step 1: Ground floor slab foundation',
+          width: 1080,
+          height: 1080,
+        },
+      },
       {
         name: 'Ground Floor Panels',
         description: 'Pre-insulated floor cassettes positioned on slab',
+        image: {
+          src: '/images/construction/assembly/step-2-ground-floor-walls.png',
+          alt: 'Step 2: Ground floor walls erected on slab',
+          width: 1080,
+          height: 1080,
+        },
       },
       {
         name: 'External Wall Panels',
         description: 'Factory-assembled wall panels craned into position',
+        image: {
+          src: '/images/construction/assembly/step-3-first-floor.png',
+          alt: 'Step 3: Intermediate floor cassette installed',
+          width: 1080,
+          height: 1080,
+        },
       },
       {
         name: 'Internal Partitions',
         description: 'Non-structural internal walls and service zones fitted',
+        image: {
+          src: '/images/construction/assembly/step-4-first-floor-walls.png',
+          alt: 'Step 4: First floor walls with internal partitions',
+          width: 1080,
+          height: 1080,
+        },
       },
       {
         name: 'First Floor Cassette',
         description: 'Engineered joist floor panels installed between storeys',
+        image: {
+          src: '/images/construction/assembly/step-5-second-floor-int.png',
+          alt: 'Step 5: Second floor slab added',
+          width: 1080,
+          height: 1080,
+        },
       },
       {
         name: 'Upper Storey Walls',
         description: 'First-floor external and party wall panels erected',
+        image: {
+          src: '/images/construction/assembly/step-6-party-walls.png',
+          alt: 'Step 6: Upper storey party walls erected',
+          width: 1080,
+          height: 1080,
+        },
       },
       {
         name: 'Roof Cassette',
         description: 'Pre-assembled roof panels complete the weathertight envelope',
+        image: {
+          src: '/images/construction/assembly/step-7-roof.png',
+          alt: 'Step 7: Roof cassette completes the build',
+          width: 1080,
+          height: 1080,
+        },
       },
     ],
   },
   structuralFloorPlans: {
     id: 'structural-floor-plans',
-    eyebrow: '07 - Structural Floor Plans',
+    eyebrow: '08 - Structural Floor Plans',
     title: 'Component Mapping',
     description:
       'Colour-coded plans showing the structural system - every wall, floor, and panel type identified. Real structural drawings provided later.',
@@ -430,7 +543,7 @@ export const landingPageContent: LandingPageContent = {
   },
   componentDetails: {
     id: 'the-components',
-    eyebrow: '08 - Component Details',
+    eyebrow: '09 - Component Details',
     title: 'Layer-by-Layer Specification',
     description:
       'Every element is engineered to a specific performance target. From slab to ridge, nothing is left to chance.',

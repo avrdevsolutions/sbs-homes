@@ -162,9 +162,9 @@ export const InteriorScrollGallery = ({ rooms, header }: InteriorScrollGalleryPr
       <div data-int-warm-bg className='absolute inset-0 bg-secondary-200' style={{ zIndex: 5 }} />
 
       {/* Content container — capped at 1920px, centered on ultra-wide */}
-      <div className='absolute inset-0 mx-auto' style={{ maxWidth: '120rem' }}>
+      <div className='absolute inset-0 mx-auto' style={{ maxWidth: '1920px' }}>
         {/* ── Section header — warm bg, dark text, above the frame ── */}
-        <div className='absolute inset-x-0 top-0 px-5 md:px-10 lg:px-14' style={{ zIndex: 20 }}>
+        <div className='absolute inset-x-0 top-0 px-5 md:px-10 lg:px-24' style={{ zIndex: 20 }}>
           <div
             data-int-header-wrap
             className='flex items-start justify-between gap-8 pt-5 md:pt-6'
@@ -229,8 +229,8 @@ export const InteriorScrollGallery = ({ rooms, header }: InteriorScrollGalleryPr
 
         {/* ── Rounded frame card ──────────────────────────────── */}
         <div
-          className='absolute inset-x-0 px-5 md:px-10 lg:px-14'
-          style={{ zIndex: 2, top: '16vh', bottom: '3vh' }}
+          className='absolute inset-x-0 px-5 md:px-10 lg:px-24'
+          style={{ zIndex: 2, top: '20vh', bottom: '10vh' }}
         >
           <div
             data-int-frame

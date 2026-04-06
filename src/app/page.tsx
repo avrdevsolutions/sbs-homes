@@ -21,6 +21,11 @@ const HomePage = () => (
     <FloorPlansSection content={landingPageContent.floorPlans} />
     <TechnologyDividerSection content={landingPageContent.technologyDivider} />
     <ConstructionOverviewSection content={landingPageContent.constructionOverview} />
+    <FloorPlansSection
+      content={landingPageContent.panelPlans}
+      background='default'
+      className='bg-white'
+    />
     <AssemblySequenceSection content={landingPageContent.assemblySequence} />
     <StructuralFloorPlansSection content={landingPageContent.structuralFloorPlans} />
     <ComponentDetailsSection content={landingPageContent.componentDetails} />

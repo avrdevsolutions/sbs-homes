@@ -272,8 +272,6 @@ The ESLint config enforces project standards automatically:
 | `unused-imports/no-unused-imports: "error"`       | Auto-removes unused imports     | Clean code, smaller bundles                              |
 | `no-console: "warn"` (allow error, warn)          | No `console.log`                | Use `console.error` or `console.warn` only               |
 | `tailwindcss/no-contradicting-classname: "error"` | No conflicting Tailwind classes | Prevents `px-4 px-6` (ambiguous)                         |
-| `tailwindcss/classnames-order: "warn"`            | Consistent class ordering       | Readability                                              |
-| `tailwindcss/no-custom-classname: "warn"`         | Warns on non-Tailwind classes   | Enforces token usage                                     |
 
 ### Import Ordering
 

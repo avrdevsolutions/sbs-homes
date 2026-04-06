@@ -172,9 +172,9 @@ export const ExteriorScrollGallery = ({ vantagePoints, header }: ExteriorScrollG
       <div data-ext-warm-bg className='absolute inset-0 bg-secondary-100' style={{ zIndex: 5 }} />
 
       {/* Content container — capped at 1920px, centered on ultra-wide */}
-      <div className='absolute inset-0 mx-auto' style={{ maxWidth: '120rem' }}>
+      <div className='absolute inset-0 mx-auto' style={{ maxWidth: '1920px' }}>
         {/* ── Section header — white bg, dark text, above the frame ── */}
-        <div className='absolute inset-x-0 top-0 px-5 md:px-10 lg:px-14' style={{ zIndex: 20 }}>
+        <div className='absolute inset-x-0 top-0 px-5 md:px-10 lg:px-24' style={{ zIndex: 20 }}>
           <div
             data-ext-header-wrap
             className='flex items-start justify-between gap-8 pt-5 md:pt-6'
@@ -190,7 +190,7 @@ export const ExteriorScrollGallery = ({ vantagePoints, header }: ExteriorScrollG
                 variant='h2'
                 as='h2'
                 className='mt-2 text-secondary-900'
-                style={{ maxWidth: '28ch' }}
+                style={{ maxWidth: '24ch' }}
               >
                 {header.title}
               </Typography>
@@ -244,8 +244,8 @@ export const ExteriorScrollGallery = ({ vantagePoints, header }: ExteriorScrollG
           the next image, its plan and legend come WITH it —
           no separate overlay animation needed. */}
         <div
-          className='absolute inset-x-0 px-5 md:px-10 lg:px-14'
-          style={{ zIndex: 2, top: '16vh', bottom: '3vh' }}
+          className='absolute inset-x-0 px-5 md:px-10 lg:px-24'
+          style={{ zIndex: 2, top: '20vh', bottom: '10vh' }}
         >
           <div
             data-ext-frame

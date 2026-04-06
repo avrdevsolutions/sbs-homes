@@ -18,15 +18,16 @@ corepack enable && corepack prepare pnpm@latest --activate
 
 ### Runtime
 
-| Package          | Version | Purpose                       |
-| ---------------- | ------- | ----------------------------- |
-| `next`           | 15.5.x  | Framework                     |
-| `react`          | ^18.3   | UI runtime                    |
-| `react-dom`      | ^18.3   | DOM renderer                  |
-| `motion`         | ^12.38  | Animation (Framer Motion v12) |
-| `clsx`           | ^2.1    | Conditional className utility |
-| `tailwind-merge` | ^2.5    | Merge Tailwind classes        |
-| `zod`            | ^3.24   | Schema validation             |
+| Package                      | Version | Purpose                             |
+| ---------------------------- | ------- | ----------------------------------- |
+| `next`                       | 15.5.x  | Framework                           |
+| `react`                      | ^18.3   | UI runtime                          |
+| `react-dom`                  | ^18.3   | DOM renderer                        |
+| `motion`                     | ^12.38  | Animation (Framer Motion v12)       |
+| `clsx`                       | ^2.1    | Conditional className utility       |
+| `tailwind-merge`             | ^2.5    | Merge Tailwind classes              |
+| `zod`                        | ^3.24   | Schema validation                   |
+| `yet-another-react-lightbox` | ^3.30   | Fullscreen image lightbox with zoom |
 
 ### Dev / Tooling
 
@@ -81,9 +82,9 @@ corepack enable && corepack prepare pnpm@latest --activate
 
 ### Animation
 
-| Package         | Install                  | When                                   | ADR      |
-| --------------- | ------------------------ | -------------------------------------- | -------- |
-| `framer-motion` | `pnpm add framer-motion` | When animation is explicitly requested | — |
+| Package         | Install                  | When                                   | ADR |
+| --------------- | ------------------------ | -------------------------------------- | --- |
+| `framer-motion` | `pnpm add framer-motion` | When animation is explicitly requested | —   |
 
 ### Storybook (Opt-In)
 

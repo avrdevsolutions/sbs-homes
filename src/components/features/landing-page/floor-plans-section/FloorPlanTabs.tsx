@@ -10,6 +10,8 @@ import type { FloorPlanTab } from '@/dictionaries/landing-page'
 import { useMotionEnabled } from '@/hooks/useMotionEnabled'
 import { cn } from '@/lib/utils'
 
+import { FloorPlanLightbox } from './FloorPlanLightbox'
+
 const tabVariantsFull = {
   hidden: { opacity: 0, y: 8 },
   visible: { opacity: 1, y: 0 },
@@ -69,14 +71,16 @@ export const FloorPlanTabs = ({ tabs }: FloorPlanTabsProps) => {
             className='relative w-full'
             style={{ aspectRatio: '3971 / 2533' }}
           >
-            <Image
-              src={tabs[activeIndex].image.src}
-              alt={tabs[activeIndex].image.alt}
-              fill
-              className='object-contain'
-              priority={activeIndex === 0}
-              unoptimized
-            />
+            <FloorPlanLightbox tabs={tabs} slideIndex={activeIndex}>
+              <Image
+                src={tabs[activeIndex].image.src}
+                alt={tabs[activeIndex].image.alt}
+                fill
+                className='object-contain'
+                priority={activeIndex === 0}
+                unoptimized
+              />
+            </FloorPlanLightbox>
           </motion.div>
         </AnimatePresence>
       </div>
