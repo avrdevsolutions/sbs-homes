@@ -76,13 +76,34 @@ export type StructuralLayer = {
   tone: LayerTone
 }
 
-export type StructuralFloorPlansSectionContent = {
+export type SystemComponentAnnotation = {
+  letter: string
+  label: string
+  /** X position as percentage (0–100) of cross-section image width */
+  anchorX: number
+  /** Y position as percentage (0–100) of cross-section image height */
+  anchorY: number
+  /** Which side the label appears on */
+  side: 'left' | 'right'
+}
+
+export type SystemComponent = {
+  id: string
+  title: string
+  subtitle: string
+  buildUp: string
+  uValue: string
+  locationKeyImage: { src: string; alt: string }
+  crossSectionImage: { src: string; alt: string }
+  annotations: SystemComponentAnnotation[]
+}
+
+export type SystemComponentsSectionContent = {
   id: string
   eyebrow: string
   title: string
   description: string
-  placeholderLabel: string
-  layers: StructuralLayer[]
+  components: SystemComponent[]
 }
 
 export type DividerSectionContent = {
@@ -183,7 +204,7 @@ export type LandingPageContent = {
   constructionOverview: ConstructionOverviewSectionContent
   panelPlans: FloorPlansSectionContent
   assemblySequence: AssemblySequenceSectionContent
-  structuralFloorPlans: StructuralFloorPlansSectionContent
+  systemComponents: SystemComponentsSectionContent
   componentDetails: ComponentDetailsSectionContent
 }
 
@@ -527,18 +548,320 @@ export const landingPageContent: LandingPageContent = {
       },
     ],
   },
-  structuralFloorPlans: {
-    id: 'structural-floor-plans',
-    eyebrow: '08 - Structural Floor Plans',
-    title: 'Component Mapping',
+  systemComponents: {
+    id: 'system-components',
+    eyebrow: '08 - System Components',
+    title: 'Layer-by-Layer Build-Up',
     description:
-      'Colour-coded plans showing the structural system - every wall, floor, and panel type identified. Real structural drawings provided later.',
-    placeholderLabel: 'Structural plan content - provided separately',
-    layers: [
-      { label: 'Exterior Walls', tone: 'primary' },
-      { label: 'Internal Walls & Panels', tone: 'porcelain' },
-      { label: 'Floor Cassette', tone: 'amber' },
-      { label: 'Roof Structure', tone: 'steel' },
+      'Each component of the building envelope is precision-engineered. Explore the cross-section details of every structural element.',
+    components: [
+      {
+        id: 'ground-floor-slab',
+        title: '01 / Ground Floor Slab',
+        subtitle: 'Ground Floor Slab',
+        buildUp: 'Total build-up: 198 mm (concrete floor by other — i.e. not included)',
+        uValue: 'U-Value: ?',
+        locationKeyImage: {
+          src: '/images/construction/ground-floor-slab/location-key.png',
+          alt: 'House diagram highlighting ground floor slab location',
+        },
+        crossSectionImage: {
+          src: '/images/construction/ground-floor-slab/cross-section.webp',
+          alt: 'Cross-section of ground floor slab construction layers',
+        },
+        annotations: [
+          {
+            letter: 'A',
+            label: 'Laminated flooring: 12 mm',
+            anchorX: 50,
+            anchorY: 20,
+            side: 'right',
+          },
+          {
+            letter: 'B',
+            label: 'Laminated flooring underlay with vapour control layer: 3 mm',
+            anchorX: 40,
+            anchorY: 30,
+            side: 'left',
+          },
+          { letter: 'C', label: 'OSB3 board: 18 mm', anchorX: 66, anchorY: 38, side: 'right' },
+          {
+            letter: 'D',
+            label:
+              'Timber framing structure of laminated timber (W:50 × H:160 mm) with 160 mm rockwool insulation inside the frame: 160 mm',
+            anchorX: 50,
+            anchorY: 63,
+            side: 'left',
+          },
+          { letter: 'E', label: 'DPM: 5 mm', anchorX: 55, anchorY: 67, side: 'right' },
+          {
+            letter: 'F',
+            label: 'Concrete floor or beam & block',
+            anchorX: 53,
+            anchorY: 78,
+            side: 'right',
+          },
+        ],
+      },
+      {
+        id: 'external-walls',
+        title: '02 / External Walls',
+        subtitle: 'External Walls',
+        buildUp: 'Total build-up: 407.5 mm',
+        uValue: 'U-Value: 0.12W/m2K',
+        locationKeyImage: {
+          src: '/images/construction/external-walls/location-key.png',
+          alt: 'House diagram highlighting external wall locations',
+        },
+        crossSectionImage: {
+          src: '/images/construction/external-walls/cross-section.webp',
+          alt: 'Cross-section of external wall construction layers',
+        },
+        annotations: [
+          {
+            letter: 'C',
+            label: 'Timber battens (W:45 mm x H:45 mm) / technical space for services: 45',
+            anchorX: 43,
+            anchorY: 45,
+            side: 'left',
+          },
+          { letter: 'B', label: 'OSB3 board: 15 mm', anchorX: 51.5, anchorY: 70, side: 'left' },
+          {
+            letter: 'A',
+            label: 'Internal plasterboard (fire rated or moisture if required): 12.5 mm',
+            anchorX: 45,
+            anchorY: 60,
+            side: 'left',
+          },
+          {
+            letter: 'I',
+            label: 'Reinforced system plastering with silicone K render: 10 mm',
+            anchorX: 58,
+            anchorY: 22,
+            side: 'left',
+          },
+          {
+            letter: 'H',
+            label: 'Double density mineral wool plaster base: 150 mm',
+            anchorX: 65,
+            anchorY: 34,
+            side: 'right',
+          },
+          { letter: 'G', label: 'Breathable membrane', anchorX: 63.5, anchorY: 46, side: 'right' },
+          { letter: 'F', label: 'OSB3 board: 15 mm', anchorX: 61, anchorY: 56, side: 'right' },
+          {
+            letter: 'E',
+            label:
+              'Timber frame structure of laminated timber (W:80 × D:160 mm) with 2 layers of 80 mm rockwool insulation inside the frame: 160 mm',
+            anchorX: 65,
+            anchorY: 68,
+            side: 'right',
+          },
+          { letter: 'D', label: 'Vapour control layer', anchorX: 65, anchorY: 80, side: 'right' },
+        ],
+      },
+      {
+        id: 'internal-walls',
+        title: '03 / Internal Walls',
+        subtitle: 'Internal Walls',
+        buildUp: 'Total build-up: 155 mm',
+        uValue: 'U-Value: NA',
+        locationKeyImage: {
+          src: '/images/construction/internal-walls/location-key.png',
+          alt: 'House diagram highlighting internal wall locations',
+        },
+        crossSectionImage: {
+          src: '/images/construction/internal-walls/cross-section.webp',
+          alt: 'Cross-section of internal wall construction layers',
+        },
+        annotations: [
+          { letter: 'B', label: 'OSB3 board: 15 mm', anchorX: 35, anchorY: 42, side: 'left' },
+          {
+            letter: 'A',
+            label: 'Internal plasterboard (fire rated or moisture if required): 12.5 mm',
+            anchorX: 30,
+            anchorY: 58,
+            side: 'left',
+          },
+          {
+            letter: 'E',
+            label: 'Internal plasterboard (fire rated or moisture if required): 12.5 mm',
+            anchorX: 65,
+            anchorY: 30,
+            side: 'right',
+          },
+          { letter: 'D', label: 'OSB3 board: 15 mm', anchorX: 65, anchorY: 42, side: 'right' },
+          {
+            letter: 'C',
+            label:
+              'Timber frame structure (W:80 × D:100 mm) with 100 mm rockwool insulation inside the frame: 100 mm',
+            anchorX: 65,
+            anchorY: 62,
+            side: 'right',
+          },
+        ],
+      },
+      {
+        id: 'party-walls',
+        title: '04 / Internal Walls (Party Walls)',
+        subtitle: 'Party Walls',
+        buildUp: 'Total build-up: 240 mm',
+        uValue: 'U-Value: NA',
+        locationKeyImage: {
+          src: '/images/construction/party-walls/location-key.png',
+          alt: 'House diagram highlighting party wall locations',
+        },
+        crossSectionImage: {
+          src: '/images/construction/party-walls/cross-section.png',
+          alt: 'Cross-section of party wall construction layers',
+        },
+        annotations: [
+          { letter: 'B', label: 'OSB3 board: 15 mm', anchorX: 35, anchorY: 40, side: 'left' },
+          {
+            letter: 'A',
+            label: '2 layers of 12.5 mm fire rated plasterboard: 25 mm',
+            anchorX: 30,
+            anchorY: 56,
+            side: 'left',
+          },
+          {
+            letter: 'E',
+            label: '2 layers of 12.5 mm fire rated plasterboard: 25 mm',
+            anchorX: 65,
+            anchorY: 28,
+            side: 'right',
+          },
+          { letter: 'D', label: 'OSB3 board: 15 mm', anchorX: 65, anchorY: 42, side: 'right' },
+          {
+            letter: 'C',
+            label:
+              'Timber frame structure (W:80 × D:160 mm) with 160 mm rockwool insulation inside the frame: 160 mm',
+            anchorX: 65,
+            anchorY: 64,
+            side: 'right',
+          },
+        ],
+      },
+      {
+        id: 'intermediate-floor',
+        title: '05 / Intermediate Floor',
+        subtitle: 'Intermediate Floor',
+        buildUp: 'Total build-up: 290.5 mm',
+        uValue: 'U-Value: NA',
+        locationKeyImage: {
+          src: '/images/construction/intermediate-floor/location-key.png',
+          alt: 'House diagram highlighting intermediate floor location',
+        },
+        crossSectionImage: {
+          src: '/images/construction/intermediate-floor/cross-section.webp',
+          alt: 'Cross-section of intermediate floor construction layers',
+        },
+        annotations: [
+          {
+            letter: 'A',
+            label: 'Laminated flooring: 12 mm',
+            anchorX: 55,
+            anchorY: 12,
+            side: 'right',
+          },
+          {
+            letter: 'B',
+            label: 'Laminated flooring underlay: 3 mm',
+            anchorX: 55,
+            anchorY: 22,
+            side: 'right',
+          },
+          { letter: 'C', label: 'OSB3 board: 18 mm', anchorX: 55, anchorY: 30, side: 'right' },
+          {
+            letter: 'D',
+            label:
+              'Timber framing structure of laminated timber (W:100 × H:200 mm) with 100 mm rockwool insulation inside the frame: 200 mm',
+            anchorX: 55,
+            anchorY: 44,
+            side: 'right',
+          },
+          { letter: 'E', label: 'Vapour control layer', anchorX: 55, anchorY: 66, side: 'right' },
+          {
+            letter: 'F',
+            label: 'Timber battens (W:45 mm x H:45 mm) / technical space for services: 45',
+            anchorX: 55,
+            anchorY: 76,
+            side: 'right',
+          },
+          {
+            letter: 'G',
+            label: 'Internal plasterboard (fire rated or moisture if required): 12.5 mm',
+            anchorX: 55,
+            anchorY: 88,
+            side: 'right',
+          },
+        ],
+      },
+      {
+        id: 'roof',
+        title: '06 / Roof',
+        subtitle: 'Roof',
+        buildUp: 'Total build-up: 450.5 mm (roof tiles by other — i.e. not included)',
+        uValue: 'U-Value: 0.113W/m2K',
+        locationKeyImage: {
+          src: '/images/construction/roof/location-key.png',
+          alt: 'House diagram highlighting roof location',
+        },
+        crossSectionImage: {
+          src: '/images/construction/roof/cross-section.webp',
+          alt: 'Cross-section of roof construction layers',
+        },
+        annotations: [
+          { letter: 'A', label: 'Roof tiles (by others)', anchorX: 55, anchorY: 6, side: 'right' },
+          {
+            letter: 'B',
+            label: 'Timber battens (W:50 mm x H:30 mm): 30 mm',
+            anchorX: 55,
+            anchorY: 14,
+            side: 'right',
+          },
+          {
+            letter: 'C',
+            label: 'Timber battens (W:45 mm x H:45 mm): 45 mm',
+            anchorX: 55,
+            anchorY: 22,
+            side: 'right',
+          },
+          { letter: 'D', label: 'Breathable membrane', anchorX: 55, anchorY: 30, side: 'right' },
+          { letter: 'E', label: 'OSB3 board: 18 mm', anchorX: 55, anchorY: 38, side: 'right' },
+          {
+            letter: 'G',
+            label:
+              'Timber battens (W:45 mm x H:100 mm) attached along the rafter with 100 mm rockwool insulation between battens: 100 mm',
+            anchorX: 55,
+            anchorY: 48,
+            side: 'right',
+          },
+          {
+            letter: 'F',
+            label:
+              'Laminated timber rafter (W:80 × H:200 mm) with 2 layers of 100 mm rockwool insulation between rafters: 200 mm',
+            anchorX: 55,
+            anchorY: 60,
+            side: 'right',
+          },
+          { letter: 'H', label: 'Vapour control layer', anchorX: 55, anchorY: 72, side: 'right' },
+          {
+            letter: 'I',
+            label: 'Timber battens (W:45 mm x H:45 mm) / technical space for services: 45 mm',
+            anchorX: 55,
+            anchorY: 82,
+            side: 'right',
+          },
+          {
+            letter: 'L',
+            label: 'Internal plasterboard (fire rated or moisture if required): 12.5 mm',
+            anchorX: 55,
+            anchorY: 92,
+            side: 'right',
+          },
+        ],
+      },
     ],
   },
   componentDetails: {

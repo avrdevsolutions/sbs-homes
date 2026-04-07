@@ -59,7 +59,7 @@ export const AssemblyScrollScene = ({
               start: 'top top',
               end: `+=${totalSteps * 100}%`,
               pin: true,
-              scrub: 1,
+              scrub: 1.5,
               anticipatePin: 1,
             },
           })
@@ -71,8 +71,8 @@ export const AssemblyScrollScene = ({
             {
               opacity: 1,
               y: 0,
-              duration: 0.5,
-              ease: 'none',
+              duration: 0.6,
+              ease: 'power2.out',
             },
             'step0',
           )
@@ -85,55 +85,55 @@ export const AssemblyScrollScene = ({
           )
 
           /* Hold on step 0 */
-          tl.to({}, { duration: 0.4 })
+          tl.to({}, { duration: 0.5 })
 
           /* Steps 1–N: reveal image, swap text, update progress */
           for (let i = 1; i < totalSteps; i++) {
             const label = `step${i}`
             tl.addLabel(label)
 
-            /* Fade in this image layer */
-            tl.to(
+            /* Fade in this image layer with subtle scale */
+            tl.fromTo(
               `.assembly-image[data-step="${i}"]`,
+              { opacity: 0, scale: 1.04 },
               {
                 opacity: 1,
-                duration: 0.8,
-                ease: 'none',
+                scale: 1,
+                duration: 1,
+                ease: 'power2.out',
               },
               label,
             )
 
-            /* Fade out previous text */
+            /* Crossfade text — fade out overlaps with fade in */
             tl.to(
               `.assembly-step-text[data-step="${i - 1}"]`,
               {
                 opacity: 0,
-                y: -10,
-                duration: 0.3,
-                ease: 'none',
+                y: -12,
+                duration: 0.4,
+                ease: 'power2.in',
               },
               label,
             )
-
-            /* Fade in this text */
             tl.to(
               `.assembly-step-text[data-step="${i}"]`,
               {
                 opacity: 1,
                 y: 0,
-                duration: 0.5,
-                ease: 'none',
+                duration: 0.6,
+                ease: 'power2.out',
               },
-              `${label}+=0.3`,
+              `${label}+=0.15`,
             )
 
-            /* Update progress — animate the fill bar inside each segment */
+            /* Update progress */
             tl.to(
               `.assembly-progress-fill[data-step="${i}"]`,
               {
                 scaleX: 1,
-                duration: 0.4,
-                ease: 'none',
+                duration: 0.5,
+                ease: 'power1.out',
               },
               label,
             )
@@ -154,14 +154,14 @@ export const AssemblyScrollScene = ({
               '.assembly-scene',
               {
                 backgroundColor: `rgb(${r}, ${g}, ${b})`,
-                duration: 0.8,
-                ease: 'none',
+                duration: 1,
+                ease: 'power1.inOut',
               },
               label,
             )
 
             /* Hold before next step */
-            tl.to({}, { duration: 0.4 })
+            tl.to({}, { duration: 0.5 })
           }
         },
       )
