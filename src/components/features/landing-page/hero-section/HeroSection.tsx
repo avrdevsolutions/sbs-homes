@@ -12,7 +12,7 @@ export const HeroSection = ({ content }: HeroSectionProps) => (
     spacing='none'
     background='warm'
     fullBleed
-    className='relative min-h-screen overflow-hidden'
+    className='relative min-h-dvh overflow-hidden'
   >
     {/* Grain texture */}
     <div

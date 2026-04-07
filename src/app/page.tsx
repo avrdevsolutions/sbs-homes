@@ -1,19 +1,17 @@
 import {
   AssemblySequenceSection,
   ComponentDetailsSection,
-  ExteriorViewsSection,
-  HeroSection,
-  IntroSection,
+  InteriorLifestyleSection,
   SystemComponentsSection,
 } from '@/components/features/landing-page'
 import { landingPageContent } from '@/dictionaries/landing-page'
 
 const HomePage = () => (
   <>
-    <HeroSection content={landingPageContent.hero} />
-    <IntroSection content={landingPageContent.intro} />
-    <ExteriorViewsSection content={landingPageContent.exteriorViews} />
-    {/*<InteriorLifestyleSection content={landingPageContent.interiorLifestyle} />*/}
+    {/*<HeroSection content={landingPageContent.hero} />*/}
+    {/*<IntroSection content={landingPageContent.intro} />*/}
+    {/*<ExteriorViewsSection content={landingPageContent.exteriorViews} />*/}
+    <InteriorLifestyleSection content={landingPageContent.interiorLifestyle} />
     {/*<FloorPlansSection content={landingPageContent.floorPlans} />*/}
     {/*<TechnologyDividerSection content={landingPageContent.technologyDivider} />*/}
     {/*<ConstructionOverviewSection content={landingPageContent.constructionOverview} />*/}
