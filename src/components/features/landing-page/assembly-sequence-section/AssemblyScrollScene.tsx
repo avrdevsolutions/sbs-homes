@@ -172,7 +172,7 @@ export const AssemblyScrollScene = ({
   return (
     <div ref={containerRef}>
       <div
-        className='assembly-scene flex h-dvh flex-col overflow-hidden'
+        className='assembly-scene relative flex h-dvh flex-col overflow-hidden'
         style={{ backgroundColor: BG_START }}
       >
         {/* Section header */}
