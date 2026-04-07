@@ -14,7 +14,6 @@ import 'yet-another-react-lightbox/styles.css'
 import { SectionBlockHeader } from '@/components/shared'
 import { Typography } from '@/components/ui'
 import type { ExteriorViewsSectionContent } from '@/dictionaries/landing-page'
-import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { cn } from '@/lib/utils'
 
 import { ExteriorSlide } from './ExteriorSlide'
@@ -39,22 +38,18 @@ export const ExteriorViewsCarousel = ({ content }: ExteriorViewsCarouselProps) =
   /* trackIndex maps to the extended track: [clone-last, 0, 1, 2, clone-first] */
   const trackIndexRef = useRef(1)
 
-  const isDesktop = useMediaQuery('(min-width: 768px)')
-  const slideGap = isDesktop ? 24 : 16
-  const slideRatio = isDesktop ? 0.75 : 1
+  const SLIDE_GAP = 24
+  const SLIDE_RATIO = 0.75
 
   const total = vantagePoints.length
   const active = vantagePoints[activeIndex]
 
   /* ── Compute pixel offset for a given track index ── */
-  const getOffset = useCallback(
-    (ti: number) => {
-      const viewportWidth = viewportRef.current?.clientWidth ?? 0
-      const slideWidth = viewportWidth * slideRatio
-      return -(ti * (slideWidth + slideGap))
-    },
-    [slideGap, slideRatio],
-  )
+  const getOffset = useCallback((ti: number) => {
+    const viewportWidth = viewportRef.current?.clientWidth ?? 0
+    const slideWidth = viewportWidth * SLIDE_RATIO
+    return -(ti * (slideWidth + SLIDE_GAP))
+  }, [])
 
   /* ── Set track position immediately (no animation) ── */
   const snapTrack = useCallback(
@@ -96,7 +91,7 @@ export const ExteriorViewsCarousel = ({ content }: ExteriorViewsCarouselProps) =
         setReady(true)
       }
     },
-    { scope: containerRef, dependencies: [slideRatio, slideGap] },
+    { scope: containerRef },
   )
 
   /* ── Navigate to next/prev with infinite wrap ── */
@@ -200,9 +195,9 @@ export const ExteriorViewsCarousel = ({ content }: ExteriorViewsCarouselProps) =
   const openImageLightbox = useCallback(() => setImageLightboxOpen(true), [])
 
   return (
-    <div ref={containerRef} className='relative flex h-full flex-col py-6 md:py-0'>
-      {/* Plan pinned to container top-right — desktop only */}
-      <div className='absolute right-0 top-10 z-10 hidden md:block'>
+    <div ref={containerRef} className='relative flex h-full flex-col'>
+      {/* Plan pinned to container top-right */}
+      <div className='absolute right-0 top-10 z-10'>
         <div data-ext-plan>
           <button
             type='button'
@@ -224,7 +219,7 @@ export const ExteriorViewsCarousel = ({ content }: ExteriorViewsCarouselProps) =
       </div>
 
       {/* ── Section header ── */}
-      <div className='shrink-0 md:pt-10'>
+      <div className='shrink-0 pt-10'>
         <SectionBlockHeader
           eyebrow={content.eyebrow}
           title={content.title}
@@ -234,18 +229,18 @@ export const ExteriorViewsCarousel = ({ content }: ExteriorViewsCarouselProps) =
       </div>
 
       {/* ── Carousel — exterior images ── */}
-      <div className='relative min-h-0 flex-1' style={{ maxHeight: '60dvh' }}>
+      <div className='relative min-h-0 flex-1'>
         {/* Skeleton — visible until GSAP positions track */}
         {!ready ? (
-          <div className='absolute inset-0 flex' style={{ gap: slideGap }}>
+          <div className='absolute inset-0 flex' style={{ gap: SLIDE_GAP }}>
             <div
               className='h-full shrink-0 animate-pulse rounded-2xl bg-secondary-200'
-              style={{ width: `${slideRatio * 100}%` }}
+              style={{ width: `${SLIDE_RATIO * 100}%` }}
             />
-            {slideRatio < 1 ? (
+            {SLIDE_RATIO < 1 ? (
               <div
                 className='h-full shrink-0 animate-pulse rounded-2xl bg-secondary-200'
-                style={{ width: `${(1 - slideRatio) * 100}%`, opacity: 0.5 }}
+                style={{ width: `${(1 - SLIDE_RATIO) * 100}%`, opacity: 0.5 }}
               />
             ) : null}
           </div>
@@ -261,14 +256,14 @@ export const ExteriorViewsCarousel = ({ content }: ExteriorViewsCarouselProps) =
           <div
             ref={trackRef}
             className='flex h-full'
-            style={{ willChange: 'transform', gap: slideGap, visibility: 'hidden' }}
+            style={{ willChange: 'transform', gap: SLIDE_GAP, visibility: 'hidden' }}
           >
             {/* Clone of last slide (for backward wrap) */}
             <ExteriorSlide
               vantagePoint={vantagePoints[total - 1]}
               index={total - 1}
               total={total}
-              slideRatio={slideRatio}
+              slideRatio={SLIDE_RATIO}
               onImageClick={openImageLightbox}
             />
             {/* Real slides */}
@@ -278,7 +273,7 @@ export const ExteriorViewsCarousel = ({ content }: ExteriorViewsCarouselProps) =
                 vantagePoint={vp}
                 index={i}
                 total={total}
-                slideRatio={slideRatio}
+                slideRatio={SLIDE_RATIO}
                 onImageClick={openImageLightbox}
               />
             ))}
@@ -287,37 +282,15 @@ export const ExteriorViewsCarousel = ({ content }: ExteriorViewsCarouselProps) =
               vantagePoint={vantagePoints[0]}
               index={0}
               total={total}
-              slideRatio={slideRatio}
+              slideRatio={SLIDE_RATIO}
               onImageClick={openImageLightbox}
             />
           </div>
         </div>
       </div>
 
-      {/* ── Bottom bar: plan legend (mobile) + navigation ── */}
-      <div className='shrink-0 pt-4 md:pb-6 md:pt-3'>
-        {/* Mobile plan legend */}
-        <div className='mb-4 flex justify-center md:hidden'>
-          <div data-ext-plan>
-            <button
-              type='button'
-              onClick={() => setLightboxOpen(true)}
-              className='cursor-zoom-in'
-              aria-label={`View ${active.sitePlan.alt} fullscreen`}
-            >
-              <div className='relative' style={{ width: 220, height: 130 }}>
-                <Image
-                  src={active.sitePlan.src}
-                  alt={active.sitePlan.alt}
-                  fill
-                  className='object-contain'
-                  sizes='220px'
-                />
-              </div>
-            </button>
-          </div>
-        </div>
-
+      {/* ── Bottom bar: navigation ── */}
+      <div className='shrink-0 pt-3 md:pb-6 md:pt-3'>
         <div className='flex items-center justify-between'>
           <div className='flex items-center gap-3'>
             <div className='flex gap-1.5' role='tablist' aria-label='Exterior view slides'>
@@ -344,6 +317,27 @@ export const ExteriorViewsCarousel = ({ content }: ExteriorViewsCarouselProps) =
               {activeIndex + 1} / {total}
             </Typography>
           </div>
+
+          {/* Mobile: View Plan button */}
+          <button
+            type='button'
+            onClick={() => setLightboxOpen(true)}
+            className='flex items-center gap-1.5 text-primary-600 md:hidden'
+            aria-label={`View ${active.sitePlan.alt}`}
+          >
+            <Typography variant='overline' className='text-primary-600'>
+              View Plan
+            </Typography>
+            <svg width='12' height='12' viewBox='0 0 16 16' fill='none' aria-hidden='true'>
+              <path
+                d='M4 12L12 4M12 4H5M12 4V11'
+                stroke='currentColor'
+                strokeWidth='1.5'
+                strokeLinecap='round'
+                strokeLinejoin='round'
+              />
+            </svg>
+          </button>
 
           <div className='hidden gap-2 md:flex'>
             <button
