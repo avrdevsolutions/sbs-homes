@@ -9,7 +9,13 @@ type ComponentDetailsSectionProps = {
 }
 
 export const ComponentDetailsSection = ({ content }: ComponentDetailsSectionProps) => (
-  <Section id={content.id} spacing='spacious' background='dark-deeper'>
+  <Section
+    id={content.id}
+    spacing='spacious'
+    background='dark-deeper'
+    containerSize='xxl'
+    containerPadding='xxl'
+  >
     <SectionBlockHeader
       eyebrow={content.eyebrow}
       title={content.title}

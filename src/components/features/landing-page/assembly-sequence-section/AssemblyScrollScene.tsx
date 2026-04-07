@@ -177,7 +177,7 @@ export const AssemblyScrollScene = ({
       >
         {/* Section header */}
         <div className='assembly-header pointer-events-none absolute left-0 top-0 z-20 w-full pt-12 md:pt-20'>
-          <Container size='xl'>
+          <Container size='xxl' padding='xxl'>
             <Stack gap='6'>
               <Typography variant='overline' className='text-primary-600'>
                 {eyebrow}
@@ -199,7 +199,7 @@ export const AssemblyScrollScene = ({
 
         {/* Main content area */}
         <div className='flex flex-1 items-center'>
-          <Container size='xl'>
+          <Container size='xxl' padding='xxl'>
             <div className='flex flex-col items-center md:relative md:grid md:grid-cols-12 md:items-center md:gap-8'>
               {/* Image stack */}
               <div className='w-3/5 shrink-0 md:col-span-6 md:col-start-4 md:w-auto'>
@@ -259,7 +259,7 @@ export const AssemblyScrollScene = ({
 
         {/* Progress indicator */}
         <div className='pb-8'>
-          <Container size='xl'>
+          <Container size='xxl' padding='xxl'>
             <div className='flex items-center gap-4'>
               <div className='flex gap-1.5 md:gap-2' role='img' aria-label='Assembly progress'>
                 {steps.map((step, i) => (

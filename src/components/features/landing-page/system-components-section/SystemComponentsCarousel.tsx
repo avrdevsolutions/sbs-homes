@@ -157,9 +157,9 @@ export const SystemComponentsCarousel = ({ content }: SystemComponentsCarouselPr
   )
 
   return (
-    <div ref={containerRef} className='flex size-full flex-col md:px-10 md:pt-14 lg:px-24 lg:pt-16'>
+    <div ref={containerRef} className='flex h-full flex-col'>
       {/* ── Top row — section header (left) + location key (right) ── */}
-      <div className='shrink-0 px-5 pt-10'>
+      <div className='shrink-0 pt-10'>
         <div className='flex items-start justify-between gap-6'>
           <SectionBlockHeader
             eyebrow={content.eyebrow}
@@ -191,7 +191,7 @@ export const SystemComponentsCarousel = ({ content }: SystemComponentsCarouselPr
       </div>
 
       {/* ── Carousel — card info + cross-section ── */}
-      <div className='min-h-0 flex-1 px-5'>
+      <div className='min-h-0 flex-1'>
         <div
           className='size-full overflow-hidden'
           onTouchStart={handleTouchStart}
@@ -208,7 +208,7 @@ export const SystemComponentsCarousel = ({ content }: SystemComponentsCarouselPr
       </div>
 
       {/* ── Navigation bar ── */}
-      <div className='shrink-0 px-5 pb-6 pt-3'>
+      <div className='shrink-0 pb-6 pt-3'>
         <div className='mb-3 h-px bg-white/[0.06]' />
         <div className='flex items-center justify-between'>
           <div className='flex items-center gap-3'>

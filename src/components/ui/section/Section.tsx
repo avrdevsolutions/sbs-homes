@@ -8,9 +8,9 @@ type SectionProps = {
   /** Background style — maps to project tokens */
   background?: 'default' | 'warm' | 'warm-alt' | 'dark' | 'dark-deeper'
   /** Container size override (defaults to 'xl') */
-  containerSize?: 'sm' | 'md' | 'lg' | 'xl' | 'full'
+  containerSize?: 'sm' | 'md' | 'lg' | 'xl' | 'xxl' | 'full'
   /** Container padding override (defaults to 'default') */
-  containerPadding?: 'none' | 'tight' | 'default' | 'wide'
+  containerPadding?: 'none' | 'tight' | 'default' | 'wide' | 'xxl'
   /** Skip Container wrapper — for full-bleed content that manages its own width */
   fullBleed?: boolean
   className?: string

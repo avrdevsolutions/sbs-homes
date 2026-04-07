@@ -136,6 +136,7 @@ const config: Config = {
       maxWidth: {
         content: '74rem',
         narrow: '46rem',
+        xxl: '1920px',
       },
       borderRadius: {
         '4xl': '2rem',

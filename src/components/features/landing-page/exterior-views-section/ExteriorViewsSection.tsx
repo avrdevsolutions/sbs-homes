@@ -25,7 +25,7 @@ export const ExteriorViewsSection = ({ content }: ExteriorViewsSectionProps) => 
 
     {/* Mobile: Static card stack on warm background */}
     <div className='bg-secondary-100 md:hidden'>
-      <Container>
+      <Container size='xxl' padding='xxl'>
         <div className='pb-10 pt-26'>
           <SectionBlockHeader
             eyebrow={content.eyebrow}
@@ -35,7 +35,7 @@ export const ExteriorViewsSection = ({ content }: ExteriorViewsSectionProps) => 
           />
         </div>
       </Container>
-      <Container>
+      <Container size='xxl' padding='xxl'>
         <Stack gap='10' className='pb-26'>
           {content.vantagePoints.map((vp, i) => (
             <VantagePointCard
