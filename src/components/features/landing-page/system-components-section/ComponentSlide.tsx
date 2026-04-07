@@ -83,23 +83,34 @@ export const ComponentSlide = memo(({ component, index }: ComponentSlideProps) =
       role='group'
     >
       {/* Left — card info */}
-      <div className='hidden w-1/4 shrink-0 flex-col pt-2 md:flex'>
-        <Typography as='h3' variant='h3' className='mb-3 text-white'>
-          {component.title}
-        </Typography>
-        <Typography
-          variant='overline'
-          className='mb-2 text-primary-600'
-          style={{ fontSize: '0.8rem' }}
-        >
-          Typical detail
-        </Typography>
-        <Typography variant='body-sm' className='text-white/60' style={{ maxWidth: '28ch' }}>
-          {component.buildUp}
-        </Typography>
-        <Typography variant='body-sm' className='text-white/60'>
-          {component.uValue}
-        </Typography>
+      <div className='hidden w-1/4 shrink-0 md:flex'>
+        <div className='relative flex flex-col border-l border-primary-600/40 pl-12 pt-2'>
+          {/* Watermark number */}
+          <span
+            className='pointer-events-none absolute select-none font-bold leading-none text-white/[0.03]'
+            style={{ fontSize: '8rem', top: '0rem', left: '.2rem' }}
+            aria-hidden='true'
+          >
+            {String(index + 1).padStart(2, '0')}
+          </span>
+
+          <Typography as='h3' variant='h3' className='relative mb-3 mt-20 text-white'>
+            {component.subtitle}
+          </Typography>
+          <Typography
+            variant='overline'
+            className='mb-2 text-primary-600'
+            style={{ fontSize: '0.8rem' }}
+          >
+            Typical detail
+          </Typography>
+          <Typography variant='body-sm' className='text-white/60' style={{ maxWidth: '28ch' }}>
+            {component.buildUp}
+          </Typography>
+          <Typography variant='body-sm' className='text-white/60'>
+            {component.uValue}
+          </Typography>
+        </div>
       </div>
 
       {/* Right — cross-section image */}

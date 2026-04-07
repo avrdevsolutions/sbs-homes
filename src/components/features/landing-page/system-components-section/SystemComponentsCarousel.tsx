@@ -25,6 +25,7 @@ export const SystemComponentsCarousel = ({ content }: SystemComponentsCarouselPr
   const trackRef = useRef<HTMLDivElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const locationKeyRef = useRef<HTMLDivElement>(null)
+  const locationLineRef = useRef<HTMLDivElement>(null)
   const [activeIndex, setActiveIndex] = useState(0)
   const animatedSlidesRef = useRef<Set<number>>(new Set())
   const isAnimatingRef = useRef(false)
@@ -79,10 +80,15 @@ export const SystemComponentsCarousel = ({ content }: SystemComponentsCarouselPr
       const track = trackRef.current
       if (!track) return
 
-      /* Animate location key: slide out in travel direction, swap image, slide in */
+      /* Animate location key: slide out in travel direction, swap image, slide in, then draw line */
       const direction = index > activeIndex ? 1 : -1
       const keyEl = locationKeyRef.current
+      const lineEl = locationLineRef.current
       if (keyEl) {
+        /* Collapse line first */
+        if (lineEl) {
+          gsap.to(lineEl, { scaleX: 0, duration: 0.15, ease: 'power2.in' })
+        }
         gsap.to(keyEl, {
           x: direction * -40,
           opacity: 0,
@@ -94,7 +100,22 @@ export const SystemComponentsCarousel = ({ content }: SystemComponentsCarouselPr
             gsap.fromTo(
               keyEl,
               { x: direction * 40, opacity: 0 },
-              { x: 0, opacity: 1, duration: 0.3, ease: 'power2.out' },
+              {
+                x: 0,
+                opacity: 1,
+                duration: 0.3,
+                ease: 'power2.out',
+                onComplete: () => {
+                  /* Draw line in after image lands */
+                  if (lineEl) {
+                    gsap.fromTo(
+                      lineEl,
+                      { scaleX: 0 },
+                      { scaleX: 1, duration: 0.4, ease: 'power2.out' },
+                    )
+                  }
+                },
+              },
             )
           },
         })
@@ -149,15 +170,22 @@ export const SystemComponentsCarousel = ({ content }: SystemComponentsCarouselPr
             dark
           />
           <div className='hidden shrink-0 md:block'>
-            <div ref={locationKeyRef} className='relative' style={{ width: 270, height: 200 }}>
-              <Image
-                src={active.locationKeyImage.src}
-                alt={active.locationKeyImage.alt}
-                fill
-                className='object-contain object-right-top'
-                sizes='120px'
-              />
+            <div ref={locationKeyRef}>
+              <div className='relative' style={{ width: 270, height: 200 }}>
+                <Image
+                  src={active.locationKeyImage.src}
+                  alt={active.locationKeyImage.alt}
+                  fill
+                  className='object-contain object-right-top'
+                  sizes='120px'
+                />
+              </div>
             </div>
+            <div
+              ref={locationLineRef}
+              className='mt-3 h-px bg-white/[0.06]'
+              style={{ width: 270, transformOrigin: 'right center' }}
+            />
           </div>
         </div>
       </div>
@@ -181,6 +209,7 @@ export const SystemComponentsCarousel = ({ content }: SystemComponentsCarouselPr
 
       {/* ── Navigation bar ── */}
       <div className='shrink-0 px-5 pb-6 pt-3'>
+        <div className='mb-3 h-px bg-white/[0.06]' />
         <div className='flex items-center justify-between'>
           <div className='flex items-center gap-3'>
             <div className='flex gap-1.5' role='tablist' aria-label='Component slides'>
