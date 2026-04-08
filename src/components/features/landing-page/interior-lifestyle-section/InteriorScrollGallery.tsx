@@ -71,34 +71,30 @@ export const InteriorScrollGallery = ({ rooms, header }: InteriorScrollGalleryPr
           gsap.set('[data-int-frame]', { y: '80vh' })
           gsap.set('[data-int-counter-wrap]', { opacity: 0 })
 
-          /* Images 1–3 pushed fully off-screen right.
-             Each slides leftward over the previous (Apple approach).
-             A 4px left-edge border on each layer acts as the divider. */
-          for (let i = 1; i < total; i++) {
-            gsap.set(IMAGE(i), { xPercent: 100 })
-          }
+          /* ── Measure frame for carousel maths ──────────────── */
+          const frame = el.querySelector('[data-int-frame]') as HTMLElement
+          if (!frame) return
+          const frameW = frame.offsetWidth
+          const GAP = 12
 
           /* ────────────────────────────────────────────────────
-           * ROUNDED FRAME + RIGHT-TO-LEFT SLIDE TRANSITIONS
+           * CAROUSEL TRACK — APPLE-STYLE CARD STRIP
            *
-           * Apple-style: each slide carries a left-edge border
-           * overlay that naturally leads the wipe. Slides use
-           * translateX instead of clip-path so the bar is part
-           * of the panel itself — zero timing gap between panels.
+           * All slides sit side-by-side in a flex row with a
+           * 4px gap. Scrolling translates the track left.
+           * The gap IS the divider — the frame background
+           * (#edebe8) shows through between rounded cards.
            *
            *   0.00–0.14  Header lifts → frame parallax up → counter
            *   0.14–0.20  HOLD — absorb room 0
-           *   0.20–0.34  SLIDE 1 — room 1 slides in
-           *   0.34–0.35  micro-hold
-           *   0.35–0.49  SLIDE 2 — room 2 slides in
-           *   0.49–0.50  micro-hold
-           *   0.50–0.64  SLIDE 3 — room 3 slides in
-           *   0.64–0.68  HOLD — absorb room 3
+           *   0.20–0.62  Continuous carousel (3 slides, no stops)
+           *   0.62–0.68  HOLD — absorb room 3
            *   0.68–0.74  Frame scales down (1 → 0.88)
            *   0.74–0.94  DEAD ZONE
            * ──────────────────────────────────────────────────── */
 
-          const WIPE = 0.14
+          const SLIDE = 0.14
+          const CAROUSEL_START = 0.2
           const master = gsap.timeline()
 
           /* ── Reveal (0.00 → 0.14) ─────────────────────────── *
@@ -113,18 +109,20 @@ export const InteriorScrollGallery = ({ rooms, header }: InteriorScrollGalleryPr
           master.to('[data-int-sep]', { opacity: 0, duration: 0.03, ease: 'none' }, 0.06)
           master.to('[data-int-counter-wrap]', { opacity: 1, duration: 0.03, ease: 'none' }, 0.1)
 
-          /* ── Slide transitions — right-to-left ────────────── */
-          const slideStarts = [0.2, 0.35, 0.5]
-
+          /* ── Slide transitions — continuous, no stops ──────── */
           for (let r = 1; r < total; r++) {
-            const t = slideStarts[r - 1]
-            if (t === undefined) break
+            /* Each slide starts right after the previous ends */
+            const t = CAROUSEL_START + (r - 1) * SLIDE
 
-            /* Panel slides from xPercent:100 → 0 (right to left) */
-            master.to(IMAGE(r), { xPercent: 0, duration: WIPE, ease: 'none' }, t)
+            /* Shift the entire track left by one card + gap */
+            master.to(
+              '[data-int-track]',
+              { x: -(r * (frameW + GAP)), duration: SLIDE, ease: 'none' },
+              t,
+            )
 
             /* Pill + counter swap at slide midpoint */
-            const mid = t + WIPE * 0.5
+            const mid = t + SLIDE * 0.5
             master.to(
               PILL(r - 1),
               {
@@ -257,81 +255,77 @@ export const InteriorScrollGallery = ({ rooms, header }: InteriorScrollGalleryPr
             data-int-frame
             className='relative size-full overflow-hidden'
             style={{
-              borderRadius: '16px',
               willChange: 'transform',
               transformOrigin: '50% 50%',
             }}
           >
-            {/* ── Image layers ──────────────────────────────── */}
-            {rooms.map((room, i) => (
-              <div
-                key={room.id}
-                data-int-image={i}
-                className='absolute inset-0'
-                style={{
-                  zIndex: i + 1,
-                  ...(i > 0
-                    ? {
-                        willChange: 'transform',
-                        /* Apple card-slide effect: rounded leading
-                           edge + depth shadow. The rounded corner
-                           lets the dark frame bg peek through,
-                           creating the divider line naturally. */
-                        borderRadius: '12px 0 0 12px',
-                        boxShadow: '-8px 0 24px rgba(0,0,0,0.45)',
-                      }
-                    : {}),
-                }}
-              >
-                <Image
-                  src={room.image.src}
-                  alt={room.image.alt}
-                  fill
-                  sizes='94vw'
-                  priority={i === 0}
-                  className='object-cover'
-                  style={i > 0 ? { borderRadius: '12px 0 0 12px' } : undefined}
-                />
-
-                {/* Bottom gradient scrim — legend readability */}
+            {/* ── Carousel track — cards side by side with gap ── */}
+            <div
+              data-int-track
+              className='flex h-full'
+              style={{ gap: 12, willChange: 'transform' }}
+            >
+              {rooms.map((room, i) => (
                 <div
-                  className='pointer-events-none absolute inset-x-0 bottom-0'
+                  key={room.id}
+                  data-int-image={i}
+                  className='relative shrink-0 overflow-hidden'
                   style={{
-                    height: '55%',
-                    background:
-                      'linear-gradient(to top, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.45) 35%, rgba(0,0,0,0.12) 65%, transparent 100%)',
-                  }}
-                />
-
-                {/* Plan overlay — top right (inside layer, clips with wipe) */}
-                <div
-                  className='absolute right-4 top-3 overflow-hidden lg:right-6 lg:top-4'
-                  style={{
-                    width: 200,
-                    height: 120,
+                    width: '100%',
+                    height: '100%',
+                    borderRadius: '10px',
+                    boxShadow: 'inset 4px 0 12px rgba(0,0,0,0.3)',
                   }}
                 >
                   <Image
-                    src={room.plan.src}
-                    alt={room.plan.alt}
-                    width={room.plan.width}
-                    height={room.plan.height}
-                    loading='lazy'
-                    className='size-full object-contain'
+                    src={room.image.src}
+                    alt={room.image.alt}
+                    fill
+                    sizes='94vw'
+                    priority={i === 0}
+                    className='object-cover'
                   />
-                </div>
 
-                {/* Legend text — bottom left (inside layer, clips with wipe) */}
-                <div className='absolute bottom-0 left-0 p-5 md:p-6 lg:p-7'>
-                  <Typography variant='overline' as='span' className='text-primary-400'>
-                    {room.title}
-                  </Typography>
-                  <Typography variant='h4' as='h3' className='mt-1 text-white'>
-                    {room.subtitle}
-                  </Typography>
+                  {/* Bottom gradient scrim — legend readability */}
+                  <div
+                    className='pointer-events-none absolute inset-x-0 bottom-0'
+                    style={{
+                      height: '55%',
+                      background:
+                        'linear-gradient(to top, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.45) 35%, rgba(0,0,0,0.12) 65%, transparent 100%)',
+                    }}
+                  />
+
+                  {/* Plan overlay — top right */}
+                  <div
+                    className='absolute right-4 top-3 overflow-hidden lg:right-6 lg:top-4'
+                    style={{
+                      width: 200,
+                      height: 120,
+                    }}
+                  >
+                    <Image
+                      src={room.plan.src}
+                      alt={room.plan.alt}
+                      width={room.plan.width}
+                      height={room.plan.height}
+                      loading='lazy'
+                      className='size-full object-contain'
+                    />
+                  </div>
+
+                  {/* Legend text — bottom left */}
+                  <div className='absolute bottom-0 left-0 p-5 md:p-6 lg:p-7'>
+                    <Typography variant='overline' as='span' className='text-primary-400'>
+                      {room.title}
+                    </Typography>
+                    <Typography variant='h4' as='h3' className='mt-1 text-white'>
+                      {room.subtitle}
+                    </Typography>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </Container>
       </div>
