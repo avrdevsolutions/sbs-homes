@@ -29,7 +29,7 @@ export const ExteriorMobileGallery = ({ content }: ExteriorMobileGalleryProps) =
   }
 
   return (
-    <div className='bg-secondary-100 py-16'>
+    <div className='py-16'>
       {/* Section header */}
       <Container size='xxl' padding='xxl'>
         <SectionBlockHeader

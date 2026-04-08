@@ -8,14 +8,16 @@ import { useGSAP } from '@gsap/react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
-import { Separator, Typography } from '@/components/ui'
+import { Container, Separator, Typography } from '@/components/ui'
 import type { InteriorRoom } from '@/dictionaries/landing-page'
+import { cn } from '@/lib/utils'
 
 gsap.registerPlugin(useGSAP, ScrollTrigger)
 
 /* ── Selectors ─────────────────────────────────────────────────── */
 const IMAGE = (i: number) => `[data-int-image="${i}"]`
-const COUNTER = (i: number) => `[data-int-counter="${i}"]`
+const PILL = (i: number) => `[data-int-pill="${i}"]`
+const COUNTER_NUM = (i: number) => `[data-int-counter-num="${i}"]`
 
 type InteriorScrollGalleryProps = {
   rooms: InteriorRoom[]
@@ -43,8 +45,7 @@ export const InteriorScrollGallery = ({ rooms, header }: InteriorScrollGalleryPr
           const { isDesktop, reduceMotion } = context.conditions!
 
           if (reduceMotion) {
-            gsap.set('[data-int-warm-bg]', { opacity: 0 })
-            gsap.set('[data-int-frame]', { opacity: 1 })
+            gsap.set('[data-int-frame]', { y: 0 })
             gsap.set('[data-int-header-wrap]', { y: 0 })
             gsap.set('[data-int-desc], [data-int-sep]', { opacity: 0, display: 'none' })
             gsap.set('[data-int-counter-wrap]', { opacity: 1 })
@@ -67,26 +68,25 @@ export const InteriorScrollGallery = ({ rooms, header }: InteriorScrollGalleryPr
 
           /* ── Initial states ────────────────────────────────── */
           gsap.set('[data-int-header-wrap]', { y: centeredY })
-          gsap.set('[data-int-frame]', { opacity: 0 })
+          gsap.set('[data-int-frame]', { y: '80vh' })
           gsap.set('[data-int-counter-wrap]', { opacity: 0 })
 
-          /* Images 1–3 fully clipped from top (hidden).
-             As wipe progresses, top-inset shrinks → reveals bottom-to-top. */
+          /* Images 1–3 fully clipped from left (hidden).
+             As wipe progresses, left-inset shrinks → reveals right-to-left. */
           for (let i = 1; i < total; i++) {
-            gsap.set(IMAGE(i), { clipPath: 'inset(100% 0% 0% 0%)' })
+            gsap.set(IMAGE(i), { clipPath: 'inset(0% 0% 0% 100%)' })
           }
-          gsap.set('[data-int-wipe-line]', { opacity: 0, top: '100%' })
+          gsap.set('[data-int-wipe-line]', { opacity: 0, left: '100%' })
 
           /* ────────────────────────────────────────────────────
-           * ROUNDED FRAME + BOTTOM-TO-TOP WIPE TRANSITIONS
+           * ROUNDED FRAME + RIGHT-TO-LEFT WIPE TRANSITIONS
            *
            * Same visual language as Section 02 (Exterior) but
-           * wipes bottom-to-top. 20px horizontal divider sweeps
-           * upward at the clip edge. 4 rooms instead of 3.
+           * wipes right-to-left. 40px vertical divider sweeps
+           * leftward at the clip edge. 4 rooms instead of 3.
            *
-           *   0.00–0.04  DEAD ZONE — warm bg, centered header
-           *   0.00–0.16  Header lifts → counter → image appears
-           *   0.16–0.20  HOLD — absorb room 0
+           *   0.00–0.14  Header lifts → frame parallax up → counter
+           *   0.14–0.20  HOLD — absorb room 0
            *   0.20–0.34  WIPE 1 — room 1 sweeps up
            *   0.34–0.42  HOLD — absorb room 1
            *   0.42–0.56  WIPE 2 — room 2 sweeps up
@@ -100,39 +100,52 @@ export const InteriorScrollGallery = ({ rooms, header }: InteriorScrollGalleryPr
           const WIPE = 0.14
           const master = gsap.timeline()
 
-          /* ── Reveal (0.00 → 0.16) ─────────────────────────── *
+          /* ── Reveal (0.00 → 0.14) ─────────────────────────── *
            *  1. Header lifts to top (starts immediately)
-           *  2. Desc + sep fade out as header nears top
-           *  3. Counter appears after header settles
-           *  4. Image fades in last
+           *  2. Frame parallax slides up from below
+           *  3. Desc + sep fade out as header nears top
+           *  4. Counter appears after header settles
            * ──────────────────────────────────────────────────── */
           master.to('[data-int-header-wrap]', { y: topY, duration: 0.1, ease: 'none' }, 0.0)
+          master.to('[data-int-frame]', { y: 0, duration: 0.12, ease: 'none' }, 0.02)
           master.to('[data-int-desc]', { opacity: 0, y: -8, duration: 0.03, ease: 'none' }, 0.06)
           master.to('[data-int-sep]', { opacity: 0, duration: 0.03, ease: 'none' }, 0.06)
           master.to('[data-int-counter-wrap]', { opacity: 1, duration: 0.03, ease: 'none' }, 0.1)
-          master.to('[data-int-warm-bg]', { opacity: 0, duration: 0.07, ease: 'none' }, 0.12)
-          master.to('[data-int-frame]', { opacity: 1, duration: 0.07, ease: 'none' }, 0.12)
-          master.set('[data-int-warm-bg]', { pointerEvents: 'none' }, 0.16)
 
-          /* ── Wipe transitions — bottom-to-top ─────────────── */
+          /* ── Wipe transitions — right-to-left ─────────────── */
           const wipeStarts = [0.2, 0.42, 0.64]
 
           for (let r = 1; r < total; r++) {
             const t = wipeStarts[r - 1]
             if (t === undefined) break
 
-            /* Image wipe: clipPath top-inset 100% → 0% (bottom-to-top reveal) */
+            /* Image wipe: clipPath left-inset 100% → 0% (right-to-left reveal) */
             master.to(IMAGE(r), { clipPath: 'inset(0% 0% 0% 0%)', duration: WIPE, ease: 'none' }, t)
 
-            /* 20px horizontal divider line sweeps upward with the clip edge */
-            master.set('[data-int-wipe-line]', { opacity: 1, top: '100%' }, t)
-            master.to('[data-int-wipe-line]', { top: '0%', duration: WIPE, ease: 'none' }, t)
+            /* 40px vertical divider line sweeps leftward with the clip edge */
+            master.set('[data-int-wipe-line]', { opacity: 1, left: '100%' }, t)
+            master.to('[data-int-wipe-line]', { left: '0%', duration: WIPE, ease: 'none' }, t)
             master.set('[data-int-wipe-line]', { opacity: 0 }, t + WIPE + 0.001)
 
-            /* Counter swap at wipe midpoint */
+            /* Pill + counter swap at wipe midpoint */
             const mid = t + WIPE * 0.5
-            master.set(COUNTER(r - 1), { opacity: 0 }, mid)
-            master.set(COUNTER(r), { opacity: 1 }, mid)
+            master.to(
+              PILL(r - 1),
+              {
+                width: 12,
+                backgroundColor: 'rgba(31, 28, 24, 0.15)',
+                duration: 0.01,
+                ease: 'none',
+              },
+              mid,
+            )
+            master.to(
+              PILL(r),
+              { width: 24, backgroundColor: '#c87941', duration: 0.01, ease: 'none' },
+              mid,
+            )
+            master.set(COUNTER_NUM(r - 1), { opacity: 0 }, mid)
+            master.set(COUNTER_NUM(r), { opacity: 1 }, mid)
           }
 
           /* ── Scale down (0.84 → 0.90) ──────────────────────── */
@@ -158,13 +171,9 @@ export const InteriorScrollGallery = ({ rooms, header }: InteriorScrollGalleryPr
 
   return (
     <div ref={sceneRef} className='relative h-screen w-full overflow-hidden bg-secondary-200'>
-      {/* ── Warm cover — dissolves to reveal the frame card ──── */}
-      <div data-int-warm-bg className='absolute inset-0 bg-secondary-200' style={{ zIndex: 5 }} />
-
-      {/* Content container — capped at 1920px, centered on ultra-wide */}
-      <div className='absolute inset-0 mx-auto' style={{ maxWidth: '1920px' }}>
-        {/* ── Section header — warm bg, dark text, above the frame ── */}
-        <div className='absolute inset-x-0 top-0 px-5 md:px-10 lg:px-24' style={{ zIndex: 20 }}>
+      {/* ── Section header — above the frame ── */}
+      <div className='absolute inset-x-0 top-0' style={{ zIndex: 20 }}>
+        <Container size='xxl' padding='xxl'>
           <div
             data-int-header-wrap
             className='flex items-start justify-between gap-8 pt-5 md:pt-6'
@@ -198,49 +207,63 @@ export const InteriorScrollGallery = ({ rooms, header }: InteriorScrollGalleryPr
               />
             </div>
 
-            {/* Right: counter (01 / 04) */}
+            {/* Right: pill indicators + counter */}
             <div
               data-int-counter-wrap
               className='mt-6 shrink-0'
               style={{ opacity: 0, willChange: 'opacity' }}
             >
-              <div className='flex items-baseline gap-1'>
-                <div className='relative overflow-hidden' style={{ width: '2ch', height: '1.2em' }}>
+              <div className='flex items-center gap-3'>
+                <div className='flex gap-1.5'>
                   {rooms.map((_, i) => (
-                    <span
+                    <div
                       key={i}
-                      data-int-counter={i}
-                      className='absolute inset-0'
-                      style={{ opacity: i === 0 ? 1 : 0, willChange: 'opacity' }}
-                    >
-                      <Typography variant='overline' as='span' className='text-primary-600'>
-                        {String(i + 1).padStart(2, '0')}
-                      </Typography>
-                    </span>
+                      data-int-pill={i}
+                      className={cn(
+                        'h-1 rounded-full',
+                        i === 0 ? 'bg-primary-600' : 'bg-secondary-900/15',
+                      )}
+                      style={{ width: i === 0 ? 24 : 12 }}
+                    />
                   ))}
                 </div>
-                <Typography variant='overline' as='span' className='text-secondary-900'>
-                  / {String(total).padStart(2, '0')}
+                <Typography
+                  variant='overline'
+                  as='span'
+                  className='text-secondary-900/40'
+                  style={{ fontSize: '0.6rem' }}
+                >
+                  <span className='relative inline-block' style={{ width: '1ch' }}>
+                    {rooms.map((_, i) => (
+                      <span
+                        key={i}
+                        data-int-counter-num={i}
+                        className='absolute inset-0'
+                        style={{ opacity: i === 0 ? 1 : 0, willChange: 'opacity' }}
+                      >
+                        {i + 1}
+                      </span>
+                    ))}
+                  </span>
+                  {' / '}
+                  {total}
                 </Typography>
               </div>
             </div>
           </div>
-        </div>
+        </Container>
+      </div>
 
-        {/* ── Rounded frame card ──────────────────────────────── */}
-        <div
-          className='absolute inset-x-0 px-5 md:px-10 lg:px-24'
-          style={{ zIndex: 2, top: '20vh', bottom: '10vh' }}
-        >
+      {/* ── Rounded frame card ──────────────────────────────── */}
+      <div className='absolute inset-x-0' style={{ zIndex: 2, top: '20vh', bottom: '10vh' }}>
+        <Container size='xxl' padding='xxl' className='h-full'>
           <div
             data-int-frame
             className='relative size-full overflow-hidden'
             style={{
               borderRadius: '16px',
-              opacity: 0,
-              willChange: 'transform, opacity',
+              willChange: 'transform',
               transformOrigin: '50% 50%',
-              boxShadow: '0 8px 32px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.06)',
             }}
           >
             {/* ── Image layers ──────────────────────────────── */}
@@ -303,22 +326,22 @@ export const InteriorScrollGallery = ({ rooms, header }: InteriorScrollGalleryPr
               </div>
             ))}
 
-            {/* ── 40px horizontal wipe divider line ──────────── *
-             *  Sweeps bottom-to-top, centered on the clip edge. */}
+            {/* ── 40px vertical wipe divider line ──────────── *
+             *  Sweeps right-to-left, centered on the clip edge. */}
             <div
               data-int-wipe-line
-              className='absolute inset-x-0'
+              className='absolute inset-y-0'
               style={{
                 zIndex: 10,
-                height: 40,
+                width: 40,
                 opacity: 0,
-                top: '100%',
-                transform: 'translateY(-50%)',
+                left: '100%',
+                transform: 'translateX(-50%)',
                 background: '#edebe8',
               }}
             />
           </div>
-        </div>
+        </Container>
       </div>
     </div>
   )

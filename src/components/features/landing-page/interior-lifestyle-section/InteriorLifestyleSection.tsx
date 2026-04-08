@@ -27,7 +27,7 @@ export const InteriorLifestyleSection = ({ content }: InteriorLifestyleSectionPr
 
       {/* Mobile: Static room cards */}
       <div className='md:hidden'>
-        <Container>
+        <Container size='xxl' padding='xxl'>
           <div className='pb-10 pt-26'>
             <SectionBlockHeader
               eyebrow={content.eyebrow}

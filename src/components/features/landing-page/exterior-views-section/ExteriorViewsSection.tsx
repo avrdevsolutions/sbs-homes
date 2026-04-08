@@ -1,4 +1,4 @@
-import { Container, Section } from '@/components/ui'
+import { Section } from '@/components/ui'
 import type { ExteriorViewsSectionContent } from '@/dictionaries/landing-page'
 
 import { ExteriorMobileGallery } from './ExteriorMobileGallery'
@@ -9,12 +9,10 @@ type ExteriorViewsSectionProps = {
 }
 
 export const ExteriorViewsSection = ({ content }: ExteriorViewsSectionProps) => (
-  <Section id={content.id} spacing='none' fullBleed>
-    {/* Desktop: Carousel */}
-    <div className='hidden h-dvh bg-background md:block'>
-      <Container size='xxl' padding='xxl' className='h-full'>
-        <ExteriorViewsCarousel content={content} />
-      </Container>
+  <Section id={content.id} spacing='none' background='warm' fullBleed>
+    {/* Desktop: Scroll-reveal intro + carousel */}
+    <div className='hidden md:block'>
+      <ExteriorViewsCarousel content={content} />
     </div>
 
     {/* Mobile: Immersive stacked gallery */}

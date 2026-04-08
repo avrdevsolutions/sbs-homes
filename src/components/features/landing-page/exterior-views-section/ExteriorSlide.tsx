@@ -11,13 +11,14 @@ type ExteriorSlideProps = {
   total: number
   slideRatio: number
   onImageClick?: () => void
+  onPlanClick?: () => void
 }
 
 export const ExteriorSlide = memo(
-  ({ vantagePoint, index, total, slideRatio, onImageClick }: ExteriorSlideProps) => (
+  ({ vantagePoint, index, total, slideRatio, onImageClick, onPlanClick }: ExteriorSlideProps) => (
     <div
-      className='h-full shrink-0 overflow-hidden rounded-2xl'
-      style={{ width: `${slideRatio * 100}%` }}
+      className='absolute inset-y-0 left-0 overflow-hidden'
+      style={{ width: `${slideRatio * 100}%`, willChange: 'transform', borderRadius: 16 }}
       data-ext-slide={index}
       aria-roledescription='slide'
       aria-label={`${index + 1} of ${total}: ${vantagePoint.title}`}
@@ -60,6 +61,30 @@ export const ExteriorSlide = memo(
           >
             {vantagePoint.description}
           </Typography>
+        </div>
+      </button>
+
+      {/* Site plan — bottom right */}
+      <button
+        type='button'
+        className='pointer-events-auto absolute bottom-5 right-5 cursor-zoom-in md:bottom-7 md:right-7 lg:bottom-8 lg:right-8'
+        onClick={(e) => {
+          e.stopPropagation()
+          onPlanClick?.()
+        }}
+        aria-label={`View ${vantagePoint.sitePlan.alt} fullscreen`}
+      >
+        <div
+          className='relative overflow-hidden rounded-lg bg-white shadow-lg'
+          style={{ width: 200, height: 150 }}
+        >
+          <Image
+            src={vantagePoint.sitePlan.src}
+            alt={vantagePoint.sitePlan.alt}
+            fill
+            className='object-contain p-3'
+            sizes='160px'
+          />
         </div>
       </button>
     </div>
