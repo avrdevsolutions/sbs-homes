@@ -71,30 +71,31 @@ export const InteriorScrollGallery = ({ rooms, header }: InteriorScrollGalleryPr
           gsap.set('[data-int-frame]', { y: '80vh' })
           gsap.set('[data-int-counter-wrap]', { opacity: 0 })
 
-          /* Images 1–3 fully clipped from left (hidden).
-             As wipe progresses, left-inset shrinks → reveals right-to-left. */
+          /* Images 1–3 pushed fully off-screen right.
+             Each slides leftward over the previous (Apple approach).
+             A 4px left-edge border on each layer acts as the divider. */
           for (let i = 1; i < total; i++) {
-            gsap.set(IMAGE(i), { clipPath: 'inset(0% 0% 0% 100%)' })
+            gsap.set(IMAGE(i), { xPercent: 100 })
           }
-          gsap.set('[data-int-wipe-line]', { opacity: 0, left: '100%' })
 
           /* ────────────────────────────────────────────────────
-           * ROUNDED FRAME + RIGHT-TO-LEFT WIPE TRANSITIONS
+           * ROUNDED FRAME + RIGHT-TO-LEFT SLIDE TRANSITIONS
            *
-           * Same visual language as Section 02 (Exterior) but
-           * wipes right-to-left. 40px vertical divider sweeps
-           * leftward at the clip edge. 4 rooms instead of 3.
+           * Apple-style: each slide carries a left-edge border
+           * overlay that naturally leads the wipe. Slides use
+           * translateX instead of clip-path so the bar is part
+           * of the panel itself — zero timing gap between panels.
            *
            *   0.00–0.14  Header lifts → frame parallax up → counter
            *   0.14–0.20  HOLD — absorb room 0
-           *   0.20–0.34  WIPE 1 — room 1 sweeps up
-           *   0.34–0.42  HOLD — absorb room 1
-           *   0.42–0.56  WIPE 2 — room 2 sweeps up
-           *   0.56–0.64  HOLD — absorb room 2
-           *   0.64–0.78  WIPE 3 — room 3 sweeps up
-           *   0.78–0.84  HOLD — absorb room 3
-           *   0.84–0.90  Frame scales down (1 → 0.88)
-           *   0.90–0.94  DEAD ZONE
+           *   0.20–0.34  SLIDE 1 — room 1 slides in
+           *   0.34–0.35  micro-hold
+           *   0.35–0.49  SLIDE 2 — room 2 slides in
+           *   0.49–0.50  micro-hold
+           *   0.50–0.64  SLIDE 3 — room 3 slides in
+           *   0.64–0.68  HOLD — absorb room 3
+           *   0.68–0.74  Frame scales down (1 → 0.88)
+           *   0.74–0.94  DEAD ZONE
            * ──────────────────────────────────────────────────── */
 
           const WIPE = 0.14
@@ -112,22 +113,17 @@ export const InteriorScrollGallery = ({ rooms, header }: InteriorScrollGalleryPr
           master.to('[data-int-sep]', { opacity: 0, duration: 0.03, ease: 'none' }, 0.06)
           master.to('[data-int-counter-wrap]', { opacity: 1, duration: 0.03, ease: 'none' }, 0.1)
 
-          /* ── Wipe transitions — right-to-left ─────────────── */
-          const wipeStarts = [0.2, 0.42, 0.64]
+          /* ── Slide transitions — right-to-left ────────────── */
+          const slideStarts = [0.2, 0.35, 0.5]
 
           for (let r = 1; r < total; r++) {
-            const t = wipeStarts[r - 1]
+            const t = slideStarts[r - 1]
             if (t === undefined) break
 
-            /* Image wipe: clipPath left-inset 100% → 0% (right-to-left reveal) */
-            master.to(IMAGE(r), { clipPath: 'inset(0% 0% 0% 0%)', duration: WIPE, ease: 'none' }, t)
+            /* Panel slides from xPercent:100 → 0 (right to left) */
+            master.to(IMAGE(r), { xPercent: 0, duration: WIPE, ease: 'none' }, t)
 
-            /* 40px vertical divider line sweeps leftward with the clip edge */
-            master.set('[data-int-wipe-line]', { opacity: 1, left: '100%' }, t)
-            master.to('[data-int-wipe-line]', { left: '0%', duration: WIPE, ease: 'none' }, t)
-            master.set('[data-int-wipe-line]', { opacity: 0 }, t + WIPE + 0.001)
-
-            /* Pill + counter swap at wipe midpoint */
+            /* Pill + counter swap at slide midpoint */
             const mid = t + WIPE * 0.5
             master.to(
               PILL(r - 1),
@@ -148,8 +144,8 @@ export const InteriorScrollGallery = ({ rooms, header }: InteriorScrollGalleryPr
             master.set(COUNTER_NUM(r), { opacity: 1 }, mid)
           }
 
-          /* ── Scale down (0.84 → 0.90) ──────────────────────── */
-          master.to('[data-int-frame]', { scale: 0.88, duration: 0.06, ease: 'none' }, 0.84)
+          /* ── Scale down (0.68 → 0.74) ──────────────────────── */
+          master.to('[data-int-frame]', { scale: 0.88, duration: 0.06, ease: 'none' }, 0.68)
 
           /* ── Dead End ──────────────────────────────────────── */
           master.set({}, {}, 0.94)
@@ -274,7 +270,17 @@ export const InteriorScrollGallery = ({ rooms, header }: InteriorScrollGalleryPr
                 className='absolute inset-0'
                 style={{
                   zIndex: i + 1,
-                  ...(i > 0 ? { willChange: 'clip-path' } : {}),
+                  ...(i > 0
+                    ? {
+                        willChange: 'transform',
+                        /* Apple card-slide effect: rounded leading
+                           edge + depth shadow. The rounded corner
+                           lets the dark frame bg peek through,
+                           creating the divider line naturally. */
+                        borderRadius: '12px 0 0 12px',
+                        boxShadow: '-8px 0 24px rgba(0,0,0,0.45)',
+                      }
+                    : {}),
                 }}
               >
                 <Image
@@ -284,6 +290,7 @@ export const InteriorScrollGallery = ({ rooms, header }: InteriorScrollGalleryPr
                   sizes='94vw'
                   priority={i === 0}
                   className='object-cover'
+                  style={i > 0 ? { borderRadius: '12px 0 0 12px' } : undefined}
                 />
 
                 {/* Bottom gradient scrim — legend readability */}
@@ -325,21 +332,6 @@ export const InteriorScrollGallery = ({ rooms, header }: InteriorScrollGalleryPr
                 </div>
               </div>
             ))}
-
-            {/* ── 40px vertical wipe divider line ──────────── *
-             *  Sweeps right-to-left, centered on the clip edge. */}
-            <div
-              data-int-wipe-line
-              className='absolute inset-y-0'
-              style={{
-                zIndex: 10,
-                width: 40,
-                opacity: 0,
-                left: '100%',
-                transform: 'translateX(-50%)',
-                background: '#edebe8',
-              }}
-            />
           </div>
         </Container>
       </div>
