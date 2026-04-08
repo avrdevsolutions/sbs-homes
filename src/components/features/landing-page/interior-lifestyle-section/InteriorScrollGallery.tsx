@@ -138,8 +138,8 @@ export const InteriorScrollGallery = ({ rooms, header }: InteriorScrollGalleryPr
               { width: 24, backgroundColor: '#c87941', duration: 0.01, ease: 'none' },
               mid,
             )
-            master.set(COUNTER_NUM(r - 1), { opacity: 0 }, mid)
-            master.set(COUNTER_NUM(r), { opacity: 1 }, mid)
+            master.set(COUNTER_NUM(r - 1), { display: 'none' }, mid)
+            master.set(COUNTER_NUM(r), { display: 'inline' }, mid)
           }
 
           /* ── Scale down (0.68 → 0.74) ──────────────────────── */
@@ -208,7 +208,7 @@ export const InteriorScrollGallery = ({ rooms, header }: InteriorScrollGalleryPr
               style={{ opacity: 0, willChange: 'opacity' }}
             >
               <div className='flex items-center gap-3'>
-                <div className='flex gap-1.5'>
+                <div className='flex items-center gap-1.5'>
                   {rooms.map((_, i) => (
                     <div
                       key={i}
@@ -221,27 +221,19 @@ export const InteriorScrollGallery = ({ rooms, header }: InteriorScrollGalleryPr
                     />
                   ))}
                 </div>
-                <Typography
-                  variant='overline'
-                  as='span'
-                  className='text-secondary-900/40'
-                  style={{ fontSize: '0.6rem' }}
-                >
-                  <span className='relative inline-block' style={{ width: '1ch' }}>
-                    {rooms.map((_, i) => (
-                      <span
-                        key={i}
-                        data-int-counter-num={i}
-                        className='absolute inset-0'
-                        style={{ opacity: i === 0 ? 1 : 0, willChange: 'opacity' }}
-                      >
-                        {i + 1}
-                      </span>
-                    ))}
-                  </span>
+                <span className='text-secondary-900/40' style={{ fontSize: '0.6rem' }}>
+                  {rooms.map((_, i) => (
+                    <span
+                      key={i}
+                      data-int-counter-num={i}
+                      style={{ display: i === 0 ? 'inline' : 'none' }}
+                    >
+                      {i + 1}
+                    </span>
+                  ))}
                   {' / '}
                   {total}
-                </Typography>
+                </span>
               </div>
             </div>
           </div>
