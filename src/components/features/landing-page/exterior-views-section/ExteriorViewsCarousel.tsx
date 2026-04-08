@@ -221,14 +221,14 @@ export const ExteriorViewsCarousel = ({ content }: ExteriorViewsCarouselProps) =
             }
           }
 
-          /* Nav controls fade in (in header) */
-          master.to('[data-ext-nav]', { opacity: 1, duration: 0.06, ease: 'none' }, 0.24)
+          /* Nav controls fade in (in header) — starts with side slides so visible when cards land */
+          master.to('[data-ext-nav]', { opacity: 1, duration: 0.12, ease: 'none' }, 0.12)
 
           /* Legend on active slide */
           master.to(
             '[data-ext-legend="0"]',
             { opacity: 1, y: 0, duration: 0.06, ease: 'none' },
-            0.26,
+            0.22,
           )
 
           /* Dead zone */
